@@ -12,14 +12,15 @@ import RegisterTeacher from './pages/RegisterTeacher';
 import Login from './pages/Login';
 
 import AdminDashboard from './pages/Admin/AdminDashboard';
-import TeacherDashboard from './pages/TeacherDashboard';
-import StudentDashboard from './pages/StudentDashboard';
+import TeacherDashboard from './pages/Teacher/TeacherDashboard';
+import StudentDashboard from './pages/Student/StudentDashboard';
 
 import AdminEvents from './pages/Admin/AdminEvent';
 import AdminStudents from './pages/Admin/AdminStudents';
 import AdminTeachers from './pages/Admin/AdminTeachers';
 import AdminFees from './pages/Admin/AdminFees';
 import AdminClasses from './pages/Admin/AdminClasses';
+import AdminAcademics from './pages/Admin/AdminAcademics';
 
 function App() {
 
@@ -51,6 +52,8 @@ function App() {
       <Route path="/dashboard/admin/teachers" element={<AdminTeachers/>} />
       <Route path="/dashboard/admin/fees" element={<AdminFees />} />
       <Route path="/dashboard/admin/classes" element={<AdminClasses />} />
+
+      <Route path="/dashboard/admin/academics" element={<AdminAcademics />} />
       <Route path="/dashboard/admin/events" element={<AdminEvents />} />
 
 
