@@ -15,7 +15,7 @@ const roles = [
   },
   {
     title: "Student",
-    route: "/register/student",
+    route: "/login/student",
     icon: (
       <svg className="w-10 h-10 mx-auto mb-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
         <path d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m0 0c-4.418 0-8-1.343-8-3V7"/>
@@ -25,7 +25,7 @@ const roles = [
   },
   {
     title: "Teacher",
-    route: "/register/teacher",
+    route: "/login/teacher",
     icon: (
       <svg className="w-10 h-10 mx-auto mb-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
         <path d="M4 19h16M4 15h16M4 11h16M4 7h16"/>

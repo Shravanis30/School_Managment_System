@@ -149,6 +149,7 @@
 
 import React, { useState } from 'react';
 import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -204,8 +205,10 @@ const AdminEvents = () => {
     <div className="flex min-h-screen bg-black text-white">
       <Sidebar role="admin" />
       <div className="flex-1 p-6">
+        <Header />
+
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <div className="flex flex-col mt-10 md:flex-row justify-between items-center mb-6">
           <h2 className="text-2xl font-bold mb-2 md:mb-0">Admin Event Calendar</h2>
           <button
             onClick={() => setShowForm(true)}

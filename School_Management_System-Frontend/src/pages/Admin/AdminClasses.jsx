@@ -1,5 +1,6 @@
 import React from 'react';
 import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
 
 const AdminClasses = () => {
   const classes = [
@@ -19,7 +20,10 @@ const AdminClasses = () => {
     <div className="flex min-h-screen bg-black text-white">
       <Sidebar role="admin" />
       <div className="flex-1 p-6">
-        <h2 className="text-2xl font-bold mb-6">All Classes</h2>
+        <Header />
+
+       
+        <h2 className="text-2xl font-bold mt-10 mb-6">All Classes</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {classes.map((cls) => (
             <div

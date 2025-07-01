@@ -125,6 +125,7 @@
 
 import React, { useState } from 'react';
 import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
 
 const AdminStudents = () => {
   const [students, setStudents] = useState([]);
@@ -160,6 +161,7 @@ const AdminStudents = () => {
     <div className="flex min-h-screen bg-black text-white">
       <Sidebar role="admin" />
       <div className="flex-1 p-6">
+        <Header />
         <h2 className="text-2xl font-bold mb-6">Student Management</h2>
 
         {/* Registration Form */}

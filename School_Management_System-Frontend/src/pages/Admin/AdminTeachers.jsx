@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
 
 const AdminTeachers = () => {
   const [teachers, setTeachers] = useState([
@@ -38,6 +39,7 @@ const AdminTeachers = () => {
     <div className="flex min-h-screen bg-gray-900 text-white">
       <Sidebar role="admin" />
       <div className="flex-1 p-6">
+        <Header />
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <h2 className="text-2xl font-bold mb-2 md:mb-0">All Teachers</h2>
           <button

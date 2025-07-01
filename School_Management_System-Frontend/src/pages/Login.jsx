@@ -1,8 +1,12 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+
 
 import backgroundImg from '../assets/img.jpg';
+
+
 
 const roleMap = {
   admin: {
@@ -11,11 +15,11 @@ const roleMap = {
   },
   student: {
     label: 'Student',
-    registerLink: '/register/student',
+    registerLink: '',
   },
   teacher: {
     label: 'Teacher',
-    registerLink: '/register/teacher',
+    registerLink: '',
   },
 };
 
@@ -25,16 +29,36 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const currentRole = roleMap[role] || roleMap.student;
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`${currentRole.label} Login Data:`, form);
-    // Backend logic goes here
+    const loginRoute = `http://localhost:5000/api/${role}s/login`;
+
+    try {
+      const response = await fetch(loginRoute, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        alert("Login successful");
+        navigate(`/dashboard/${role}`);
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-300">
@@ -102,10 +126,17 @@ const Login = () => {
 
             <p className="text-sm text-center mt-6 text-gray-500">
               Don’t have an account?{' '}
-              <Link to={currentRole.registerLink} className="text-blue-600 hover:underline">
-                Register here
-              </Link>
+              {role === "admin" ? (
+                <Link to={currentRole.registerLink} className="text-blue-600 hover:underline">
+                  Register here
+                </Link>
+              ) : (
+                <span className="text-red-500 font-semibold">
+                  Please contact your school admin to register.
+                </span>
+              )}
             </p>
+
           </div>
         </div>
       </div>

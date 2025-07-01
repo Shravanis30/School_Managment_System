@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
+import {
+
+  FaBell
+} from 'react-icons/fa';
 
 const classOptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -33,17 +38,13 @@ const classWiseSubjects = {
 const tabs = ['Subject', 'Classes', 'Syllabus', 'Time-Table', 'Result'];
 
 const AdminAcademics = () => {
-  const [selectedClass, setSelectedClass] = useState('10');
-  const [activeTab, setActiveTab] = useState('Subject');
+
   const [assignedTeachers, setAssignedTeachers] = useState({});
   const [uploadedSyllabus, setUploadedSyllabus] = useState(() => JSON.parse(localStorage.getItem('syllabus')) || {});
-  const [results, setResults] = useState({});
   const [newTeacher, setNewTeacher] = useState({ class: '', teacher: '' });
   const [syllabusFile, setSyllabusFile] = useState(null);
-  const [resultText, setResultText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSyllabusClass, setActiveSyllabusClass] = useState('');
-  const academicData = classWiseSubjects[selectedClass] || [];
 
   const [uploadedTimetables, setUploadedTimetables] = useState(() => JSON.parse(localStorage.getItem('timetable')) || {});
   const [newTimetableEntries, setNewTimetableEntries] = useState([
@@ -56,6 +57,17 @@ const AdminAcademics = () => {
   ]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalClass, setModalClass] = useState('');
+
+
+  const [selectedClass, setSelectedClass] = useState('10');
+  const [activeTab, setActiveTab] = useState('Subject');
+  const [results, setResults] = useState(() => JSON.parse(localStorage.getItem('studentResults')) || {});
+  const [newResults, setNewResults] = useState({});
+  const academicData = classWiseSubjects[selectedClass] || [];
+  const [uploadedFiles, setUploadedFiles] = useState({});
+
+
+
 
 
 
@@ -77,7 +89,7 @@ const AdminAcademics = () => {
   };
 
 
-const handleTimetableInput = (dayIndex, periodIndex, value) => {
+  const handleTimetableInput = (dayIndex, periodIndex, value) => {
     const updatedEntries = [...newTimetableEntries];
     updatedEntries[dayIndex].periods[periodIndex] = value;
     setNewTimetableEntries(updatedEntries);
@@ -97,10 +109,41 @@ const handleTimetableInput = (dayIndex, periodIndex, value) => {
     ]);
   };
 
-  const handleResultPost = () => {
-    if (resultText) {
-      setResults({ ...results, [selectedClass]: resultText });
-      setResultText('');
+  useEffect(() => {
+    const initial = {};
+    (sampleStudents[selectedClass] || []).forEach((name) => {
+      initial[name] = resultCategories.reduce((acc, cat) => {
+        acc[cat] = '';
+        return acc;
+      }, {});
+    });
+    setNewResults(initial);
+  }, [selectedClass]);
+
+  const handleResultChange = (student, category, value) => {
+    setNewResults((prev) => ({
+      ...prev,
+      [student]: {
+        ...prev[student],
+        [category]: value,
+      },
+    }));
+  };
+
+  const handleSaveResults = () => {
+    const updated = { ...results, [selectedClass]: newResults };
+    setResults(updated);
+    localStorage.setItem('studentResults', JSON.stringify(updated));
+  };
+
+  const handleFileUpload = (e, student) => {
+    const file = e.target.files[0];
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      setUploadedFiles((prev) => ({
+        ...prev,
+        [student]: fileUrl,
+      }));
     }
   };
 
@@ -116,7 +159,7 @@ const handleTimetableInput = (dayIndex, periodIndex, value) => {
     setActiveSyllabusClass('');
   };
 
-    const openTimetableModal = (cls) => {
+  const openTimetableModal = (cls) => {
     setModalClass(cls);
     setModalOpen(true);
   };
@@ -331,64 +374,53 @@ const handleTimetableInput = (dayIndex, periodIndex, value) => {
               </div>
             )}
           </div>
-          //     <div className="bg-gray-900 p-4 rounded">
-          //       <h3 className="text-lg font-semibold mb-4">Upload Time-Table for Class {selectedClass}</h3>
-          //       <input
-          //         type="file"
-          //         onChange={(e) => setTimetableFile(e.target.files[0])}
-          //         className="mb-2"
-          //         accept="application/pdf"
-          //       />
-          //       <button
-          //         onClick={handleTimetableUpload}
-          //         className="bg-blue-600 px-4 py-2 rounded text-white hover:bg-blue-700"
-          //       >
-          //         Upload
-          //       </button>
-          //       <div className="mt-6">
-          //         <h4 className="text-lg font-semibold mb-2">Time-Table Upload Status</h4>
-          //         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          //           {classOptions.map((cls) => (
-          //             <div key={cls} className="bg-gray-800 p-4 rounded text-center">
-          //               <h5 className="font-bold mb-2">Class {cls}</h5>
-          //               {uploadedTimetables[cls] ? (
-          //                 <a
-          //                   href={uploadedTimetables[cls].url}
-          //                   target="_blank"
-          //                   rel="noopener noreferrer"
-          //                   className="text-blue-400 underline"
-          //                 >
-          //                   View Time-Table
-          //                 </a>
-          //               ) : (
-          //                 <span className="text-gray-400">Not Uploaded</span>
-          //               )}
-          //             </div>
-          //           ))}
-          //         </div>
-          //       </div>
-          //     </div>
+
         );
       case 'Result':
         return (
           <div className="bg-gray-900 p-4 rounded">
-            <h3 className="text-lg font-semibold mb-4">Post Result for Class {selectedClass}</h3>
-            <textarea
-              className="w-full p-2 rounded text-black"
-              rows={5}
-              placeholder="Enter results with student names..."
-              value={resultText}
-              onChange={(e) => setResultText(e.target.value)}
-            />
+            <h3 className="text-lg font-semibold mb-4">Post Results for Class {selectedClass}</h3>
+            {(sampleStudents[selectedClass] || []).map((student) => (
+              <div key={student} className="mb-4">
+                <h4 className="text-md font-bold mb-2">{student}</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {resultCategories.map((cat) => (
+                    <input
+                      key={cat}
+                      type="text"
+                      placeholder={`${cat} Marks`}
+                      className="p-2 bg-gray-800 text-white rounded"
+                      value={newResults[student]?.[cat] || ''}
+                      onChange={(e) => handleResultChange(student, cat, e.target.value)}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
             <button
-              onClick={handleResultPost}
-              className="mt-2 bg-purple-600 px-4 py-2 rounded text-white hover:bg-purple-700"
+              onClick={handleSaveResults}
+              className="mt-4 bg-green-600 px-4 py-2 rounded text-white hover:bg-green-700"
             >
-              Post Result
+              Save Results
             </button>
-            <div className="mt-4">
-              <h4 className="font-semibold">Result Preview:</h4>
-              <p className="text-gray-300 whitespace-pre-wrap">{results[selectedClass] || 'No result posted.'}</p>
+            <div className="mt-6">
+              <h4 className="text-lg font-semibold mb-2">Result Preview</h4>
+              {(results[selectedClass] && Object.entries(results[selectedClass]).length) ? (
+                <div className="space-y-4">
+                  {Object.entries(results[selectedClass]).map(([student, res]) => (
+                    <div key={student} className="bg-gray-800 p-4 rounded">
+                      <h5 className="font-bold mb-2">{student}</h5>
+                      <ul>
+                        {resultCategories.map((cat) => (
+                          <li key={cat} className="text-gray-300">{cat}: {res[cat]}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-400">No results posted for this class.</p>
+              )}
             </div>
           </div>
         );
@@ -398,38 +430,47 @@ const handleTimetableInput = (dayIndex, periodIndex, value) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    <div className="flex min-h-screen bg-gradient-to-b from-[#0f172a] to-black text-white">
       <Sidebar role="admin" />
       <div className="flex-1 p-6">
-        <div className="flex flex-col lg:flex-row justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold mb-4 lg:mb-0">Academics</h2>
+
+        <Header />
+
+
+        {/* Header */}
+        <div className="flex flex-col mt-10 lg:flex-row justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold mb-4 lg:mb-0 text-white">Academics</h2>
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
-            className="bg-gray-800 text-white border px-3 py-2 rounded"
+            className="bg-gray-900 text-white px-3 py-2 rounded border border-gray-700 shadow"
           >
             <option value="">Select Class</option>
             {classOptions.map((cls) => (
-              <option key={cls} value={cls}>
-                Class {cls}
-              </option>
+              <option key={cls} value={cls}>Class {cls}</option>
             ))}
           </select>
         </div>
+
+        {/* Tabs */}
         <div className="flex flex-wrap gap-3 mb-6">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded shadow text-sm transition-all duration-200 ${activeTab === tab ? 'bg-white text-black font-bold' : 'bg-gray-700 text-white hover:bg-gray-600'
+              className={`px-5 py-2 rounded-full transition duration-200 text-sm font-semibold shadow-lg ${activeTab === tab ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white' : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
                 }`}
             >
               {tab}
             </button>
           ))}
         </div>
-        {renderTabContent()}
-      </div>1
+
+        {/* Tab Content */}
+        <div className="rounded-xl p-4 bg-gray-900/80 shadow-lg">
+          {renderTabContent()}
+        </div>
+      </div>
     </div>
   );
 };

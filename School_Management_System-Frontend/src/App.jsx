@@ -21,6 +21,11 @@ import AdminTeachers from './pages/Admin/AdminTeachers';
 import AdminFees from './pages/Admin/AdminFees';
 import AdminClasses from './pages/Admin/AdminClasses';
 import AdminAcademics from './pages/Admin/AdminAcademics';
+import StudentComplaintPage from './pages/Student/StudentComplaintPage';
+import AdminComplaintPage from './pages/Admin/AdminComplaintPage';
+import AdminMeetingPage from './pages/Admin/AdminMeetingPage';
+import TeacherMeetingPage from './pages/Teacher/TeacherMeetingPage';
+import AdminFinancePage from './pages/Admin/AdminFinancePage';
 
 function App() {
 
@@ -52,9 +57,18 @@ function App() {
       <Route path="/dashboard/admin/teachers" element={<AdminTeachers/>} />
       <Route path="/dashboard/admin/fees" element={<AdminFees />} />
       <Route path="/dashboard/admin/classes" element={<AdminClasses />} />
-
       <Route path="/dashboard/admin/academics" element={<AdminAcademics />} />
       <Route path="/dashboard/admin/events" element={<AdminEvents />} />
+      <Route path="/dashboard/admin/complaints" element={<AdminComplaintPage />} />
+      <Route path="/dashboard/admin/meeting" element={<AdminMeetingPage />} />
+      <Route path="/dashboard/admin/finance" element={<AdminFinancePage />} />
+
+
+      <Route path="/dashboard/student/complaints" element={<StudentComplaintPage />} />
+
+
+      <Route path="/dashboard/teacher/meeting" element={<TeacherMeetingPage />} />
+
 
 
 

@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import backgroundImg from "../assets/img.jpg";
 
-
 const RegisterStudent = () => {
   const [form, setForm] = useState({
     fullName: '',
     enrollmentNo: '',
     email: '',
     password: '',
+    className: '',
     remember: false,
+    profileImage: '', // ✅ Add this
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -22,10 +23,42 @@ const RegisterStudent = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Register Student:', form);
-    // Add validation/backend logic here
+
+    try {
+      const token = localStorage.getItem("token");
+
+      // ✅ Debug logs
+      console.log("Token:", token);
+      console.log("Sending request to: http://localhost:5000/api/students/register");
+
+      const response = await fetch("http://localhost:5000/api/students/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: form.fullName,
+          rollNo: form.enrollmentNo,
+          email: form.email,
+          password: form.password,
+          class: form.className,
+          profileImage: form.profileImage, // ✅ Add this
+        }),
+
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Student Registered");
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error("Student registration error:", err);
+    }
   };
 
   return (
@@ -63,6 +96,7 @@ const RegisterStudent = () => {
               required
               className="w-full px-4 py-2 border rounded focus:ring-purple-500"
             />
+
             <input
               type="text"
               name="enrollmentNo"
@@ -72,6 +106,39 @@ const RegisterStudent = () => {
               required
               className="w-full px-4 py-2 border rounded focus:ring-purple-500"
             />
+
+            <select
+              name="className"
+              value={form.className}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded focus:ring-purple-500 text-gray-700"
+            >
+              <option value="" disabled>Select Class *</option>
+              <option value="1st">1st</option>
+              <option value="2nd">2nd</option>
+              <option value="3rd">3rd</option>
+              <option value="4th">4th</option>
+              <option value="5th">5th</option>
+              <option value="6th">6th</option>
+              <option value="7th">7th</option>
+              <option value="8th">8th</option>
+              <option value="9th">9th</option>
+              <option value="10th">10th</option>
+              <option value="11th">11th</option>
+              <option value="12th">12th</option>
+            </select>
+
+            <input
+              type="text"
+              name="profileImage"
+              placeholder="Profile image URL (optional)"
+              value={form.profileImage}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded focus:ring-purple-500"
+            />
+
+
             <input
               type="email"
               name="email"
@@ -100,17 +167,6 @@ const RegisterStudent = () => {
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="remember"
-                checked={form.remember}
-                onChange={handleChange}
-                className="accent-purple-600"
-              />
-              <label className="text-sm text-gray-600">Remember me</label>
-            </div>
-
             <button
               type="submit"
               className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded font-semibold"
@@ -118,17 +174,9 @@ const RegisterStudent = () => {
               REGISTER
             </button>
           </form>
-
-          <p className="text-sm text-center mt-6 text-gray-500">
-            Already have an account?{' '}
-            <Link to="/login/student" className="text-purple-600 hover:underline">
-              Log in
-            </Link>
-          </p>
         </div>
       </div>
     </div>
-
   );
 };
 
