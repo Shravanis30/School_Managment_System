@@ -21,11 +21,15 @@ import AdminTeachers from './pages/Admin/AdminTeachers';
 import AdminFees from './pages/Admin/AdminFees';
 import AdminClasses from './pages/Admin/AdminClasses';
 import AdminAcademics from './pages/Admin/AdminAcademics';
+<<<<<<< HEAD
 import StudentComplaintPage from './pages/Student/StudentComplaintPage';
 import AdminComplaintPage from './pages/Admin/AdminComplaintPage';
 import AdminMeetingPage from './pages/Admin/AdminMeetingPage';
 import TeacherMeetingPage from './pages/Teacher/TeacherMeetingPage';
 import AdminFinancePage from './pages/Admin/AdminFinancePage';
+=======
+import StudentAssignment from './pages/Student/StudentAssignment';
+>>>>>>> 6e68262 (Add assignment page)
 
 function App() {
 
@@ -59,6 +63,7 @@ function App() {
       <Route path="/dashboard/admin/classes" element={<AdminClasses />} />
       <Route path="/dashboard/admin/academics" element={<AdminAcademics />} />
       <Route path="/dashboard/admin/events" element={<AdminEvents />} />
+<<<<<<< HEAD
       <Route path="/dashboard/admin/complaints" element={<AdminComplaintPage />} />
       <Route path="/dashboard/admin/meeting" element={<AdminMeetingPage />} />
       <Route path="/dashboard/admin/finance" element={<AdminFinancePage />} />
@@ -69,12 +74,17 @@ function App() {
 
       <Route path="/dashboard/teacher/meeting" element={<TeacherMeetingPage />} />
 
+=======
+      
+      <Route path ="/dashboard/student/assignment" element={<StudentAssignment />} />
+      <Route path ="/dashboard/student" element={<StudentDashboard />} />
+>>>>>>> 6e68262 (Add assignment page)
 
 
 
 
     </Routes>
-    //   </Router>
+    //   </Router> 
     // </BrowserRouter>
   )
 }
