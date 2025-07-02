@@ -26,6 +26,14 @@ import AdminComplaintPage from './pages/Admin/AdminComplaintPage';
 import AdminMeetingPage from './pages/Admin/AdminMeetingPage';
 import TeacherMeetingPage from './pages/Teacher/TeacherMeetingPage';
 import AdminFinancePage from './pages/Admin/AdminFinancePage';
+import AllStudentsByClass from './pages/Teacher/AllStudentsByClass';
+import ViewSyllabus from './pages/Student/ViewSyllabus';
+import ViewTimetable from './pages/Student/ViewTimetable';
+import StudentAssignments from './pages/Student/StudentAssignments';
+import TeacherAssignments from './pages/Teacher/TeacherAssignment';
+import TeacherProfile from './pages/Teacher/TeacherProfile'
+import StudentProfile from './pages/Student/StudentProfile'
+import AdminProfile from './pages/Admin/AdminProfile'
 
 function App() {
 
@@ -54,7 +62,7 @@ function App() {
 
 
       <Route path="/dashboard/admin/students" element={<AdminStudents />} />
-      <Route path="/dashboard/admin/teachers" element={<AdminTeachers/>} />
+      <Route path="/dashboard/admin/teachers" element={<AdminTeachers />} />
       <Route path="/dashboard/admin/fees" element={<AdminFees />} />
       <Route path="/dashboard/admin/classes" element={<AdminClasses />} />
       <Route path="/dashboard/admin/academics" element={<AdminAcademics />} />
@@ -62,16 +70,20 @@ function App() {
       <Route path="/dashboard/admin/complaints" element={<AdminComplaintPage />} />
       <Route path="/dashboard/admin/meeting" element={<AdminMeetingPage />} />
       <Route path="/dashboard/admin/finance" element={<AdminFinancePage />} />
+      <Route path="/admin/profile" element={<AdminProfile />} />
 
 
       <Route path="/dashboard/student/complaints" element={<StudentComplaintPage />} />
+      <Route path="/dashboard/student/syllabus" element={<ViewSyllabus />} />
+      <Route path="/dashboard/student/timetable" element={<ViewTimetable />} />
+      <Route path="/dashboard/student/assignments" element={<StudentAssignments />} />
+      <Route path="/student/profile" element={<StudentProfile />} />
 
 
       <Route path="/dashboard/teacher/meeting" element={<TeacherMeetingPage />} />
-
-
-
-
+      <Route path="/dashboard/teacher/students" element={<AllStudentsByClass />} />
+      <Route path="/dashboard/teacher/assignments" element={<TeacherAssignments />} />
+      <Route path="/teacher/profile" element={<TeacherProfile />} />
 
     </Routes>
     //   </Router>

@@ -1,5 +1,5 @@
 // StudentComplaintPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 
 const StudentComplaintPage = () => {
@@ -10,25 +10,44 @@ const StudentComplaintPage = () => {
         complaint: '',
         priority: '',
     });
+    const [classList, setClassList] = useState([]);
+
+    useEffect(() => {
+        const fetchClasses = async () => {
+            const res = await fetch('http://localhost:5000/api/classes');
+            const data = await res.json();
+            setClassList(data);
+        };
+        fetchClasses();
+    }, []);
+
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-const handleSubmit = (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch('http://localhost:5000/api/complaints', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
 
-    // Get existing complaints from localStorage
-    const existingComplaints = JSON.parse(localStorage.getItem('complaints')) || [];
+            if (!res.ok) {
+                throw new Error('Failed to submit complaint');
+            }
 
-    // Add new complaint
-    const updatedComplaints = [...existingComplaints, formData];
+            alert('Complaint submitted successfully!');
+            setFormData({ name: '', class: '', rollNo: '', complaint: '', priority: '' });
+        } catch (err) {
+            console.error(err.message);
+            alert('Failed to submit complaint.');
+        }
+    };
 
-    // Save back to localStorage
-    localStorage.setItem('complaints', JSON.stringify(updatedComplaints));
-
-    alert('Complaint submitted successfully!');
-    setFormData({ name: '', class: '', rollNo: '', complaint: '', priority: '' });
-};
 
 
     return (
@@ -62,9 +81,9 @@ const handleSubmit = (e) => {
                             required
                         >
                             <option value="">Select class</option>
-                            {Array.from({ length: 10 }, (_, i) => (
-                                <option key={i + 1} value={i + 1}>
-                                    {i + 1}
+                            {classList.map((cls, idx) => (
+                                <option key={idx} value={cls.name}>
+                                    {cls.name}
                                 </option>
                             ))}
                         </select>

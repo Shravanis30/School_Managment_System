@@ -1,88 +1,92 @@
 import React from 'react';
-import { FaBell, FaChalkboardTeacher, FaClipboardList, FaUserGraduate, FaBook, FaCog, FaSignOutAlt, FaEnvelope, FaCalendarAlt, FaComments } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
+import EventCalendar from '../../components/EventCalendar';
+
+// Icons
+import {
+  FaUserEdit,
+  FaClipboardCheck,
+  FaEnvelopeOpenText,
+  FaChalkboardTeacher,
+  FaCalendarAlt
+} from 'react-icons/fa';
+import NoticeBoard from '../../components/NoticeBoard';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
 
-
+  const cardData = [
+    {
+      label: 'Upload Assignment',
+      icon: <FaClipboardCheck className="text-4xl text-white" />,
+      note: 'New submissions pending',
+      link: '/dashboard/teacher/assignments'
+    },
+    {
+      label: 'Add Marks',
+      icon: <FaUserEdit className="text-4xl text-white" />,
+      note: 'Update recent exams',
+      link: '/dashboard/teacher/marks'
+    },
+    {
+      label: 'Message Parents',
+      icon: <FaEnvelopeOpenText className="text-4xl text-white" />,
+      note: '2 unread replies',
+      link: '/dashboard/teacher/mail'
+    },
+    {
+      label: 'Upcoming Classes',
+      icon: <FaChalkboardTeacher className="text-4xl text-white" />,
+      note: '3 classes today',
+      link: '/dashboard/teacher/classes'
+    }
+  ];
 
   return (
-    <div className="flex min-h-screen bg-[#0B1120] text-white">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white">
       <Sidebar role="teacher" />
 
-
-      {/* Main Content */}
-      <main className="flex-1 p-6 bg-[#1F2937] overflow-y-auto">
-        {/* Header */}
+      <div className="flex-1 p-6 space-y-10">
         <Header />
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Group Chat */}
-          <div className="bg-[#111827] p-4 rounded-lg">
-            <h3 className="text-xl font-semibold mb-4">Group chat</h3>
-            {['10th A Class Group', 'Teacher Group', '9th B Class Group'].map((group, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-300 text-black px-4 py-2 rounded mb-3 flex justify-between items-center"
-              >
-                {group} <FaComments />
-              </div>
-            ))}
-          </div>
-
-          {/* Attendance & Mail */}
-          <div className="flex flex-col gap-4">
-            <button className="bg-[#374151] text-white py-4 rounded-lg flex items-center justify-center gap-2 text-lg">
-              <FaClipboardList /> Take Attendance
-            </button>
-            <button className="bg-[#374151] text-white py-4 rounded-lg flex items-center justify-center gap-2 text-lg">
-              <FaEnvelope /> Send Mail to Parents
-            </button>
-
-            {/* Event Calendar */}
-            <div className="bg-[#1E293B] text-white p-4 rounded-lg">
-              <h4 className="text-md font-bold mb-2">Event Calendar</h4>
-              <div className="bg-purple-800 p-3 rounded mb-3">
-                <h5 className="font-bold">26 Jun 2024</h5>
-                <p className="text-sm">There will be webinar on the cybersecurity to guide students towards the safety over the internet</p>
-              </div>
-              <div className="text-sm text-gray-300">
-                <div className="flex justify-between mb-1">
-                  <span>June 2024</span>
-                  <FaCalendarAlt />
+        {/* Dashboard Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+          {cardData.map((card, idx) => (
+            <div
+              key={idx}
+              onClick={() => navigate(card.link)}
+              className="bg-gradient-to-r from-indigo-700 to-indigo-900 p-5 rounded-xl shadow-lg hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-indigo-600 rounded-full">
+                  {card.icon}
                 </div>
-                <div className="grid grid-cols-7 gap-1 text-center text-xs">
-                  {[...Array(30)].map((_, i) => (
-                    <div
-                      key={i}
-                      className={`p-1 rounded ${i === 25 ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                    >
-                      {i + 1}
-                    </div>
-                  ))}
+                <div>
+                  <h4 className="text-lg font-semibold">{card.label}</h4>
+                  <p className="text-sm text-gray-300 mt-1">{card.note}</p>
                 </div>
               </div>
             </div>
+          ))}
+        </div>
+
+        {/* Notice Board & Calendar */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Notice Board */}
+          <div className="bg-gray-900 p-6 rounded-lg shadow-md">
+            <NoticeBoard />
           </div>
 
-          {/* Student Progress & Upcoming Classes */}
-          <div className="space-y-6">
-            <div className="bg-[#111827] p-4 rounded-lg min-h-[150px]">
-              <h3 className="text-lg font-semibold">Student Progress</h3>
-              {/* Add student progress content here */}
-            </div>
-            <div className="bg-[#111827] p-4 rounded-lg min-h-[150px]">
-              <h3 className="text-lg font-semibold">Upcoming Classes</h3>
-              {/* Add upcoming classes content here */}
-            </div>
+          {/* Calendar */}
+          <div className="bg-gray-900 p-6 rounded-lg shadow-md">
+            <EventCalendar role="teacher" />
+
           </div>
         </div>
-      </main>
+
+      </div>
     </div>
   );
 };

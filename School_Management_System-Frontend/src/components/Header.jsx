@@ -34,13 +34,15 @@ const Header = () => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const res = await axios.get('/api/user/profile', {
+        const res = await axios.get('http://localhost:5000/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         setUser(res.data);
+        console.log("Fetched user profile:", res.data);
+
       } catch (err) {
         console.error("Error fetching profile:", err);
       }
@@ -72,7 +74,7 @@ const Header = () => {
           onClick={handleNotificationClick}
         />
         <div className="text-sm text-right cursor-pointer" onClick={handleProfileClick}>
-          <p className="font-bold">{user?.fullName || 'User'}</p>
+          <p className="font-bold">{user?.name || user?.fullName || 'User'}</p>
           <p className="text-gray-400 text-xs">{user?.designation || 'Role'}</p>
         </div>
         <div

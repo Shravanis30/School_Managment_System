@@ -152,7 +152,10 @@ import {
   FaCog,
   FaSignOutAlt,
   FaCalendarAlt,
-  FaBookOpen
+  FaBookOpen,
+  FaThLarge,
+  FaPoll
+
 } from 'react-icons/fa';
 
 const Sidebar = ({ role }) => {
@@ -175,13 +178,16 @@ const Sidebar = ({ role }) => {
       { icon: <FaBookOpen />, path: '/dashboard/teacher/resources', label: 'Resources' },
 
     ],
-
     student: [
-      { icon: <FaUserGraduate />, path: '/dashboard/student', label: 'My Dashboard' },
+      { icon: <FaThLarge />, path: '/dashboard/student', label: 'Dashboard' },
       { icon: <FaClipboardCheck />, path: '/dashboard/student/attendance', label: 'Attendance' },
-      { icon: <FaBook />, path: '/dashboard/student/courses', label: 'Courses' },
-      { icon: <FaProjectDiagram />, path: '/dashboard/student/assignments', label: 'Assignments' },
+      { icon: <FaBook />, path: '/dashboard/student/syllabus', label: 'Syllabus' },
+      { icon: <FaClipboardCheck />, path: '/dashboard/student/assignments', label: 'Assignments' },
+      { icon: <FaCalendarAlt />, path: '/dashboard/student/timetable', label: 'TimeTable' },
+      { icon: <FaPoll />, path: '/dashboard/student/result', label: 'Result' },
+      { icon: <FaComments />, path: '/dashboard/student/complaints', label: 'Complaint Box' },
     ],
+
   };
 
   const items = navItems[role] || [];
@@ -202,8 +208,8 @@ const Sidebar = ({ role }) => {
               key={item.path}
               title={item.label}
               className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 ${location.pathname === item.path
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                 }`}
             >
               {item.icon}

@@ -1,91 +1,62 @@
-// import jwt from "jsonwebtoken";
-// import Admin from "../models/admin.model.js";
-// import Teacher from "../models/teacher.model.js";
-// import Student from "../models/student.model.js";
-
-// const authMiddleware = async (req, res, next) => {
-//   const authHeader = req.headers.authorization;
-
-//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-//     return res.status(401).json({ message: "Unauthorized: No token provided" });
-//   }
-
-//   const token = authHeader.split(" ")[1];
-
-//   try {
-//     // 🔐 Decode token
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     const { id, role } = decoded;
-
-//     // 👤 Dynamically find the user based on role
-//     let user;
-//     if (role === "admin") {
-//       user = await Admin.findById(id);
-//     } else if (role === "teacher") {
-//       user = await Teacher.findById(id);
-//     } else if (role === "student") {
-//       user = await Student.findById(id);
-//     }
-
-//     if (!user) {
-//       return res.status(401).json({ message: "Unauthorized: User not found" });
-//     }
-
-//     // 👌 Attach user info and role to request
-//     req.user = { id: user._id, role }; // Minimal for downstream usage
-//     req.fullUser = user; // Full object if needed in protected routes
-
-//     next();
-//   } catch (err) {
-//     return res.status(401).json({ message: "Unauthorized: Invalid token" });
-//   }
-// };
-
-// export default authMiddleware;
-
-
-
 import jwt from "jsonwebtoken";
-import Admin from "../models/admin.model.js";
-import Teacher from "../models/teacher.model.js";
-import Student from "../models/student.model.js";
 
-const authMiddleware = async (req, res, next) => {
+const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized: No token provided" });
+    return res.status(401).json({ message: "No token provided" });
   }
 
   const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { id, role } = decoded;
-
-    let user;
-    if (role === "admin") {
-      user = await Admin.findById(id);
-    } else if (role === "teacher") {
-      user = await Teacher.findById(id);
-    } else if (role === "student") {
-      user = await Student.findById(id);
-    }
-
-    if (!user) {
-      return res.status(401).json({ message: "Unauthorized: User not found" });
-    }
-
-    // Optionally check if account is disabled
-    // if (user.isDisabled) return res.status(403).json({ message: "Account disabled" });
-
-    req.user = { id: user._id, role };
-    req.fullUser = user;
-
+    req.user = decoded; // contains user ID and role
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Unauthorized: Invalid token" });
+    return res.status(403).json({ message: "Invalid or expired token" });
   }
 };
+
+// export const authorizeRole = (role) => {
+//   return (req, res, next) => {
+//     if (!req.user) {
+//       return res.status(401).json({ message: "Unauthorized: No user in request" });
+//     }
+
+//     if (req.user.role !== role) {
+//       return res.status(403).json({ message: `Access denied. Only ${role}s allowed.` });
+//     }
+
+//     next();
+//   };
+// };
+
+export const authorizeRole = (role) => {
+  return (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      if (decoded.role !== role) {
+        return res.status(403).json({ message: "Access denied. Not authorized." });
+      }
+
+      req.user = decoded; // ✅ This is what makes req.user.id work
+      next();
+    } catch (err) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+  };
+};
+
+
+
 
 export default authMiddleware;

@@ -6,7 +6,7 @@ import {
   FaBell
 } from 'react-icons/fa';
 
-const classOptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+
 
 const sampleStudents = {
   '1': ['Aarav Singh', 'Diya Mehta'],
@@ -57,6 +57,26 @@ const AdminAcademics = () => {
   ]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalClass, setModalClass] = useState('');
+   const [classOptions, setClassOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/classes');
+        const data = await response.json();
+
+        // Assuming backend returns: [{ _id, name, subjects }]
+        const classNames = data.map(cls => cls.name);
+        setClassOptions(classNames);
+      } catch (error) {
+        console.error("Failed to fetch class list", error);
+      }
+    };
+
+    fetchClasses();
+  }, []);
+
+
 
 
   const [selectedClass, setSelectedClass] = useState('10');
@@ -64,10 +84,6 @@ const AdminAcademics = () => {
   const [results, setResults] = useState(() => JSON.parse(localStorage.getItem('studentResults')) || {});
   const [newResults, setNewResults] = useState({});
   const academicData = classWiseSubjects[selectedClass] || [];
-  const [uploadedFiles, setUploadedFiles] = useState({});
-
-
-
 
 
 
@@ -78,15 +94,34 @@ const AdminAcademics = () => {
     }
   };
 
-  const handleSyllabusUpload = () => {
+  const handleSyllabusUpload = async () => {
     if (syllabusFile) {
-      const fileURL = URL.createObjectURL(syllabusFile);
-      const updated = { ...uploadedSyllabus, [selectedClass]: { name: syllabusFile.name, url: fileURL } };
-      setUploadedSyllabus(updated);
-      localStorage.setItem('syllabus', JSON.stringify(updated));
-      setSyllabusFile(null);
+      const fileURL = URL.createObjectURL(syllabusFile); // For preview only
+
+      // Simulate upload to Cloudinary / Firebase (replace this part with real upload logic)
+      const payload = {
+        class: selectedClass,
+        syllabusURL: fileURL
+      };
+
+      try {
+        const res = await fetch("http://localhost:5000/api/syllabus", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (res.ok) {
+          const updated = { ...uploadedSyllabus, [selectedClass]: { name: syllabusFile.name, url: fileURL } };
+          setUploadedSyllabus(updated);
+          setSyllabusFile(null);
+        }
+      } catch (err) {
+        console.error("Syllabus upload error", err);
+      }
     }
   };
+
 
 
   const handleTimetableInput = (dayIndex, periodIndex, value) => {
@@ -95,19 +130,55 @@ const AdminAcademics = () => {
     setNewTimetableEntries(updatedEntries);
   };
 
-  const handleTimetableSubmit = () => {
-    const updated = { ...uploadedTimetables, [selectedClass]: newTimetableEntries };
-    setUploadedTimetables(updated);
-    localStorage.setItem('timetable', JSON.stringify(updated));
-    setNewTimetableEntries([
-      { day: 'Monday', periods: ['', '', '', '', '', ''] },
-      { day: 'Tuesday', periods: ['', '', '', '', '', ''] },
-      { day: 'Wednesday', periods: ['', '', '', '', '', ''] },
-      { day: 'Thursday', periods: ['', '', '', '', '', ''] },
-      { day: 'Friday', periods: ['', '', '', '', '', ''] },
-      { day: 'Saturday', periods: ['', '', '', '', '', ''] }
-    ]);
+  const handleTimetableSubmit = async () => {
+    const payload = {
+      class: selectedClass,
+      entries: newTimetableEntries,
+    };
+
+    try {
+      const res = await fetch("http://localhost:5000/api/timetable", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const updated = { ...uploadedTimetables, [selectedClass]: newTimetableEntries };
+        setUploadedTimetables(updated);
+        setNewTimetableEntries([
+          { day: 'Monday', periods: ['', '', '', '', '', ''] },
+          { day: 'Tuesday', periods: ['', '', '', '', '', ''] },
+          { day: 'Wednesday', periods: ['', '', '', '', '', ''] },
+          { day: 'Thursday', periods: ['', '', '', '', '', ''] },
+          { day: 'Friday', periods: ['', '', '', '', '', ''] },
+          { day: 'Saturday', periods: ['', '', '', '', '', ''] }
+        ]);
+      }
+    } catch (err) {
+      console.error("Timetable upload error", err);
+    }
   };
+
+  const handleDeleteTimetable = async (cls) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/timetable/${cls}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        const updated = { ...uploadedTimetables };
+        delete updated[cls];
+        setUploadedTimetables(updated);
+        alert(`Timetable for Class ${cls} deleted.`);
+      } else {
+        alert("Failed to delete timetable.");
+      }
+    } catch (err) {
+      console.error("Delete timetable error", err);
+    }
+  };
+
+
 
   useEffect(() => {
     const initial = {};
@@ -136,16 +207,7 @@ const AdminAcademics = () => {
     localStorage.setItem('studentResults', JSON.stringify(updated));
   };
 
-  const handleFileUpload = (e, student) => {
-    const file = e.target.files[0];
-    if (file) {
-      const fileUrl = URL.createObjectURL(file);
-      setUploadedFiles((prev) => ({
-        ...prev,
-        [student]: fileUrl,
-      }));
-    }
-  };
+
 
   const openSyllabusModal = (cls) => {
     if (uploadedSyllabus[cls]) {
@@ -168,6 +230,36 @@ const AdminAcademics = () => {
     setModalOpen(false);
     setModalClass('');
   };
+
+  useEffect(() => {
+    const fetchSyllabus = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/syllabus/${selectedClass}`);
+        const data = await res.json();
+        if (res.ok) {
+          setUploadedSyllabus(prev => ({ ...prev, [selectedClass]: { url: data.syllabusURL } }));
+        }
+      } catch (err) {
+        console.error("Fetch syllabus error", err);
+      }
+    };
+
+    const fetchTimetable = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/timetable/${selectedClass}`);
+        const data = await res.json();
+        if (res.ok) {
+          setUploadedTimetables(prev => ({ ...prev, [selectedClass]: data.entries }));
+        }
+      } catch (err) {
+        console.error("Fetch timetable error", err);
+      }
+    };
+
+    fetchSyllabus();
+    fetchTimetable();
+  }, [selectedClass]);
+
 
 
   const renderTabContent = () => {
@@ -331,10 +423,24 @@ const AdminAcademics = () => {
                   >
                     <h5 className="font-bold mb-2">Class {cls}</h5>
                     {uploadedTimetables[cls] ? (
-                      <span className="text-green-400 underline">View Time-Table</span>
+                      <div className="space-y-1">
+                        <span
+                          className="text-green-400 underline block cursor-pointer"
+                          onClick={() => openTimetableModal(cls)}
+                        >
+                          View Time-Table
+                        </span>
+                        <button
+                          onClick={() => handleDeleteTimetable(cls)}
+                          className="text-red-400 text-sm hover:text-red-500 underline"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     ) : (
                       <span className="text-gray-400">Not Uploaded</span>
                     )}
+
                   </div>
                 ))}
               </div>

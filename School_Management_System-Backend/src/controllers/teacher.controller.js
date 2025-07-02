@@ -61,7 +61,7 @@ export const loginTeacher = async (req, res) => {
       token,
       user: {
         id: teacher._id,
-        fullName: teacher.fullName,
+        name: teacher.fullName,
         email: teacher.email,
         employeeId: teacher.employeeId,
         classTeacherOf: teacher.classTeacherOf,
@@ -73,5 +73,35 @@ export const loginTeacher = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: "Login error", error: err.message });
+  }
+};
+
+
+
+export const getAllTeachers = async (req, res) => {
+  try {
+    const teachers = await Teacher.find();
+    res.status(200).json(teachers);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch teachers', error: err.message });
+  }
+};
+
+
+
+// DELETE: Remove a teacher by ID
+export const deleteTeacherController = async (req, res) => {
+  const teacherId = req.params.id;
+
+  try {
+    const deleted = await Teacher.findByIdAndDelete(teacherId);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+
+    res.status(200).json({ message: 'Teacher deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting teacher:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
