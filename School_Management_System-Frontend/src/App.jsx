@@ -1,6 +1,7 @@
-import './App.css'
+import './App.css';
 import './index.css';
 import { Routes, Route } from 'react-router-dom';
+
 // Pages
 import Welcome from './pages/Welcome';
 import RoleSelection from './pages/RoleSelection';
@@ -21,23 +22,19 @@ import AdminTeachers from './pages/Admin/AdminTeachers';
 import AdminFees from './pages/Admin/AdminFees';
 import AdminClasses from './pages/Admin/AdminClasses';
 import AdminAcademics from './pages/Admin/AdminAcademics';
-<<<<<<< HEAD
-import StudentComplaintPage from './pages/Student/StudentComplaintPage';
 import AdminComplaintPage from './pages/Admin/AdminComplaintPage';
 import AdminMeetingPage from './pages/Admin/AdminMeetingPage';
-import TeacherMeetingPage from './pages/Teacher/TeacherMeetingPage';
 import AdminFinancePage from './pages/Admin/AdminFinancePage';
-=======
+
+import TeacherMeetingPage from './pages/Teacher/TeacherMeetingPage';
+
+import StudentComplaintPage from './pages/Student/StudentComplaintPage';
+
+import StudentResult from './pages/Student/StudentResult';
 import StudentAssignment from './pages/Student/StudentAssignment';
->>>>>>> 6e68262 (Add assignment page)
 
 function App() {
-
   return (
-
-
-    // <BrowserRouter>
-    //   <Router>
     <Routes>
       {/* Entry Pages */}
       <Route path="/" element={<Welcome />} />
@@ -48,7 +45,7 @@ function App() {
       <Route path="/register/student" element={<RegisterStudent />} />
       <Route path="/register/teacher" element={<RegisterTeacher />} />
 
-      {/* Common Login Page for All Roles */}
+      {/* Common Login Page */}
       <Route path="/login/:role" element={<Login />} />
 
       {/* Dashboards */}
@@ -56,37 +53,27 @@ function App() {
       <Route path="/dashboard/teacher" element={<TeacherDashboard />} />
       <Route path="/dashboard/student" element={<StudentDashboard />} />
 
-
+      {/* Admin Routes */}
       <Route path="/dashboard/admin/students" element={<AdminStudents />} />
-      <Route path="/dashboard/admin/teachers" element={<AdminTeachers/>} />
+      <Route path="/dashboard/admin/teachers" element={<AdminTeachers />} />
       <Route path="/dashboard/admin/fees" element={<AdminFees />} />
       <Route path="/dashboard/admin/classes" element={<AdminClasses />} />
       <Route path="/dashboard/admin/academics" element={<AdminAcademics />} />
       <Route path="/dashboard/admin/events" element={<AdminEvents />} />
-<<<<<<< HEAD
       <Route path="/dashboard/admin/complaints" element={<AdminComplaintPage />} />
       <Route path="/dashboard/admin/meeting" element={<AdminMeetingPage />} />
       <Route path="/dashboard/admin/finance" element={<AdminFinancePage />} />
 
-
-      <Route path="/dashboard/student/complaints" element={<StudentComplaintPage />} />
-
-
+      {/* Teacher Routes */}
       <Route path="/dashboard/teacher/meeting" element={<TeacherMeetingPage />} />
 
-=======
+      {/* Student Routes */}
+      <Route path="/dashboard/student/complaints" element={<StudentComplaintPage />} />
       
-      <Route path ="/dashboard/student/assignment" element={<StudentAssignment />} />
-      <Route path ="/dashboard/student" element={<StudentDashboard />} />
->>>>>>> 6e68262 (Add assignment page)
-
-
-
-
+      <Route path="/dashboard/student/result" element={<StudentResult />} />
+      <Route path="/dashboard/student/Assignment" element={<StudentAssignment />} />
     </Routes>
-    //   </Router> 
-    // </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
