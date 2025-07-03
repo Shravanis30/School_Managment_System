@@ -42,10 +42,14 @@ const Login = () => {
       const response = await fetch(loginRoute, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        // credentials: 'include', // ✅ this allows cookies to be set from server
         body: JSON.stringify(form),
+        withCredentials: true
+
       });
 
       const data = await response.json();
+      localStorage.setItem("studentId", role._id); // 👈 this is the line you need to add
 
       if (response.ok) {
         localStorage.setItem('token', data.token);

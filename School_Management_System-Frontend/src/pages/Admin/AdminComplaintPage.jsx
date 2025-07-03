@@ -1,3 +1,67 @@
+// import React, { useEffect, useState } from 'react';
+// import Sidebar from '../../components/Sidebar';
+// import Header from '../../components/Header';
+
+// const AdminComplaintPage = () => {
+//   const [complaints, setComplaints] = useState([]);
+
+//   useEffect(() => {
+//     const fetchComplaints = async () => {
+//       try {
+//         const res = await fetch('http://localhost:5000/api/complaints');
+//         const data = await res.json();
+//         setComplaints(data);
+//       } catch (err) {
+//         console.error('Failed to fetch complaints', err);
+//       }
+//     };
+
+//     fetchComplaints();
+//   }, []);
+
+//   return (
+//     <div className="flex min-h-screen bg-black text-white">
+//       <Sidebar role="admin" />
+//       <div className="flex-1 p-10">
+//         <Header role="admin" name="Principal Name" designation="Admin" />
+
+//         <h1 className="text-xl font-bold mt-10 mb-6">Received Complaints</h1>
+//         <div className="overflow-x-auto">
+//           {complaints.length > 0 ? (
+//             <table className="table-auto w-full text-left">
+//               <thead>
+//                 <tr className="bg-gray-800">
+//                   <th className="p-2">Name</th>
+//                   <th className="p-2">Class</th>
+//                   <th className="p-2">Roll No</th>
+//                   <th className="p-2">Complaint</th>
+//                   <th className="p-2">Priority</th>
+//                 </tr>
+//               </thead>
+//               <tbody>
+//                 {complaints.map((item, i) => (
+//                   <tr key={i} className="bg-gray-700">
+//                     <td className="p-2">{item.name}</td>
+//                     <td className="p-2">{item.class}</td>
+//                     <td className="p-2">{item.rollNo}</td>
+//                     <td className="p-2">{item.complaint}</td>
+//                     <td className="p-2">{item.priority}</td>
+//                   </tr>
+//                 ))}
+//               </tbody>
+//             </table>
+//           ) : (
+//             <p className="text-gray-400">No complaints received yet.</p>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AdminComplaintPage;
+
+
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
@@ -20,38 +84,42 @@ const AdminComplaintPage = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
       <Sidebar role="admin" />
-      <div className="flex-1 p-10">
+      <div className="flex-1 p-6 md:p-10">
         <Header role="admin" name="Principal Name" designation="Admin" />
 
-        <h1 className="text-xl font-bold mt-10 mb-6">Received Complaints</h1>
+        <h1 className="text-3xl font-bold mb-8 text-white">Received Complaints</h1>
+
         <div className="overflow-x-auto">
           {complaints.length > 0 ? (
-            <table className="table-auto w-full text-left">
-              <thead>
-                <tr className="bg-gray-800">
-                  <th className="p-2">Name</th>
-                  <th className="p-2">Class</th>
-                  <th className="p-2">Roll No</th>
-                  <th className="p-2">Complaint</th>
-                  <th className="p-2">Priority</th>
+            <table className="w-full text-left rounded-xl overflow-hidden backdrop-blur bg-white/5 border border-white/10 shadow-2xl">
+              <thead className="bg-gradient-to-r from-gray-800/70 to-gray-700/70 text-white">
+                <tr>
+                  <th className="p-4 text-sm font-semibold">Name</th>
+                  <th className="p-4 text-sm font-semibold">Class</th>
+                  <th className="p-4 text-sm font-semibold">Roll No</th>
+                  <th className="p-4 text-sm font-semibold">Complaint</th>
+                  <th className="p-4 text-sm font-semibold">Priority</th>
                 </tr>
               </thead>
               <tbody>
                 {complaints.map((item, i) => (
-                  <tr key={i} className="bg-gray-700">
-                    <td className="p-2">{item.name}</td>
-                    <td className="p-2">{item.class}</td>
-                    <td className="p-2">{item.rollNo}</td>
-                    <td className="p-2">{item.complaint}</td>
-                    <td className="p-2">{item.priority}</td>
+                  <tr
+                    key={i}
+                    className="hover:bg-white/10 transition duration-300 border-t border-white/10"
+                  >
+                    <td className="p-4 text-sm text-white/90">{item.name}</td>
+                    <td className="p-4 text-sm text-white/90">{item.class}</td>
+                    <td className="p-4 text-sm text-white/90">{item.rollNo}</td>
+                    <td className="p-4 text-sm text-white/90">{item.complaint}</td>
+                    <td className="p-4 text-sm text-yellow-400 font-semibold">{item.priority}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <p className="text-gray-400">No complaints received yet.</p>
+            <p className="text-gray-400 text-lg">No complaints received yet.</p>
           )}
         </div>
       </div>

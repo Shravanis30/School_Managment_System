@@ -137,8 +137,7 @@
 // export default Sidebar;
 
 
-
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FaChalkboard,
   FaBook,
@@ -154,12 +153,24 @@ import {
   FaCalendarAlt,
   FaBookOpen,
   FaThLarge,
-  FaPoll
-
+  FaPoll,
+  FaCalendarCheck,
+  FaHandshake
 } from 'react-icons/fa';
+import axios from 'axios';
 
 const Sidebar = ({ role }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/user/logout', {}, { withCredentials: true });
+      navigate('/select-role'); // redirect after logout
+    } catch (err) {
+      console.error("Logout failed:", err.response?.data || err.message);
+    }
+  };
 
   const navItems = {
     admin: [
@@ -176,7 +187,7 @@ const Sidebar = ({ role }) => {
       { icon: <FaClipboardCheck />, path: '/dashboard/teacher/assignments', label: 'Assignments' },
       { icon: <FaCalendarAlt />, path: '/dashboard/teacher/leaves', label: 'Leaves' },
       { icon: <FaBookOpen />, path: '/dashboard/teacher/resources', label: 'Resources' },
-
+      { icon: <FaHandshake />, path: '/dashboard/teacher/meeting', label: 'Meeting' }
     ],
     student: [
       { icon: <FaThLarge />, path: '/dashboard/student', label: 'Dashboard' },
@@ -187,7 +198,6 @@ const Sidebar = ({ role }) => {
       { icon: <FaPoll />, path: '/dashboard/student/result', label: 'Result' },
       { icon: <FaComments />, path: '/dashboard/student/complaints', label: 'Complaint Box' },
     ],
-
   };
 
   const items = navItems[role] || [];
@@ -208,8 +218,8 @@ const Sidebar = ({ role }) => {
               key={item.path}
               title={item.label}
               className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 ${location.pathname === item.path
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                 }`}
             >
               {item.icon}
@@ -228,13 +238,14 @@ const Sidebar = ({ role }) => {
           <FaCog />
           <span className="text-sm">Settings</span>
         </Link>
-        <Link
-          to="/logout"
+
+        <button
+          onClick={handleLogout}
           className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all"
         >
           <FaSignOutAlt />
           <span className="text-sm">Logout</span>
-        </Link>
+        </button>
       </div>
     </aside>
   );

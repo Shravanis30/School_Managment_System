@@ -1,12 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
-import {
-
-  FaBell
-} from 'react-icons/fa';
-
-
+import { FaBell } from 'react-icons/fa';
 
 const sampleStudents = {
   '1': ['Aarav Singh', 'Diya Mehta'],
@@ -35,18 +31,17 @@ const classWiseSubjects = {
   ]
 };
 
-const tabs = ['Subject', 'Classes', 'Syllabus', 'Time-Table', 'Result'];
+const tabs = ['Subject', 'Syllabus', 'Time-Table', 'Result'];
 
 const AdminAcademics = () => {
-
   const [assignedTeachers, setAssignedTeachers] = useState({});
-  const [uploadedSyllabus, setUploadedSyllabus] = useState(() => JSON.parse(localStorage.getItem('syllabus')) || {});
+  const [uploadedSyllabus, setUploadedSyllabus] = useState({});
   const [newTeacher, setNewTeacher] = useState({ class: '', teacher: '' });
   const [syllabusFile, setSyllabusFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSyllabusClass, setActiveSyllabusClass] = useState('');
 
-  const [uploadedTimetables, setUploadedTimetables] = useState(() => JSON.parse(localStorage.getItem('timetable')) || {});
+  const [uploadedTimetables, setUploadedTimetables] = useState({});
   const [newTimetableEntries, setNewTimetableEntries] = useState([
     { day: 'Monday', periods: ['', '', '', '', '', ''] },
     { day: 'Tuesday', periods: ['', '', '', '', '', ''] },
@@ -57,36 +52,33 @@ const AdminAcademics = () => {
   ]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalClass, setModalClass] = useState('');
-   const [classOptions, setClassOptions] = useState([]);
+  const [classOptions, setClassOptions] = useState([]);
 
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/classes');
+        const response = await fetch('/api/classes', {
+          credentials: 'include'
+        });
         const data = await response.json();
-
-        // Assuming backend returns: [{ _id, name, subjects }]
         const classNames = data.map(cls => cls.name);
         setClassOptions(classNames);
+        if (classNames.length > 0) {
+          setSelectedClass(classNames[0]); // ✅ set default selected class
+        }
       } catch (error) {
         console.error("Failed to fetch class list", error);
       }
     };
-
     fetchClasses();
   }, []);
 
-
-
-
-  const [selectedClass, setSelectedClass] = useState('10');
+  const [selectedClass, setSelectedClass] = useState('');
   const [activeTab, setActiveTab] = useState('Subject');
-  const [results, setResults] = useState(() => JSON.parse(localStorage.getItem('studentResults')) || {});
+  const [results, setResults] = useState({});
   const [newResults, setNewResults] = useState({});
   const academicData = classWiseSubjects[selectedClass] || [];
-
-
-
+  const BACKEND_BASE = 'http://localhost:5000'; // or use from .env
   const handleAssignTeacher = () => {
     if (newTeacher.class && newTeacher.teacher) {
       setAssignedTeachers({ ...assignedTeachers, [newTeacher.class]: newTeacher.teacher });
@@ -94,34 +86,31 @@ const AdminAcademics = () => {
     }
   };
 
+
   const handleSyllabusUpload = async () => {
-    if (syllabusFile) {
-      const fileURL = URL.createObjectURL(syllabusFile); // For preview only
+    if (!syllabusFile) return;
 
-      // Simulate upload to Cloudinary / Firebase (replace this part with real upload logic)
-      const payload = {
-        class: selectedClass,
-        syllabusURL: fileURL
-      };
+    const formData = new FormData();
+    formData.append('class', selectedClass);
+    formData.append('syllabus', syllabusFile);
 
-      try {
-        const res = await fetch("http://localhost:5000/api/syllabus", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+    try {
+      const res = await fetch(`/api/syllabus/upload`, {
+        method: "POST",
+        credentials: 'include',
+        body: formData
+      });
 
-        if (res.ok) {
-          const updated = { ...uploadedSyllabus, [selectedClass]: { name: syllabusFile.name, url: fileURL } };
-          setUploadedSyllabus(updated);
-          setSyllabusFile(null);
-        }
-      } catch (err) {
-        console.error("Syllabus upload error", err);
+      if (res.ok) {
+        const data = await res.json();
+        const updated = { ...uploadedSyllabus, [selectedClass]: { name: syllabusFile.name, url: data.url } };
+        setUploadedSyllabus(updated);
+        setSyllabusFile(null);
       }
+    } catch (err) {
+      console.error("Syllabus upload error", err);
     }
   };
-
 
 
   const handleTimetableInput = (dayIndex, periodIndex, value) => {
@@ -135,14 +124,13 @@ const AdminAcademics = () => {
       class: selectedClass,
       entries: newTimetableEntries,
     };
-
     try {
-      const res = await fetch("http://localhost:5000/api/timetable", {
+      const res = await fetch("/api/timetable", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify(payload),
       });
-
       if (res.ok) {
         const updated = { ...uploadedTimetables, [selectedClass]: newTimetableEntries };
         setUploadedTimetables(updated);
@@ -162,8 +150,9 @@ const AdminAcademics = () => {
 
   const handleDeleteTimetable = async (cls) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/timetable/${cls}`, {
-        method: "DELETE"
+      const res = await fetch(`/api/timetable/${cls}`, {
+        method: "DELETE",
+        credentials: 'include'
       });
       if (res.ok) {
         const updated = { ...uploadedTimetables };
@@ -177,8 +166,6 @@ const AdminAcademics = () => {
       console.error("Delete timetable error", err);
     }
   };
-
-
 
   useEffect(() => {
     const initial = {};
@@ -201,13 +188,22 @@ const AdminAcademics = () => {
     }));
   };
 
-  const handleSaveResults = () => {
+  const handleSaveResults = async () => {
     const updated = { ...results, [selectedClass]: newResults };
     setResults(updated);
-    localStorage.setItem('studentResults', JSON.stringify(updated));
+
+    try {
+      const res = await fetch("/api/results", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ class: selectedClass, results: newResults })
+      });
+      if (!res.ok) throw new Error("Failed to save results");
+    } catch (err) {
+      console.error("Error saving results to server", err);
+    }
   };
-
-
 
   const openSyllabusModal = (cls) => {
     if (uploadedSyllabus[cls]) {
@@ -230,14 +226,74 @@ const AdminAcademics = () => {
     setModalOpen(false);
     setModalClass('');
   };
+  // useEffect(() => {
+  //   if (!selectedClass) return; // ✅ guard clause
+
+  //   const fetchSyllabus = async () => {
+  //     try {
+  //       const res = await fetch(`/api/syllabus/${selectedClass}`, {
+  //         credentials: 'include',
+  //       });
+
+  //       if (res.ok) {
+  //         const data = await res.json();
+  //         setUploadedSyllabus(prev => ({
+  //           ...prev,
+  //           [selectedClass]: { url: data.syllabusURL },
+  //         }));
+  //       } else if (res.status === 404) {
+  //         setUploadedSyllabus(prev => ({
+  //           ...prev,
+  //           [selectedClass]: null,
+  //         }));
+  //       }
+  //     } catch (err) {
+  //       console.error("Fetch syllabus error", err);
+  //     }
+  //   };
+
+  //   const fetchTimetable = async () => {
+  //     try {
+  //       const res = await fetch(`/api/timetable/${selectedClass}`, {
+  //         credentials: 'include'
+  //       });
+
+  //       if (res.ok) {
+  //         const data = await res.json();
+  //         setUploadedTimetables(prev => ({ ...prev, [selectedClass]: data.entries }));
+  //       } else if (res.status === 404) {
+  //         setUploadedTimetables(prev => ({ ...prev, [selectedClass]: [] }));
+  //       }
+  //     } catch (err) {
+  //       console.error("Fetch timetable error", err);
+  //     }
+  //   };
+
+  //   fetchSyllabus();
+  //   fetchTimetable();
+  // }, [selectedClass]);
 
   useEffect(() => {
+    if (!selectedClass) return;
+
+
     const fetchSyllabus = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/syllabus/${selectedClass}`);
-        const data = await res.json();
+        const res = await fetch(`/api/syllabus/${selectedClass}`, {
+          credentials: 'include',
+        });
+
         if (res.ok) {
-          setUploadedSyllabus(prev => ({ ...prev, [selectedClass]: { url: data.syllabusURL } }));
+          const data = await res.json();
+          setUploadedSyllabus(prev => ({
+            ...prev,
+            [selectedClass]: { url: data.syllabusURL },
+          }));
+        } else if (res.status === 404) {
+          setUploadedSyllabus(prev => ({
+            ...prev,
+            [selectedClass]: null,
+          }));
         }
       } catch (err) {
         console.error("Fetch syllabus error", err);
@@ -246,10 +302,21 @@ const AdminAcademics = () => {
 
     const fetchTimetable = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/timetable/${selectedClass}`);
-        const data = await res.json();
+        const res = await fetch(`/api/timetable/${selectedClass}`, {
+          credentials: 'include',
+        });
+
         if (res.ok) {
-          setUploadedTimetables(prev => ({ ...prev, [selectedClass]: data.entries }));
+          const data = await res.json();
+          setUploadedTimetables(prev => ({
+            ...prev,
+            [selectedClass]: data.entries,
+          }));
+        } else if (res.status === 404) {
+          setUploadedTimetables(prev => ({
+            ...prev,
+            [selectedClass]: [],
+          }));
         }
       } catch (err) {
         console.error("Fetch timetable error", err);
@@ -259,7 +326,6 @@ const AdminAcademics = () => {
     fetchSyllabus();
     fetchTimetable();
   }, [selectedClass]);
-
 
 
   const renderTabContent = () => {
@@ -338,24 +404,6 @@ const AdminAcademics = () => {
       case 'Syllabus':
         return (
           <div className="bg-gray-900 p-4 rounded relative">
-            {isModalOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 relative">
-                  <button
-                    onClick={closeModal}
-                    className="absolute top-2 right-3 text-black text-xl font-bold hover:text-red-600"
-                  >
-                    &times;
-                  </button>
-                  <h4 className="text-lg font-semibold text-black mb-4">Class {activeSyllabusClass} Syllabus</h4>
-                  <iframe
-                    src={uploadedSyllabus[activeSyllabusClass]?.url}
-                    title="Syllabus PDF"
-                    className="w-full h-[500px] border rounded"
-                  />
-                </div>
-              </div>
-            )}
             <h3 className="text-lg font-semibold mb-4">Upload Syllabus PDF for Class {selectedClass}</h3>
             <input
               type="file"
@@ -388,6 +436,19 @@ const AdminAcademics = () => {
                 ))}
               </div>
             </div>
+            {activeSyllabusClass && uploadedSyllabus[activeSyllabusClass] && (
+              <div className="mt-6 text-center">
+                <h4 className="text-lg font-semibold mb-4">Download Syllabus for Class {activeSyllabusClass}</h4>
+                <a
+                  href={`${BACKEND_BASE}${uploadedSyllabus[activeSyllabusClass].url}`}
+                  download
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-block transition"
+                >
+                  📥 Download Syllabus
+                </a>
+              </div>
+            )}
+
           </div>
         );
       case 'Time-Table':
@@ -416,11 +477,7 @@ const AdminAcademics = () => {
               <h4 className="text-lg font-semibold mb-2">Class-wise Time-Table View</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {classOptions.map((cls) => (
-                  <div
-                    key={cls}
-                    onClick={() => openTimetableModal(cls)}
-                    className="bg-gray-800 p-4 rounded text-center cursor-pointer hover:bg-gray-700"
-                  >
+                  <div key={cls} className="bg-gray-800 p-4 rounded text-center hover:bg-gray-700">
                     <h5 className="font-bold mb-2">Class {cls}</h5>
                     {uploadedTimetables[cls] ? (
                       <div className="space-y-1">
@@ -440,7 +497,6 @@ const AdminAcademics = () => {
                     ) : (
                       <span className="text-gray-400">Not Uploaded</span>
                     )}
-
                   </div>
                 ))}
               </div>
@@ -536,12 +592,53 @@ const AdminAcademics = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-[#0f172a] to-black text-white">
+    // <div className="flex min-h-screen bg-gradient-to-b from-[#0f172a] to-black text-white">
+    //   <Sidebar role="admin" />
+    //   <div className="flex-1 p-6">
+    //     <Header />
+
+
+    //     {/* Header */}
+    //     <div className="flex flex-col mt-10 lg:flex-row justify-between items-center mb-6">
+    //       <h2 className="text-3xl font-bold mb-4 lg:mb-0 text-white">Academics</h2>
+    //       <select
+    //         value={selectedClass}
+    //         onChange={(e) => setSelectedClass(e.target.value)}
+    //         className="bg-gray-900 text-white px-3 py-2 rounded border border-gray-700 shadow"
+    //       >
+    //         <option value="">Select Class</option>
+    //         {classOptions.map((cls) => (
+    //           <option key={cls} value={cls}>Class {cls}</option>
+    //         ))}
+    //       </select>
+    //     </div>
+
+    //     {/* Tabs */}
+    //     <div className="flex flex-wrap gap-3 mb-6">
+    //       {tabs.map((tab) => (
+    //         <button
+    //           key={tab}
+    //           onClick={() => setActiveTab(tab)}
+    //           className={`px-5 py-2 rounded-full transition duration-200 text-sm font-semibold shadow-lg ${activeTab === tab ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white' : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+    //             }`}
+    //         >
+    //           {tab}
+    //         </button>
+    //       ))}
+    //     </div>
+
+    //     {/* Tab Content */}
+    //     <div className="rounded-xl p-4 bg-gray-900/80 shadow-lg">
+    //       {renderTabContent()}
+    //     </div>
+    //   </div>
+    // </div>
+
+    <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-gray-900/60 to-black/30 blur-xl -z-10 animate-pulse" />
       <Sidebar role="admin" />
-      <div className="flex-1 p-6">
-
+      <div className="flex-1 p-6 space-y-10">
         <Header />
-
 
         {/* Header */}
         <div className="flex flex-col mt-10 lg:flex-row justify-between items-center mb-6">
@@ -549,7 +646,7 @@ const AdminAcademics = () => {
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
-            className="bg-gray-900 text-white px-3 py-2 rounded border border-gray-700 shadow"
+            className="bg-white/50 backdrop-blur-md text-black px-3 py-2 rounded border border-white/40 shadow-lg"
           >
             <option value="">Select Class</option>
             {classOptions.map((cls) => (
@@ -564,7 +661,9 @@ const AdminAcademics = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2 rounded-full transition duration-200 text-sm font-semibold shadow-lg ${activeTab === tab ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white' : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+              className={`px-5 py-2 rounded-full transition duration-200 text-sm font-semibold shadow-md border border-white/10 backdrop-blur-md ${activeTab === tab
+                  ? 'bg-white text-black'
+                  : 'bg-white/10 hover:bg-white/20 text-white'
                 }`}
             >
               {tab}
@@ -572,8 +671,8 @@ const AdminAcademics = () => {
           ))}
         </div>
 
-        {/* Tab Content */}
-        <div className="rounded-xl p-4 bg-gray-900/80 shadow-lg">
+        {/* Tab Content Wrapper */}
+        <div className="rounded-xl p-4 bg-white/5 shadow-lg border border-white/10 backdrop-blur-md">
           {renderTabContent()}
         </div>
       </div>
@@ -582,7 +681,3 @@ const AdminAcademics = () => {
 };
 
 export default AdminAcademics;
-
-
-
-

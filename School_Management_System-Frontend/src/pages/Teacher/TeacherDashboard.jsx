@@ -37,10 +37,10 @@ const TeacherDashboard = () => {
       link: '/dashboard/teacher/mail'
     },
     {
-      label: 'Upcoming Classes',
+      label: 'Take Atendance',
       icon: <FaChalkboardTeacher className="text-4xl text-white" />,
       note: '3 classes today',
-      link: '/dashboard/teacher/classes'
+      link: '/dashboard/teacher/attendance'
     }
   ];
 

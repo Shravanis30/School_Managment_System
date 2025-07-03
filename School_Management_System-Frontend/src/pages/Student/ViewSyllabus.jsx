@@ -10,7 +10,7 @@ const ViewSyllabus = ({ className = "10" }) => {
         const fetchSyllabus = async () => {
             const token = localStorage.getItem('token');
             try {
-                const res = await fetch(`http://localhost:5000/api/syllabus/${className}`, {
+                const res = await fetch(`/api/syllabus/${className}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const data = await res.json();

@@ -18,7 +18,9 @@ const RegisterStudent = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/classes');
+        const res = await axios.get('/api/classes', {
+          withCredentials: true,
+        });
         setClasses(res.data);
       } catch (err) {
         console.error('Error fetching classes:', err.message);
@@ -35,28 +37,21 @@ const RegisterStudent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      alert("⚠️ You must be logged in as Admin to register a student.");
-      return;
-    }
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/students/register",
+        "/api/students/register",
         {
           name: form.fullName,
           email: form.email,
           password: form.password,
           rollNo: form.enrollmentNo,
+          // rollNumber: form.enrollmentNo,
           className: form.className,
           profileImage: form.profileImage,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true, // ✅ Important for sending cookie
         }
       );
 

@@ -190,27 +190,30 @@ const RegisterAdmin = () => {
       const response = await fetch('http://localhost:5000/api/admins/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // ⬅️ allows cookies like accessToken
         body: JSON.stringify({
           name: form.fullName,
           schoolName: form.schoolName,
           email: form.email,
           password: form.password,
-          profileImage: form.profileImage, // ✅ Add this
+          profileImage: form.profileImage,
         }),
-
       });
+
       const data = await response.json();
+
       if (response.ok) {
         alert("Admin Registered");
         console.log(data);
-        navigate('/dashboard/admin'); // ✅ redirect after success
+        navigate('/dashboard/admin');
       } else {
-        alert(data.message);
+        alert(data.message || "Something went wrong.");
       }
     } catch (error) {
       console.error("Registration Error:", error);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-300">

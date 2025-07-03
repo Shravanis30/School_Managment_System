@@ -26,7 +26,7 @@ const StudentAssignments = () => {
         setStudentClass(className);
 
         // Fetch assignments using className as string
-        const assignmentsRes = await fetch(`http://localhost:5000/api/assignments/class/${className}`, {
+        const assignmentsRes = await fetch(`http://localhost:5000/api/assignments/${className}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

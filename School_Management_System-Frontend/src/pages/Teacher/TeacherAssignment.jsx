@@ -312,15 +312,16 @@ const TeacherAssignments = () => {
   };
 
   const fetchSubmissions = async () => {
-    if (filter.classId && filter.subject) {
+    if (filter.className && filter.subject) {
       const response = await fetch(
-        `http://localhost:5000/api/assignments/submissions/${filter.classId}/${filter.subject}`,
+        `http://localhost:5000/api/assignments/submissions/${filter.className}/${filter.subject}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         }
       );
+
       const data = await response.json();
       setSubmissions(data || []);
     }
