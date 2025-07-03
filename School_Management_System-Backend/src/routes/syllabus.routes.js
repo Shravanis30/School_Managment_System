@@ -1,47 +1,69 @@
-// routes/syllabus.js
+
+
+
 import express from "express";
+import multer from 'multer';
 import Syllabus from "../models/syllabus.model.js";
 
 const router = express.Router();
 
-// POST syllabus
-router.post("/", async (req, res) => {
-  const { class: className, syllabusURL } = req.body;
+// ✅ Declare 'upload' before using it
+const upload = multer({ dest: 'uploads/' });
+
+// ✅ Now safe to use 'upload'
+router.post('/upload', upload.single('syllabus'), async (req, res) => {
   try {
-    let existing = await Syllabus.findOne({ class: className });
-    if (existing) {
-      existing.syllabusURL = syllabusURL;
-      await existing.save();
-      return res.status(200).json(existing);
+    const className = req.body.class.replace(/^Class\s*/, '');
+    const fileUrl = `/uploads/${req.file.filename}`;
+
+    let syllabus = await Syllabus.findOne({ class: className });
+    if (syllabus) {
+      syllabus.syllabusURL = fileUrl;
+      await syllabus.save();
     } else {
-      const newEntry = new Syllabus({ class: className, syllabusURL });
-      await newEntry.save();
-      return res.status(201).json(newEntry);
+      syllabus = await Syllabus.create({ class: className, syllabusURL: fileUrl });
     }
+
+    res.status(200).json({ message: 'Syllabus uploaded successfully', url: fileUrl });
   } catch (err) {
-    res.status(500).json({ error: "Failed to save syllabus" });
+    res.status(500).json({ message: 'Upload failed', error: err.message });
   }
 });
 
-// GET syllabus
-router.get("/:className", async (req, res) => {
+// ... other routes
+
+// GET syllabus by classId
+router.get('/:classId', async (req, res) => {
   try {
-    const syllabus = await Syllabus.findOne({ class: req.params.className });
-    if (!syllabus) return res.status(404).json({ message: "Not found" });
-    res.json(syllabus);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch syllabus" });
+    console.log("Fetching syllabus for:", req.params.classId);
+    const classId = req.params.classId.replace(/^Class\s*/, '');
+    const syllabus = await Syllabus.findOne({ class: classId });
+    if (!syllabus) {
+      console.log("Not found");
+      return res.status(404).json({ message: "Syllabus not found" });
+    }
+    console.log("Found syllabus:", syllabus.syllabusURL);
+    res.status(200).json(syllabus);
+  } catch (error) {
+    console.error("Fetch error", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
-// DELETE syllabus
-router.delete("/:className", async (req, res) => {
+// DELETE syllabus by classId
+router.delete("/:classId", async (req, res) => {
   try {
-    await Syllabus.findOneAndDelete({ class: req.params.className });
+    const classId = req.params.classId.replace(/^Class\s*/, ''); // remove "Class " if present
+
+    await Syllabus.findOneAndDelete({ class: classId });
     res.json({ message: "Syllabus deleted" });
   } catch (err) {
     res.status(500).json({ error: "Delete failed" });
   }
 });
 
+
+
+
 export default router;
+

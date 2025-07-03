@@ -1,10 +1,16 @@
 // models/Assignment.js
 import mongoose from 'mongoose';
 
+
 const assignmentSchema = new mongoose.Schema({
+  classId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Class',
+    required: true,
+  },
   className: {
     type: String,
-    required: true
+    required: true,
   },
   subject: {
     type: String,
@@ -14,19 +20,17 @@ const assignmentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  description: {
-    type: String,
+  description: String,
+  dueDate: Date,
+  teacherId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Teacher',
     required: true,
   },
-  dueDate: {
-    type: Date,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+}, {
+  timestamps: true,
 });
+
 
 
 export default mongoose.model('Assignment', assignmentSchema);

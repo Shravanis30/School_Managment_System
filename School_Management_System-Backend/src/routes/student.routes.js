@@ -30,8 +30,9 @@ import express from "express";
 import {
   createStudent,
   loginStudent,
-  getStudentsByClass,
+  getStudentsByClassByName,
   getAllStudentsGroupedByClass,
+  getStudentsByClassId,
   deleteStudent,
   getLoggedInStudent,
 } from "../controllers/student.controller.js";
@@ -40,10 +41,13 @@ import { authorizeRole } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/register", authorizeRole("admin"), createStudent);
+router.post("/register",authMiddleware, authorizeRole("admin"), createStudent);
 router.post("/login", loginStudent);
 router.get("/all", authMiddleware, getAllStudentsGroupedByClass);
-router.get("/by-class/:className", getStudentsByClass);
+
+router.get("/by-class-name/:className", getStudentsByClassByName);
+router.get("/by-class-id/:classId", getStudentsByClassId);
+
 router.get("/me", authMiddleware, getLoggedInStudent); // ✅ This is required
 router.delete("/:id", deleteStudent);
 

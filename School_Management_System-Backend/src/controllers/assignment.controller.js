@@ -1,11 +1,94 @@
+// import Assignment from "../models/assignment.model.js";
+// import StudentSubmission from "../models/submission.model.js";
+// import multer from "multer";
+// import path from "path";
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
+
+// export const upload = multer({ storage }).single("file");
+
+// export const uploadAssignment = async (req, res) => {
+//   try {
+//     const assignment = new Assignment(req.body);
+//     await assignment.save();
+//     res.status(201).json({ message: "Assignment uploaded successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Upload failed" });
+//   }
+// };
+
+// export const submitAssignment = async (req, res) => {
+//   try {
+//     const fileUrl = `/uploads/${req.file.filename}`;
+//     const submission = new StudentSubmission({
+//       assignmentId: req.body.assignmentId,
+//       studentName: req.body.studentName,
+//       studentId: req.body.studentId || null,
+//       submittedFile: fileUrl,
+//     });
+//     await submission.save();
+//     res.status(201).json({ message: "Assignment submitted successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Submission failed" });
+//   }
+// };
+
+
+// // GET /api/assignments/:className
+// export const getAssignmentsByClass = async (req, res) => {
+//   const { className } = req.params;
+
+//   try {
+//     const assignments = await Assignment.find({ className }).sort({ dueDate: 1 });
+//     res.status(200).json(assignments);
+//   } catch (error) {
+//     console.error('Error fetching assignments:', error.message);
+//     res.status(500).json({ message: 'Failed to fetch assignments' });
+//   }
+// };
+
+
+
+// export const getSubmissionsByClassAndSubject = async (req, res) => {
+//   try {
+//     const { className: className, subject } = req.params;
+//     const assignments = await Assignment.find({ className: className, subject });
+//     const assignmentIds = assignments.map(a => a._id);
+//     const submissions = await StudentSubmission.find({ assignmentId: { $in: assignmentIds } })
+//       .populate("assignmentId")
+//       .populate("studentId");
+//     res.status(200).json(submissions);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Failed to fetch submissions" });
+//   }
+// };
+
+
+
+
+
+
+// nmew auth
 import Assignment from "../models/assignment.model.js";
 import StudentSubmission from "../models/submission.model.js";
 import multer from "multer";
 import path from "path";
+import { ApiError } from "../utils/ApiError.js";
 
+// ✅ Multer config
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/");
+    cb(null, "uploads/"); // make sure this folder exists
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -14,55 +97,90 @@ const storage = multer.diskStorage({
 
 export const upload = multer({ storage }).single("file");
 
+// ✅ Teacher uploads assignment
 export const uploadAssignment = async (req, res) => {
   try {
-    const assignment = new Assignment(req.body);
+    if (req.role !== "teacher") {
+      throw new ApiError(403, "Only teachers can upload assignments");
+    }
+
+    const assignment = new Assignment({
+      ...req.body,
+      uploadedBy: req.user._id,
+    });
+
     await assignment.save();
+
     res.status(201).json({ message: "Assignment uploaded successfully" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Upload failed" });
+    res.status(err.statusCode || 500).json({ message: err.message || "Upload failed" });
   }
 };
 
+// ✅ Student submits assignment with file
 export const submitAssignment = async (req, res) => {
   try {
+    if (req.role !== "student") {
+      throw new ApiError(403, "Only students can submit assignments");
+    }
+
+    if (!req.file) {
+      throw new ApiError(400, "No file uploaded");
+    }
+
     const fileUrl = `/uploads/${req.file.filename}`;
+
     const submission = new StudentSubmission({
       assignmentId: req.body.assignmentId,
-      studentName: req.body.studentName,
-      studentId: req.body.studentId || null,
+      studentName: req.user.name,
+      studentId: req.user._id,
       submittedFile: fileUrl,
     });
+
     await submission.save();
+
     res.status(201).json({ message: "Assignment submitted successfully" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Submission failed" });
+    res.status(err.statusCode || 500).json({ message: err.message || "Submission failed" });
   }
 };
 
+// ✅ GET all assignments by class
 export const getAssignmentsByClass = async (req, res) => {
+  const { className } = req.params;
+
   try {
-    const assignments = await Assignment.find({ className: req.params.className });
+    const assignments = await Assignment.find({ className }).sort({ dueDate: 1 });
     res.status(200).json(assignments);
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("Error fetching assignments:", error.message);
     res.status(500).json({ message: "Failed to fetch assignments" });
   }
 };
 
+// ✅ GET all submissions for a class and subject (Admin/Teacher)
 export const getSubmissionsByClassAndSubject = async (req, res) => {
   try {
-    const { className: className, subject } = req.params;
-    const assignments = await Assignment.find({ className: className, subject });
-    const assignmentIds = assignments.map(a => a._id);
+    const { className, subject } = req.params;
+
+    if (req.role !== "teacher" && req.role !== "admin") {
+      throw new ApiError(403, "Only teachers or admins can view submissions");
+    }
+
+    const assignments = await Assignment.find({ className, subject });
+    const assignmentIds = assignments.map((a) => a._id);
+
     const submissions = await StudentSubmission.find({ assignmentId: { $in: assignmentIds } })
       .populate("assignmentId")
       .populate("studentId");
+
     res.status(200).json(submissions);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to fetch submissions" });
+    res.status(err.statusCode || 500).json({ message: err.message || "Failed to fetch submissions" });
   }
 };
+
+

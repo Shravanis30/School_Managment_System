@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 router.post('/', uploadTimetable);
-router.get('/:class', getTimetableByClass);
-router.delete('/:class', deleteTimetableByClass);
+router.get('/:classId', getTimetableByClass);
+router.delete('/:classId', deleteTimetableByClass);
 
 export default router;

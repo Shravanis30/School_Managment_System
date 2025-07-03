@@ -1,17 +1,86 @@
+// import Admin from "../models/admin.model.js";
+// import bcrypt from "bcryptjs";
+// import jwt from "jsonwebtoken";
+
+// // Register Admin
+// export const registerAdmin = async (req, res) => {
+//   const { name, schoolName, email, password, profileImage } = req.body;
+
+//   try {
+//     const existingAdmin = await Admin.findOne({ email });
+//     if (existingAdmin)
+//       return res.status(400).json({ message: "Admin already exists" });
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     const admin = await Admin.create({
+//       name,
+//       schoolName,
+//       email,
+//       password: hashedPassword,
+//       profileImage,
+//       role: "admin",
+//       designation: "Principal"
+//     });
+
+//     res.status(201).json({ message: "Admin registered successfully", admin });
+//   } catch (err) {
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+// // Login Admin
+// export const loginAdmin = async (req, res) => {
+//   const { email, password } = req.body;
+
+//   try {
+//     const admin = await Admin.findOne({ email });
+//     if (!admin) return res.status(404).json({ message: "Admin not found" });
+
+//     const isMatch = await bcrypt.compare(password, admin.password);
+//     if (!isMatch)
+//       return res.status(401).json({ message: "Invalid credentials" });
+
+//     const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, {
+//       expiresIn: "1d",
+//     });
+
+//     res.json({
+//       token,
+//       user: {
+//         id: admin._id,
+//         name: admin.name,
+//         email: admin.email,
+//         schoolName: admin.schoolName,
+//         profileImage: admin.profileImage,
+//         role: "admin",
+//         designation: "Principal"
+//       },
+//     });
+//   } catch (err) {
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+
+
+
+
+// changes auth
 import Admin from "../models/admin.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { ApiError } from "../utils/ApiError.js";
 
-// Register Admin
+// ✅ Register Admin
 export const registerAdmin = async (req, res) => {
   const { name, schoolName, email, password, profileImage } = req.body;
 
   try {
     const existingAdmin = await Admin.findOne({ email });
-    if (existingAdmin)
-      return res.status(400).json({ message: "Admin already exists" });
+    if (existingAdmin) throw new ApiError(400, "Admin already exists");
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const admin = await Admin.create({
       name,
       schoolName,
@@ -19,45 +88,111 @@ export const registerAdmin = async (req, res) => {
       password: hashedPassword,
       profileImage,
       role: "admin",
-      designation: "Principal"
+      designation: "Principal",
     });
 
-    res.status(201).json({ message: "Admin registered successfully", admin });
+    // Token payload
+    const payload = {
+      _id: admin._id,
+      role: "admin",
+    };
+
+    // Access & Refresh tokens
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "1d",
+    });
+
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "10d",
+    });
+
+    // Set cookies
+    res
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days
+      })
+      .status(201)
+      .json({
+        message: "Admin registered successfully",
+        admin: {
+          _id: admin._id,
+          name: admin.name,
+          email: admin.email,
+          schoolName: admin.schoolName,
+          profileImage: admin.profileImage,
+          role: "admin",
+          designation: "Principal",
+        },
+      });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(err.statusCode || 500).json({
+      message: err.message || "Server error",
+    });
   }
 };
 
-// Login Admin
+// ✅ Login Admin
 export const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const admin = await Admin.findOne({ email });
-    if (!admin) return res.status(404).json({ message: "Admin not found" });
+    if (!admin) throw new ApiError(404, "Admin not found");
 
     const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch)
-      return res.status(401).json({ message: "Invalid credentials" });
+    if (!isMatch) throw new ApiError(401, "Invalid credentials");
 
-    const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+    const payload = {
+      _id: admin._id,
+      role: "admin",
+    };
+
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "1d",
     });
 
-    res.json({
-      token,
-      user: {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        schoolName: admin.schoolName,
-        profileImage: admin.profileImage,
-        role: "admin",
-        designation: "Principal"
-      },
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "10d",
     });
+
+    res
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 10 * 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json({
+        message: "Logged in successfully",
+        admin: {
+          _id: admin._id,
+          name: admin.name,
+          email: admin.email,
+          schoolName: admin.schoolName,
+          profileImage: admin.profileImage,
+          role: "admin",
+          designation: "Principal",
+        },
+      });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(err.statusCode || 500).json({
+      message: err.message || "Server error",
+    });
   }
 };
-
