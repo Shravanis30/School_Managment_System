@@ -19,6 +19,7 @@ import meetingRoutes from './routes/meeting.routes.js';
 import resourceRoutes from './routes/resource.routes.js';
 import attendanceRoutes from './routes/attendance.routes.js'
 import cookieParser from 'cookie-parser';
+import feeRoutes from './routes/fee.routes.js';
 
 
 
@@ -65,6 +66,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.get('/', (req, res) => {
   res.send('School Management System API running...');
 });
+app.use('/api/fees', feeRoutes);
 
 
 export { app }

@@ -200,6 +200,7 @@ const Sidebar = ({ role }) => {
       { icon: <FaCalendarAlt size={24} />, path: '/dashboard/student/timetable', label: 'TimeTable' },
       { icon: <FaPoll size={24} />, path: '/dashboard/student/result', label: 'Result' },
       { icon: <FaComments size={24} />, path: '/dashboard/student/complaints', label: 'Complaint Box' },
+      { icon: <FaComments size={24} />, path: '/dashboard/student/fees', label: 'Fee Structure' },
     ],
   };
 

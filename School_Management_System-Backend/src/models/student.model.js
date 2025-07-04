@@ -13,7 +13,9 @@ const studentSchema = new mongoose.Schema({
   rollNo: { type: String, required: true },
   role: { type: String, default: 'student' },
   designation: { type: String, default: 'Student' },
-  profileImage: { type: String, default: '' }
+  profileImage: { type: String, default: '' },
+  paidFee: { type: Number, default: 0 },
+
 }, { timestamps: true });
 
 const Student = mongoose.model("Student", studentSchema);

@@ -41,6 +41,7 @@ import TeacherAttendance from './pages/Teacher/TeacherAttendance';
 import StudentResults from './pages/Student/StudentResult';
 import UploadResources from './pages/Teacher/UploadResources';
 import ViewResources from './pages/Student/ViewResources';
+import StudentFees from './pages/Student/StudentFees';
 
 function App() {
 
@@ -89,6 +90,7 @@ function App() {
       <Route path="/dashboard/student/attendance" element={<StudentAttendance />} />
       <Route path="/dashboard/student/result" element={<StudentResults />} />
       <Route path="/dashboard/student/resources" element={<ViewResources />} />
+      <Route path="/dashboard/student/fees" element={<StudentFees />} />
 
 
       <Route path="/dashboard/teacher/meeting" element={<TeacherMeetingPage />} />
