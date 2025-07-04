@@ -213,3 +213,23 @@ export const getStudentsByClassId = async (req, res) => {
     res.status(500).json({ message: "Error fetching students", error: error.message });
   }
 };
+
+
+
+export const getStudentsByClass = async (req, res) => {
+  try {
+    const { classId } = req.params;
+    if (!classId) {
+      throw new ApiError(400, 'Class ID is required');
+    }
+
+    const students = await Student.find({ class: classId }).select('name _id'); // Adjust fields as needed
+
+    res.status(200).json(students);
+  } catch (error) {
+    console.error("Error fetching students by class:", error);
+    res.status(error.statusCode || 500).json({
+      message: error.message || 'Internal Server Error',
+    });
+  }
+};

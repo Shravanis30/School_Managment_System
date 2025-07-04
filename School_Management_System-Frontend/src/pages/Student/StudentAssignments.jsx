@@ -11,23 +11,21 @@ const StudentAssignments = () => {
   useEffect(() => {
     const fetchStudentAndAssignments = async () => {
       try {
-        const token = localStorage.getItem('token');
-
-        // Fetch student info
-        const studentRes = await fetch('http://localhost:5000/api/students/me', {
-          headers: { Authorization: `Bearer ${token}` },
+        // ✅ Fetch student info using cookie-based auth
+        const studentRes = await fetch('/api/students/me', {
+          credentials: 'include', // ✅ sends cookies
         });
 
         if (!studentRes.ok) throw new Error("Unauthorized or invalid student fetch");
 
         const student = await studentRes.json();
+        const className = student.className;
 
-        const className = student.className; // ⚠️ must match stored string in assignment.className
         setStudentClass(className);
 
-        // Fetch assignments using className as string
-        const assignmentsRes = await fetch(`http://localhost:5000/api/assignments/${className}`, {
-          headers: { Authorization: `Bearer ${token}` },
+        // ✅ Fetch assignments by class name (no token header)
+        const assignmentsRes = await fetch(`/api/assignments/${className}`, {
+          credentials: 'include', // ✅ sends cookies
         });
 
         const assignmentsData = await assignmentsRes.json();
@@ -45,7 +43,6 @@ const StudentAssignments = () => {
     fetchStudentAndAssignments();
   }, []);
 
-
   const handleSubmit = async () => {
     if (!selectedId || !file) return alert('Please select assignment and file');
 
@@ -53,16 +50,21 @@ const StudentAssignments = () => {
     formData.append('assignmentId', selectedId);
     formData.append('file', file);
 
-    const res = await fetch('http://localhost:5000/api/assignments/submit', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      body: formData,
-    });
+    try {
+      const res = await fetch('/api/assignments/submit', {
+        method: 'POST',
+        credentials: 'include', // ✅ sends cookies
+        body: formData,
+      });
 
-    const data = await res.json();
-    alert(data.message);
-    setSelectedId('');
-    setFile(null);
+      const data = await res.json();
+      alert(data.message);
+      setSelectedId('');
+      setFile(null);
+    } catch (err) {
+      console.error("Submission failed:", err.message);
+      alert("Failed to submit assignment");
+    }
   };
 
   return (

@@ -13,7 +13,7 @@ import authMiddleware from '../middlewares/auth.middleware.js';
 const router = express.Router();
 
 
-router.get('/', authMiddleware, getAllClasses);
+router.get('/', getAllClasses);
 router.get('/:id', authMiddleware, getClassById);
 router.post('/', authMiddleware, createClass);
 router.post('/:id/subjects', authMiddleware, addSubjectToClass);

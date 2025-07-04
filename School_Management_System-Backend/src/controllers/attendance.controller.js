@@ -116,3 +116,4 @@ export const saveAttendance = async (req, res) => {
       .json({ message: err.message || 'Internal server error' });
   }
 };
+
