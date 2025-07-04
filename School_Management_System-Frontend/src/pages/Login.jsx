@@ -36,7 +36,7 @@ const Login = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const loginRoute = `http://localhost:5000/api/${role}s/login`;
+    const loginRoute = `/api/${role}s/login`;
 
     try {
       const response = await fetch(loginRoute, {

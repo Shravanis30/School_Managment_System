@@ -187,10 +187,10 @@ const RegisterAdmin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/admins/register', {
+      const response = await fetch('/api/admins/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // ⬅️ allows cookies like accessToken
+        withCredentials: true,
         body: JSON.stringify({
           name: form.fullName,
           schoolName: form.schoolName,

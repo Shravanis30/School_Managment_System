@@ -6,7 +6,7 @@ import authMiddleware from '../middlewares/auth.middleware.js';
 const router = express.Router();
 
 // router.post('/create', authMiddleware, createTeacher);
-router.post("/create", authorizeRole("admin"), createTeacher);
+router.post("/create", authMiddleware, createTeacher);
 
 router.get('/list', authMiddleware, getTeachers);
 router.post('/login', loginTeacher); 
@@ -14,6 +14,6 @@ router.post('/login', loginTeacher);
 // DELETE /api/teachers/:id
 router.delete('/:id', authMiddleware, deleteTeacherController);
 
-router.get('/', getAllTeachers);
+router.get('/', authMiddleware, getAllTeachers);
 
 export default router;

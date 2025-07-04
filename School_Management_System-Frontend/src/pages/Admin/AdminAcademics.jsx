@@ -4,12 +4,6 @@ import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
 import { FaBell } from 'react-icons/fa';
 
-const sampleStudents = {
-  '1': ['Aarav Singh', 'Diya Mehta'],
-  '2': ['Krish Patel', 'Ananya Sharma'],
-  '10': ['Rohan Desai', 'Priya Kapoor', 'Arjun Verma'],
-};
-
 const resultCategories = ['Mid Term', 'Final Term', 'Unit Test'];
 
 const classWiseSubjects = {
@@ -31,7 +25,7 @@ const classWiseSubjects = {
   ]
 };
 
-const tabs = ['Subject', 'Syllabus', 'Time-Table', 'Result'];
+const tabs = ['Syllabus', 'Time-Table', 'Result'];
 
 const AdminAcademics = () => {
   const [assignedTeachers, setAssignedTeachers] = useState({});
@@ -58,7 +52,7 @@ const AdminAcademics = () => {
     const fetchClasses = async () => {
       try {
         const response = await fetch('/api/classes', {
-          credentials: 'include'
+          credentials: 'include',
         });
         const data = await response.json();
         const classNames = data.map(cls => cls.name);
@@ -77,14 +71,8 @@ const AdminAcademics = () => {
   const [activeTab, setActiveTab] = useState('Subject');
   const [results, setResults] = useState({});
   const [newResults, setNewResults] = useState({});
-  const academicData = classWiseSubjects[selectedClass] || [];
   const BACKEND_BASE = 'http://localhost:5000'; // or use from .env
-  const handleAssignTeacher = () => {
-    if (newTeacher.class && newTeacher.teacher) {
-      setAssignedTeachers({ ...assignedTeachers, [newTeacher.class]: newTeacher.teacher });
-      setNewTeacher({ class: '', teacher: '' });
-    }
-  };
+
 
 
   const handleSyllabusUpload = async () => {
@@ -97,7 +85,7 @@ const AdminAcademics = () => {
     try {
       const res = await fetch(`/api/syllabus/upload`, {
         method: "POST",
-        credentials: 'include',
+        credentials: 'include', // ✅ <== important
         body: formData
       });
 
@@ -121,14 +109,15 @@ const AdminAcademics = () => {
 
   const handleTimetableSubmit = async () => {
     const payload = {
-      class: selectedClass,
+      class: selectedClass.replace('Class ', ''),
       entries: newTimetableEntries,
     };
+
     try {
       const res = await fetch("/api/timetable", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: 'include',
+        credentials: 'include', // ✅ <== important
         body: JSON.stringify(payload),
       });
       if (res.ok) {
@@ -150,9 +139,9 @@ const AdminAcademics = () => {
 
   const handleDeleteTimetable = async (cls) => {
     try {
-      const res = await fetch(`/api/timetable/${cls}`, {
+      const res = await fetch(`/api/timetable/${cls.replace('Class ', '')}`, {
         method: "DELETE",
-        credentials: 'include'
+        credentials: 'include',
       });
       if (res.ok) {
         const updated = { ...uploadedTimetables };
@@ -167,16 +156,6 @@ const AdminAcademics = () => {
     }
   };
 
-  useEffect(() => {
-    const initial = {};
-    (sampleStudents[selectedClass] || []).forEach((name) => {
-      initial[name] = resultCategories.reduce((acc, cat) => {
-        acc[cat] = '';
-        return acc;
-      }, {});
-    });
-    setNewResults(initial);
-  }, [selectedClass]);
 
   const handleResultChange = (student, category, value) => {
     setNewResults((prev) => ({
@@ -226,60 +205,13 @@ const AdminAcademics = () => {
     setModalOpen(false);
     setModalClass('');
   };
-  // useEffect(() => {
-  //   if (!selectedClass) return; // ✅ guard clause
-
-  //   const fetchSyllabus = async () => {
-  //     try {
-  //       const res = await fetch(`/api/syllabus/${selectedClass}`, {
-  //         credentials: 'include',
-  //       });
-
-  //       if (res.ok) {
-  //         const data = await res.json();
-  //         setUploadedSyllabus(prev => ({
-  //           ...prev,
-  //           [selectedClass]: { url: data.syllabusURL },
-  //         }));
-  //       } else if (res.status === 404) {
-  //         setUploadedSyllabus(prev => ({
-  //           ...prev,
-  //           [selectedClass]: null,
-  //         }));
-  //       }
-  //     } catch (err) {
-  //       console.error("Fetch syllabus error", err);
-  //     }
-  //   };
-
-  //   const fetchTimetable = async () => {
-  //     try {
-  //       const res = await fetch(`/api/timetable/${selectedClass}`, {
-  //         credentials: 'include'
-  //       });
-
-  //       if (res.ok) {
-  //         const data = await res.json();
-  //         setUploadedTimetables(prev => ({ ...prev, [selectedClass]: data.entries }));
-  //       } else if (res.status === 404) {
-  //         setUploadedTimetables(prev => ({ ...prev, [selectedClass]: [] }));
-  //       }
-  //     } catch (err) {
-  //       console.error("Fetch timetable error", err);
-  //     }
-  //   };
-
-  //   fetchSyllabus();
-  //   fetchTimetable();
-  // }, [selectedClass]);
-
   useEffect(() => {
     if (!selectedClass) return;
 
 
     const fetchSyllabus = async () => {
       try {
-        const res = await fetch(`/api/syllabus/${selectedClass}`, {
+        const res = await fetch(`/api/syllabus/${selectedClass.replace('Class ', '')}`, {
           credentials: 'include',
         });
 
@@ -302,7 +234,7 @@ const AdminAcademics = () => {
 
     const fetchTimetable = async () => {
       try {
-        const res = await fetch(`/api/timetable/${selectedClass}`, {
+        const res = await fetch(`/api/timetable/${selectedClass.replace('Class ', '')}`, {
           credentials: 'include',
         });
 
@@ -330,77 +262,7 @@ const AdminAcademics = () => {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'Subject':
-        return (
-          <div className="overflow-x-auto bg-gray-900 p-4 rounded shadow">
-            <table className="table-auto w-full text-sm text-left">
-              <thead className="bg-gray-800">
-                <tr>
-                  <th className="px-4 py-2">SubjectCode</th>
-                  <th className="px-4 py-2">SubjectName</th>
-                  <th className="px-4 py-2">Assigned Teacher</th>
-                  <th className="px-4 py-2">Type</th>
-                  <th className="px-4 py-2">Max Marks</th>
-                </tr>
-              </thead>
-              <tbody>
-                {academicData.map((subject) => (
-                  <tr key={subject.code} className="border-b border-gray-700">
-                    <td className="px-4 py-2">{subject.code}</td>
-                    <td className="px-4 py-2">{subject.name}</td>
-                    <td className="px-4 py-2">{subject.teacher}</td>
-                    <td className="px-4 py-2">{subject.type}</td>
-                    <td className="px-4 py-2">{subject.marks}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        );
-      case 'Classes':
-        return (
-          <div className="space-y-4">
-            <div className="bg-gray-800 p-4 rounded">
-              <h3 className="text-lg font-semibold mb-2">Assign Class Teacher</h3>
-              <div className="flex flex-col md:flex-row gap-4">
-                <select
-                  className="p-2 bg-gray-900 text-white rounded"
-                  value={newTeacher.class}
-                  onChange={(e) => setNewTeacher({ ...newTeacher, class: e.target.value })}
-                >
-                  <option value="">Select Class</option>
-                  {classOptions.map((cls) => (
-                    <option key={cls} value={cls}>Class {cls}</option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  placeholder="Teacher Name"
-                  className="p-2 bg-gray-900 text-white rounded"
-                  value={newTeacher.teacher}
-                  onChange={(e) => setNewTeacher({ ...newTeacher, teacher: e.target.value })}
-                />
-                <button
-                  onClick={handleAssignTeacher}
-                  className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
-                >
-                  Assign
-                </button>
-              </div>
-            </div>
-            <div className="bg-gray-900 p-4 rounded">
-              <h3 className="text-lg font-semibold mb-3">Classes & Class Teachers</h3>
-              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {classOptions.map((cls) => (
-                  <li key={cls} className="bg-gray-800 p-4 rounded">
-                    <strong>Class {cls}</strong><br />
-                    Teacher: {assignedTeachers[cls] || 'Not Assigned'}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        );
+
       case 'Syllabus':
         return (
           <div className="bg-gray-900 p-4 rounded relative">
@@ -592,47 +454,7 @@ const AdminAcademics = () => {
   };
 
   return (
-    // <div className="flex min-h-screen bg-gradient-to-b from-[#0f172a] to-black text-white">
-    //   <Sidebar role="admin" />
-    //   <div className="flex-1 p-6">
-    //     <Header />
 
-
-    //     {/* Header */}
-    //     <div className="flex flex-col mt-10 lg:flex-row justify-between items-center mb-6">
-    //       <h2 className="text-3xl font-bold mb-4 lg:mb-0 text-white">Academics</h2>
-    //       <select
-    //         value={selectedClass}
-    //         onChange={(e) => setSelectedClass(e.target.value)}
-    //         className="bg-gray-900 text-white px-3 py-2 rounded border border-gray-700 shadow"
-    //       >
-    //         <option value="">Select Class</option>
-    //         {classOptions.map((cls) => (
-    //           <option key={cls} value={cls}>Class {cls}</option>
-    //         ))}
-    //       </select>
-    //     </div>
-
-    //     {/* Tabs */}
-    //     <div className="flex flex-wrap gap-3 mb-6">
-    //       {tabs.map((tab) => (
-    //         <button
-    //           key={tab}
-    //           onClick={() => setActiveTab(tab)}
-    //           className={`px-5 py-2 rounded-full transition duration-200 text-sm font-semibold shadow-lg ${activeTab === tab ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white' : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-    //             }`}
-    //         >
-    //           {tab}
-    //         </button>
-    //       ))}
-    //     </div>
-
-    //     {/* Tab Content */}
-    //     <div className="rounded-xl p-4 bg-gray-900/80 shadow-lg">
-    //       {renderTabContent()}
-    //     </div>
-    //   </div>
-    // </div>
 
     <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-gray-900/60 to-black/30 blur-xl -z-10 animate-pulse" />
@@ -650,7 +472,7 @@ const AdminAcademics = () => {
           >
             <option value="">Select Class</option>
             {classOptions.map((cls) => (
-              <option key={cls} value={cls}>Class {cls}</option>
+              <option key={cls} value={cls}>{`${cls}`}</option>
             ))}
           </select>
         </div>
@@ -662,8 +484,8 @@ const AdminAcademics = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 rounded-full transition duration-200 text-sm font-semibold shadow-md border border-white/10 backdrop-blur-md ${activeTab === tab
-                  ? 'bg-white text-black'
-                  : 'bg-white/10 hover:bg-white/20 text-white'
+                ? 'bg-white text-black'
+                : 'bg-white/10 hover:bg-white/20 text-white'
                 }`}
             >
               {tab}

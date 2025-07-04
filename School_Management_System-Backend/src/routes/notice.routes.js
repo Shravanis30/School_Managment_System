@@ -9,8 +9,8 @@ import authMiddleware from '../middlewares/auth.middleware.js';
 const router = express.Router();
 
 // Only logged-in admins can add or delete
-router.post('/', authMiddleware, createNotice);
 router.get('/', authMiddleware, getNotices);
+router.post('/', authMiddleware, createNotice);
 router.delete('/:id', authMiddleware, deleteNotice);
 
 export default router;

@@ -30,18 +30,20 @@ app.use(cors({
   credentials: true,
 }));
 
+
 app.use(express.json());
 
 app.use(cookieParser());
-// app.use('/uploads', express.static('uploads'));
+// app.use('/uploads/results', express.static(path.join(__dirname, 'uploads/results')));
+app.use('/uploads', express.static('uploads'));
 
-app.use('/uploads', (req, res, next) => {
-  if (req.path.endsWith('.pdf')) {
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'inline');
-  }
-  next();
-}, express.static(path.resolve('uploads')));
+// app.use('/uploads', (req, res, next) => {
+//   if (req.path.endsWith('.pdf')) {
+//     res.setHeader('Content-Type', 'application/pdf');
+//     res.setHeader('Content-Disposition', 'inline');
+//   }
+//   next();
+// }, express.static(path.resolve('uploads')));
 
 // routes
 app.use('/api/admins', adminRoutes);

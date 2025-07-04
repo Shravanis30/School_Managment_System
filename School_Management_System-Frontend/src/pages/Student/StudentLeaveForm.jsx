@@ -1,51 +1,5 @@
-// import React, { useState } from 'react';
-// import axios from 'axios';
-
-// const StudentLeaveForm = () => {
-//   const [formData, setFormData] = useState({
-//     studentName: '',
-//     class: '',
-//     rollNo: '',
-//     fromDate: '',
-//     toDate: '',
-//     reason: '',
-//   });
-
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       await axios.post('http://localhost:5000/api/leaves/submit', formData);
-//       alert('Leave application submitted successfully!');
-//       setFormData({ studentName: '', class: '', rollNo: '', fromDate: '', toDate: '', reason: '' });
-//     } catch (error) {
-//       alert('Error submitting leave application', error);
-//     }
-//   };
-
-//   return (
-//     <div className="max-w-lg mx-auto mt-10 bg-gray-900 p-6 rounded text-white">
-//       <h2 className="text-xl font-semibold mb-4">Leave Application Form</h2>
-//       <form onSubmit={handleSubmit} className="space-y-4">
-//         <input name="studentName" placeholder="Student Name" className="w-full p-2 rounded bg-gray-800" onChange={handleChange} value={formData.studentName} required />
-//         <input name="class" placeholder="Class" className="w-full p-2 rounded bg-gray-800" onChange={handleChange} value={formData.class} required />
-//         <input name="rollNo" placeholder="Roll No" className="w-full p-2 rounded bg-gray-800" onChange={handleChange} value={formData.rollNo} required />
-//         <input type="date" name="fromDate" className="w-full p-2 rounded bg-gray-800" onChange={handleChange} value={formData.fromDate} required />
-//         <input type="date" name="toDate" className="w-full p-2 rounded bg-gray-800" onChange={handleChange} value={formData.toDate} required />
-//         <textarea name="reason" placeholder="Reason for Leave" className="w-full p-2 rounded bg-gray-800" onChange={handleChange} value={formData.reason} required />
-//         <button type="submit" className="bg-blue-600 px-4 py-2 rounded">Submit</button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default StudentLeaveForm;
 
 
-// components/StudentLeaveForm.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -62,9 +16,26 @@ const StudentLeaveForm = () => {
   const [classes, setClasses] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/classes')
+    // Fetch available classes
+    axios.get('/api/classes', { withCredentials: true })
       .then((res) => setClasses(res.data))
       .catch((err) => console.error('Error fetching classes:', err));
+
+    // Auto-fill student details from /api/user/profile
+    axios.get('/api/user/profile', { withCredentials: true })
+      .then((res) => {
+        const student = res.data;
+        setFormData(prev => ({
+          ...prev,
+          studentName: student.name,
+          class: student.class,
+          rollNo: student.rollNo,
+        }));
+      })
+      .catch((err) => {
+        console.error('Error fetching student profile:', err);
+        alert('Please log in again');
+      });
   }, []);
 
   const handleChange = (e) => {
@@ -74,11 +45,19 @@ const StudentLeaveForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/leaves/submit', formData);
+      await axios.post('/api/leaves/submit', formData, {
+        withCredentials: true, // 🔐 send accessToken cookie
+      });
       alert('Leave application submitted successfully!');
-      setFormData({ studentName: '', class: '', rollNo: '', fromDate: '', toDate: '', reason: '' });
+      setFormData(prev => ({
+        ...prev,
+        fromDate: '',
+        toDate: '',
+        reason: '',
+      }));
     } catch (error) {
-      alert('Failed to submit leave application', error);
+      console.error('Submit error:', error);
+      alert('Failed to submit leave application');
     }
   };
 
@@ -86,19 +65,16 @@ const StudentLeaveForm = () => {
     <div className="max-w-xl mx-auto mt-10 bg-[#0f1117] p-6 rounded-lg text-white shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">Leave Application</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input name="studentName" placeholder="Student Name" onChange={handleChange} value={formData.studentName} required
-          className="w-full p-2 bg-gray-800 rounded border border-gray-600" />
+        <input name="studentName" value={formData.studentName} readOnly
+          className="w-full p-2 bg-gray-700 rounded border border-gray-500 cursor-not-allowed" />
 
-        <select name="class" onChange={handleChange} value={formData.class} required
-          className="w-full p-2 bg-gray-800 rounded border border-gray-600">
-          <option value="">Select Class</option>
-          {classes.map((cls) => (
-            <option key={cls._id} value={cls.name}>{cls.name}</option>
-          ))}
+        <select name="class" value={formData.class} disabled
+          className="w-full p-2 bg-gray-700 rounded border border-gray-500 cursor-not-allowed">
+          <option>{formData.class}</option>
         </select>
 
-        <input name="rollNo" placeholder="Roll No" onChange={handleChange} value={formData.rollNo} required
-          className="w-full p-2 bg-gray-800 rounded border border-gray-600" />
+        <input name="rollNo" value={formData.rollNo} readOnly
+          className="w-full p-2 bg-gray-700 rounded border border-gray-500 cursor-not-allowed" />
 
         <input type="date" name="fromDate" onChange={handleChange} value={formData.fromDate} required
           className="w-full p-2 bg-gray-800 rounded border border-gray-600" />

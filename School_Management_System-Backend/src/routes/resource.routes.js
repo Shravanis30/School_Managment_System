@@ -26,9 +26,9 @@ const upload = multer({ storage });
 router.post('/upload', authMiddleware, upload.single('file'), uploadResource);
 
 // GET /api/resources/class/:className
-router.get('/class/:className', getResourcesByClass);
+router.get('/class/:className',authMiddleware, getResourcesByClass);
 
 // GET /api/resources/subjects/:className
-router.get('/subjects/:className', getSubjectsByClass);
+router.get('/subjects/:className', authMiddleware, getSubjectsByClass);
 
 export default router;

@@ -5,11 +5,11 @@ import {
   getTimetableByClass,
   deleteTimetableByClass,
 } from '../controllers/timetable.controller.js';
-
+import authMiddleware from '../middlewares/auth.middleware.js';
 const router = express.Router();
 
-router.post('/', uploadTimetable);
-router.get('/:classId', getTimetableByClass);
-router.delete('/:classId', deleteTimetableByClass);
+router.post('/', authMiddleware, uploadTimetable);
+router.get('/:classId',authMiddleware, getTimetableByClass);
+router.delete('/:classId',authMiddleware, deleteTimetableByClass);
 
 export default router;

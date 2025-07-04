@@ -8,15 +8,18 @@ import {
   deleteSubjectFromClass,
 } from '../controllers/class.controller.js';
 
+import authMiddleware from '../middlewares/auth.middleware.js';
+
 const router = express.Router();
 
-router.get('/', getAllClasses); // <-- This defines GET /api/classes
-router.get('/:id', getClassById);
-router.post('/', createClass);
-router.post('/:id/subjects', addSubjectToClass);
-router.delete('/:id/subjects/:subject', deleteSubjectFromClass); // optional
 
-router.get('/:classId/subjects', async (req, res) => {
+router.get('/', authMiddleware, getAllClasses);
+router.get('/:id', authMiddleware, getClassById);
+router.post('/', authMiddleware, createClass);
+router.post('/:id/subjects', authMiddleware, addSubjectToClass);
+router.delete('/:id/subjects/:subject', authMiddleware, deleteSubjectFromClass);
+
+router.get('/:classId/subjects', authMiddleware, async (req, res) => {
   const { classId } = req.params;
   try {
     // fetch class by ID

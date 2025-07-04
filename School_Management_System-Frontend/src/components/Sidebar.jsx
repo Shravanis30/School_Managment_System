@@ -137,6 +137,7 @@
 // export default Sidebar;
 
 
+
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FaChalkboard,
@@ -147,26 +148,28 @@ import {
   FaUserGraduate,
   FaClipboardCheck,
   FaSchool,
-  FaProjectDiagram,
   FaCog,
   FaSignOutAlt,
   FaCalendarAlt,
   FaBookOpen,
   FaThLarge,
   FaPoll,
-  FaCalendarCheck,
-  FaHandshake
+  FaHandshake,
+  FaBars,
+  FaTimes
 } from 'react-icons/fa';
 import axios from 'axios';
+import { useState } from 'react';
 
 const Sidebar = ({ role }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(true);
 
   const handleLogout = async () => {
     try {
       await axios.post('/api/user/logout', {}, { withCredentials: true });
-      navigate('/select-role'); // redirect after logout
+      navigate('/select-role');
     } catch (err) {
       console.error("Logout failed:", err.response?.data || err.message);
     }
@@ -174,80 +177,92 @@ const Sidebar = ({ role }) => {
 
   const navItems = {
     admin: [
-      { icon: <FaChalkboard />, path: '/dashboard/admin', label: 'Dashboard' },
-      { icon: <FaBook />, path: '/dashboard/admin/academics', label: 'Academics' },
-      { icon: <FaDollarSign />, path: '/dashboard/admin/finance', label: 'Finance' },
-      { icon: <FaUsers />, path: '/dashboard/admin/meeting', label: 'Meeting' },
-      { icon: <FaComments />, path: '/dashboard/admin/complaints', label: 'Complaints' },
-      { icon: <FaCalendarAlt />, path: '/dashboard/admin/events', label: 'Events' },
+      { icon: <FaChalkboard size={24} />, path: '/dashboard/admin', label: 'Dashboard' },
+      { icon: <FaBook size={24} />, path: '/dashboard/admin/academics', label: 'Academics' },
+      { icon: <FaDollarSign size={24} />, path: '/dashboard/admin/finance', label: 'Finance' },
+      { icon: <FaUsers size={24} />, path: '/dashboard/admin/meeting', label: 'Meeting' },
+      { icon: <FaComments size={24} />, path: '/dashboard/admin/complaints', label: 'Complaints' },
+      { icon: <FaCalendarAlt size={24} />, path: '/dashboard/admin/events', label: 'Events' },
     ],
     teacher: [
-      { icon: <FaChalkboard />, path: '/dashboard/teacher', label: 'Dashboard' },
-      { icon: <FaUserGraduate />, path: '/dashboard/teacher/students', label: 'Students' },
-      { icon: <FaClipboardCheck />, path: '/dashboard/teacher/assignments', label: 'Assignments' },
-      { icon: <FaCalendarAlt />, path: '/dashboard/teacher/leaves', label: 'Leaves' },
-      { icon: <FaBookOpen />, path: '/dashboard/teacher/resources', label: 'Resources' },
-      { icon: <FaHandshake />, path: '/dashboard/teacher/meeting', label: 'Meeting' }
+      { icon: <FaChalkboard size={24} />, path: '/dashboard/teacher', label: 'Dashboard' },
+      { icon: <FaUserGraduate size={24} />, path: '/dashboard/teacher/students', label: 'Students' },
+      { icon: <FaClipboardCheck size={24} />, path: '/dashboard/teacher/assignments', label: 'Assignments' },
+      { icon: <FaCalendarAlt size={24} />, path: '/dashboard/teacher/leaves', label: 'Leaves' },
+      { icon: <FaBookOpen size={24} />, path: '/dashboard/teacher/resources', label: 'Resources' },
+      { icon: <FaHandshake size={24} />, path: '/dashboard/teacher/meeting', label: 'Meeting' }
     ],
     student: [
-      { icon: <FaThLarge />, path: '/dashboard/student', label: 'Dashboard' },
-      { icon: <FaClipboardCheck />, path: '/dashboard/student/attendance', label: 'Attendance' },
-      { icon: <FaBook />, path: '/dashboard/student/syllabus', label: 'Syllabus' },
-      { icon: <FaClipboardCheck />, path: '/dashboard/student/assignments', label: 'Assignments' },
-      { icon: <FaCalendarAlt />, path: '/dashboard/student/timetable', label: 'TimeTable' },
-      { icon: <FaPoll />, path: '/dashboard/student/result', label: 'Result' },
-      { icon: <FaComments />, path: '/dashboard/student/complaints', label: 'Complaint Box' },
+      { icon: <FaThLarge size={24} />, path: '/dashboard/student', label: 'Dashboard' },
+      { icon: <FaClipboardCheck size={24} />, path: '/dashboard/student/attendance', label: 'Attendance' },
+      { icon: <FaBook size={24} />, path: '/dashboard/student/syllabus', label: 'Syllabus' },
+      { icon: <FaClipboardCheck size={24} />, path: '/dashboard/student/assignments', label: 'Assignments' },
+      { icon: <FaCalendarAlt size={24} />, path: '/dashboard/student/timetable', label: 'TimeTable' },
+      { icon: <FaPoll size={24} />, path: '/dashboard/student/result', label: 'Result' },
+      { icon: <FaComments size={24} />, path: '/dashboard/student/complaints', label: 'Complaint Box' },
     ],
   };
 
   const items = navItems[role] || [];
 
   return (
-    <aside className="bg-[#0f172a] w-64 min-h-screen flex flex-col justify-between p-6 shadow-xl">
-      {/* Top Logo */}
-      <div>
-        <div className="flex items-center gap-2 text-white mb-10">
-          <FaSchool className="text-3xl" />
-          <span className="text-2xl font-bold">ACA</span>
+    <div className={`transition-all duration-500 ${isOpen ? 'w-64' : 'w-16'} m-4 top-4 left-4 bottom-4 rounded-2xl bg-white/10 backdrop-blur-md shadow-xl text-white flex flex-col justify-between z-50`}>
+      {/* Header */}
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-6">
+          {isOpen && (
+            <div className="flex items-center gap-2">
+              <FaSchool className="text-3xl" />
+              <span className="text-2xl font-bold">ACA</span>
+            </div>
+          )}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-white hover:text-blue-300 text-2xl"
+          >
+            {isOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
 
+        {/* Navigation Links */}
         <nav className="flex flex-col gap-3">
           {items.map((item) => (
             <Link
               to={item.path}
               key={item.path}
               title={item.label}
-              className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 ${location.pathname === item.path
+              className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 text-lg ${
+                location.pathname === item.path
                   ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                }`}
+                  : 'text-gray-300 hover:bg-blue-700/40 hover:text-white'
+              }`}
             >
               {item.icon}
-              <span className="text-sm">{item.label}</span>
+              {isOpen && <span className="text-lg font-semibold">{item.label}</span>}
             </Link>
           ))}
         </nav>
       </div>
 
       {/* Settings + Logout */}
-      <div className="flex flex-col gap-3 mt-10">
+      <div className="p-4 flex flex-col gap-3">
         <Link
           to={`/${role}/settings`}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-blue-700/40 hover:text-white transition-all text-lg"
         >
-          <FaCog />
-          <span className="text-sm">Settings</span>
+          <FaCog size={24} />
+          {isOpen && <span className="text-lg font-semibold">Settings</span>}
         </Link>
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-red-600/40 hover:text-white transition-all text-lg"
         >
-          <FaSignOutAlt />
-          <span className="text-sm">Logout</span>
+          <FaSignOutAlt size={24} />
+          {isOpen && <span className="text-lg font-semibold">Logout</span>}
         </button>
       </div>
-    </aside>
+    </div>
   );
 };
 

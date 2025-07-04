@@ -14,7 +14,7 @@ const StudentComplaintPage = () => {
 
     useEffect(() => {
         const fetchClasses = async () => {
-            const res = await fetch('http://localhost:5000/api/classes');
+            const res = await fetch('/api/classes');
             const data = await res.json();
             setClassList(data);
         };
@@ -28,7 +28,7 @@ const StudentComplaintPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:5000/api/complaints', {
+            const res = await fetch('/api/complaints', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
