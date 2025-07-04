@@ -236,3 +236,59 @@ const StudentResults = () => {
 };
 
 export default StudentResults;
+
+
+
+// import React, { useEffect, useState } from 'react';
+
+// const StudentResults = () => {
+//   const [results, setResults] = useState({});
+//   const BACKEND_BASE = 'http://localhost:5000';
+
+//   useEffect(() => {
+//     const fetchResults = async () => {
+//       try {
+//         const res = await fetch('/api/results/student', {
+//           credentials: 'include'
+//         });
+//         if (!res.ok) throw new Error("Failed to fetch");
+//         const data = await res.json();
+//         setResults(data);
+//       } catch (err) {
+//         console.error("Error fetching student results", err);
+//       }
+//     };
+//     fetchResults();
+//   }, []);
+
+//   return (
+//     <div className="p-6 bg-gray-900 text-white rounded">
+//       <h2 className="text-2xl font-bold mb-4">My Results</h2>
+//       {Object.entries(results).length === 0 ? (
+//         <p>No results available.</p>
+//       ) : (
+//         Object.entries(results).map(([term, files]) => (
+//           <div key={term} className="mb-6">
+//             <h3 className="text-xl font-semibold mb-2">{term}</h3>
+//             <ul className="space-y-2">
+//               {files.map((file, idx) => (
+//                 <li key={idx}>
+//                   <a
+//                     href={`${BACKEND_BASE}${file.fileUrl}`}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                     className="text-blue-400 underline"
+//                   >
+//                     📄 {file.originalName}
+//                   </a>
+//                 </li>
+//               ))}
+//             </ul>
+//           </div>
+//         ))
+//       )}
+//     </div>
+//   );
+// };
+
+// export default StudentResults;

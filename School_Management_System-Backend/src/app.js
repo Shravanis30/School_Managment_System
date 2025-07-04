@@ -20,6 +20,8 @@ import resourceRoutes from './routes/resource.routes.js';
 import attendanceRoutes from './routes/attendance.routes.js'
 import cookieParser from 'cookie-parser';
 import feeRoutes from './routes/fee.routes.js';
+import resultRoutes from './routes/result.routes.js';
+import paymentRoutes from './routes/payment.routes.js';
 
 
 
@@ -67,6 +69,8 @@ app.get('/', (req, res) => {
   res.send('School Management System API running...');
 });
 app.use('/api/fees', feeRoutes);
+app.use('/api/results', resultRoutes); // ✅ This mounts /api/results
+app.use('/api/payment', paymentRoutes); // ✅ Mounting route
 
 
 export { app }

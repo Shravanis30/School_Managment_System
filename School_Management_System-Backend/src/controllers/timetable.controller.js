@@ -35,17 +35,18 @@ export const uploadTimetable = async (req, res) => {
 };
 
 // ✅ Get Timetable by Class (Accessible to all roles)
-export const getTimetableByClass = async (req, res) => {
+export const getTimetableByClassName = async (req, res) => {
   try {
-    const classId = req.params.classId;
-    const timetable = await Timetable.findOne({ class: classId });
+    const { className } = req.params;
+    const timetable = await Timetable.findOne({ className });
 
     if (!timetable) {
       return res.status(404).json({ message: 'Timetable not found' });
     }
+
     res.status(200).json(timetable);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching timetable', error: err.message });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 

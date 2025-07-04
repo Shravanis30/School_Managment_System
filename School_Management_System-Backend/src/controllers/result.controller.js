@@ -5,38 +5,46 @@ import path from 'path';
 import fs from 'fs';
 
 const BASE_URL = process.env.BACKEND_BASE || 'http://localhost:5000';
-const UPLOAD_DIR = '/uploads/results'; // relative to your static folder
+const UPLOAD_DIR = '/uploads/results';
+
+// ✅ Upload a final result PDF (overwrite if exists)
 export const uploadResult = async (req, res) => {
   try {
-    if (req.role !== 'admin') {
-      throw new ApiError(403, 'Only admins can upload results');
-    }
-
     const { classId, studentId } = req.params;
+    const file = req.files?.file?.[0];
 
-    if (!req.file) {
-      throw new ApiError(400, 'No file uploaded');
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const student = await Student.findById(studentId);
-    if (!student) throw new ApiError(404, 'Student not found');
+    const fileUrl = `${UPLOAD_DIR}/${file.filename}`;
 
-    // Save result document
-    const fileUrl = `${UPLOAD_DIR}/${req.file.filename}`;
-    const result = await Result.create({
-      class: classId,
-      studentId,
+    // Delete existing result for this student and class
+    const existing = await Result.findOne({ student: studentId, className: classId });
+    if (existing) {
+      const oldPath = path.join('public', existing.fileUrl);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+      await existing.deleteOne();
+    }
+
+    const newResult = new Result({
+      className: classId,
+      student: studentId,
       fileUrl,
     });
 
-    res.status(201).json({
-      message: 'Result uploaded successfully',
-      result,
-    });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({ message: error.message });
+    await newResult.save();
+
+    res.status(201).json({ message: "Result uploaded", url: fileUrl });
+  } catch (err) {
+    console.error("Upload result error", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
+
+// ✅ List all results for a class (Admin only)
 export const listResultsByClass = async (req, res) => {
   try {
     if (req.role !== 'admin') {
@@ -44,13 +52,15 @@ export const listResultsByClass = async (req, res) => {
     }
 
     const { classId } = req.params;
-    const results = await Result.find({ class: classId }).populate('studentId', 'name rollNo');
+    const results = await Result.find({ className: classId }).populate('student', 'name rollNo');
 
     res.status(200).json(results);
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
   }
 };
+
+// ✅ Delete a specific result by result ID (Admin only)
 export const deleteResultById = async (req, res) => {
   try {
     if (req.role !== 'admin') {
@@ -60,8 +70,7 @@ export const deleteResultById = async (req, res) => {
     const result = await Result.findById(req.params.id);
     if (!result) throw new ApiError(404, 'Result not found');
 
-    // Delete file from disk
-    const filePath = path.join('public', result.fileUrl); // adjust if needed
+    const filePath = path.join('public', result.fileUrl);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
@@ -73,18 +82,25 @@ export const deleteResultById = async (req, res) => {
     res.status(error.statusCode || 500).json({ message: error.message });
   }
 };
+
+// ✅ Student: Get their own result (only one final result)
 export const getStudentResults = async (req, res) => {
   try {
-    if (req.role !== 'student') {
-      throw new ApiError(403, 'Only students can access this route');
+    if (req.role !== 'student') throw new ApiError(403, 'Access denied');
+
+    const studentId = req.user._id;
+
+    const result = await Result.findOne({ student: studentId });
+
+    if (!result) {
+      return res.status(404).json({ message: "No result uploaded yet" });
     }
 
-    const studentId = req.userId;
-
-    const results = await Result.find({ studentId }).sort({ uploadedAt: -1 });
-
-    res.status(200).json(results);
-  } catch (error) {
-    res.status(error.statusCode || 500).json({ message: error.message });
+    res.status(200).json({
+      fileUrl: result.fileUrl,
+      uploadedAt: result.uploadedAt,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
