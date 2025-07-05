@@ -8,6 +8,8 @@ import Teacher from "../models/teacher.model.js";
 import Admin from "../models/admin.model.js";
 
 const authMiddleware = asyncHandler(async (req, res, next) => {
+    console.log('Checking authentication...');
+  console.log('Cookies:', req.cookies);
   const token =
     req.cookies?.accessToken ||
     req.header("Authorization")?.replace("Bearer ", "");
@@ -32,7 +34,11 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
   let user = null;
 
   if (role === "student") {
+    // user = await Student.findById(_id).select("-password -refreshToken");
+
+    console.log("Looking up student:", _id);
     user = await Student.findById(_id).select("-password -refreshToken");
+    if (!user) console.log("❌ Student not found in DB");
   } else if (role === "teacher") {
     user = await Teacher.findById(_id).select("-password -refreshToken");
   } else if (role === "admin") {

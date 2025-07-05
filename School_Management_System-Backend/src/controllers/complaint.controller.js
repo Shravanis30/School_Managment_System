@@ -1,27 +1,4 @@
-// // controllers/complaint.controller.js
-// import Complaint from '../models/complaint.model.js';
 
-// export const submitComplaint = async (req, res) => {
-//   try {
-//     const complaint = new Complaint(req.body);
-//     await complaint.save();
-//     res.status(201).json({ message: 'Complaint submitted', complaint });
-//   } catch (err) {
-//     res.status(500).json({ error: 'Failed to submit complaint' });
-//   }
-// };
-
-// export const getAllComplaints = async (req, res) => {
-//   try {
-//     const complaints = await Complaint.find().sort({ createdAt: -1 });
-//     res.status(200).json(complaints);
-//   } catch (err) {
-//     res.status(500).json({ error: 'Failed to fetch complaints' });
-//   }
-// };
-
-
-// new auth
 
 import Complaint from '../models/complaint.model.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -33,17 +10,24 @@ export const submitComplaint = async (req, res) => {
       throw new ApiError(403, 'Only students can submit complaints');
     }
 
+    // Map frontend fields to backend fields
     const complaint = new Complaint({
       studentId: req.user._id,
       studentName: req.user.name,
-      complaintText: req.body.complaintText,
-      category: req.body.category || "General",
+      name: req.user.name, // Keep original name field
+      class: req.user.className, // Use student's class
+      rollNo: req.user.rollNo, // Use student's roll number
+      complaintText: req.body.complaint, // Map complaint to complaintText
+      priority: req.body.priority,
+      category: req.body.priority // Map priority to category
     });
 
     await complaint.save();
     res.status(201).json({ message: 'Complaint submitted', complaint });
   } catch (err) {
-    res.status(err.statusCode || 500).json({ error: err.message || 'Failed to submit complaint' });
+    res.status(err.statusCode || 500).json({ 
+      error: err.message || 'Failed to submit complaint' 
+    });
   }
 };
 

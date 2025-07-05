@@ -76,7 +76,7 @@ export const registerAdmin = async (req, res) => {
   }
 };
 
-// ✅ Login Admin
+// Login Admin
 export const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 

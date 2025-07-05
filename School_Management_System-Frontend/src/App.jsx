@@ -31,9 +31,7 @@ import ViewSyllabus from './pages/Student/ViewSyllabus';
 import ViewTimetable from './pages/Student/ViewTimetable';
 import StudentAssignments from './pages/Student/StudentAssignments';
 import TeacherAssignments from './pages/Teacher/TeacherAssignment';
-import TeacherProfile from './pages/Teacher/TeacherProfile'
-import StudentProfile from './pages/Student/StudentProfile'
-import AdminProfile from './pages/Admin/AdminProfile'
+
 import StudentLeaveForm from './pages/Student/StudentLeaveForm';
 import TeacherLeaveList from './pages/Teacher/TeacherLeaveList';
 import StudentAttendance from './pages/Student/StudentAttendance';
@@ -42,6 +40,9 @@ import StudentResults from './pages/Student/StudentResult';
 import UploadResources from './pages/Teacher/UploadResources';
 import ViewResources from './pages/Student/ViewResources';
 import StudentFees from './pages/Student/StudentFees';
+import CommonProfile from './components/CommonProfile';
+import TeacherAddMarks from './pages/Teacher/TeacherAddMarks';
+import StudentMarksSection from './pages/Student/StudentMarksSection';
 
 function App() {
 
@@ -78,28 +79,30 @@ function App() {
       <Route path="/dashboard/admin/complaints" element={<AdminComplaintPage />} />
       <Route path="/dashboard/admin/meeting" element={<AdminMeetingPage />} />
       <Route path="/dashboard/admin/finance" element={<AdminFinancePage />} />
-      <Route path="/admin/profile" element={<AdminProfile />} />
+      <Route path="dashboard/admin/profile" element={<CommonProfile />} />
 
 
       <Route path="/dashboard/student/complaints" element={<StudentComplaintPage />} />
       <Route path="/dashboard/student/syllabus" element={<ViewSyllabus />} />
       <Route path="/dashboard/student/timetable" element={<ViewTimetable />} />
       <Route path="/dashboard/student/assignments" element={<StudentAssignments />} />
-      <Route path="dashboard/student/profile" element={<StudentProfile />} />
       <Route path="dashboard/student/leave" element={<StudentLeaveForm />} />
       <Route path="/dashboard/student/attendance" element={<StudentAttendance />} />
       <Route path="/dashboard/student/result" element={<StudentResults />} />
       <Route path="/dashboard/student/resources" element={<ViewResources />} />
       <Route path="/dashboard/student/fees" element={<StudentFees />} />
+      <Route path="/dashboard/student/profile" element={<CommonProfile />} />
+      <Route path="/dashboard/student/marks" element={<StudentMarksSection />} />
 
 
       <Route path="/dashboard/teacher/meeting" element={<TeacherMeetingPage />} />
       <Route path="/dashboard/teacher/students" element={<AllStudentsByClass />} />
       <Route path="/dashboard/teacher/assignments" element={<TeacherAssignments />} />
-      <Route path="dashboard/teacher/profile" element={<TeacherProfile />} />
-      <Route path="dashboard/teacher/leaves" element={<TeacherLeaveList />} />
+      <Route path="/dashboard/teacher/leaves" element={<TeacherLeaveList />} />
       <Route path="/dashboard/teacher/attendance" element={<TeacherAttendance />} />
       <Route path="/dashboard/teacher/resources" element={<UploadResources />} />
+      <Route path="/dashboard/teacher/profile" element={<CommonProfile />} />
+      <Route path="/dashboard/teacher/addMarks" element={<TeacherAddMarks />} />
     </Routes>
     //   </Router>
     // </BrowserRouter>

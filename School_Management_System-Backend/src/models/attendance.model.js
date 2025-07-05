@@ -1,54 +1,24 @@
-// import mongoose from 'mongoose';
-
-// const attendanceSchema = new mongoose.Schema({
-//   studentId: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'Student',
-//     required: true,
-//   },
-//   classId: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'Class',
-//     required: true,
-//   },
-//   subject: {
-//     type: String,
-//     required: true,
-//   },
-//   date: {
-//     type: String, // Format: YYYY-MM-DD
-//     unique: true,
-//     required: true,
-//   },
-//   status: {
-//     type: String,
-//     enum: ['present', 'absent', 'late'],
-//     required: true,
-//   },
-
-// });
-
-// const Attendance = mongoose.model('Attendance', attendanceSchema);
-// export default Attendance;
-
 
 import mongoose from 'mongoose';
 
 const attendanceRecordSchema = new mongoose.Schema({
   date: {
-    type: String, // Format: YYYY-MM-DD
+    type: String, 
     required: true,
 
   },
   status: {
     type: String,
-    enum: ['present', 'absent', 'leave'],
+    enum: ['present', 'absent', 'leave'],  
     required: true,
   },
   subject: {
     type: String,
-    required: true,
+    required: [true, 'Subject is required'],
+    trim: true,
+    minlength: [2, 'Subject name too short'],
   },
+
   classId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Class',
@@ -61,7 +31,7 @@ const attendanceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Student',
     required: true,
-    unique: true,
+    // unique: true,
   },
   academicYear: {
     type: String,
@@ -73,5 +43,9 @@ const attendanceSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
+attendanceSchema.index(
+  { studentId: 1, academicYear: 1 },
+  { unique: true }
+);
 const Attendance = mongoose.model('Attendance', attendanceSchema);
 export default Attendance;

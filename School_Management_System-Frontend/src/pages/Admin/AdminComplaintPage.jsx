@@ -72,14 +72,15 @@ const AdminComplaintPage = () => {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/complaints');
+        const res = await fetch('/api/complaints', {
+          credentials: 'include' // Add this
+        });
         const data = await res.json();
         setComplaints(data);
       } catch (err) {
         console.error('Failed to fetch complaints', err);
       }
     };
-
     fetchComplaints();
   }, []);
 

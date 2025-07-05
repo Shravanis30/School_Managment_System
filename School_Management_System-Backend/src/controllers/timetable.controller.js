@@ -10,7 +10,7 @@ export const uploadTimetable = async (req, res) => {
   }
 
   const { class: className, entries } = req.body;
-  const normalizedClass = className.trim().replace(/^Class\s*/i, ''); // removes "Class " if present
+  const normalizedClass = className.trim().replace(/^Class\s*/i, '');
 
   let timetable = await Timetable.findOne({ class: normalizedClass });
 
@@ -34,23 +34,35 @@ export const uploadTimetable = async (req, res) => {
   }
 };
 
-// ✅ Get Timetable by Class (Accessible to all roles)
 export const getTimetableByClassName = async (req, res) => {
   try {
-    const { className } = req.params;
-    const timetable = await Timetable.findOne({ className });
+    const { className } = req.params; // Changed to className
+
+    console.log(`Fetching timetable for: ${className}`);
+
+    if (!className) {
+      return res.status(400).json({ message: 'Class parameter is required' });
+    }
+
+    const normalizedClass = className.replace(/^Class\s*/i, '');
+    console.log(`Normalized class: ${normalizedClass}`);
+
+    const timetable = await Timetable.findOne({
+      class: normalizedClass
+    });
 
     if (!timetable) {
+      console.log(`Timetable not found for: ${normalizedClass}`);
       return res.status(404).json({ message: 'Timetable not found' });
     }
 
+    console.log(`Found timetable for: ${normalizedClass}`);
     res.status(200).json(timetable);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Timetable fetch error:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
-
-
 // ✅ Delete Timetable by Class (Admin only)
 export const deleteTimetableByClass = async (req, res) => {
   if (req.role !== 'admin') {
@@ -59,8 +71,9 @@ export const deleteTimetableByClass = async (req, res) => {
 
   try {
     const classId = req.params.classId;
-    const result = await Timetable.findOneAndDelete({ class: classId });
+    const normalizedClass = classId.trim().replace(/^Class\s*/i, '');
 
+    const result = await Timetable.findOneAndDelete({ class: normalizedClass });
 
     if (!result) {
       return res.status(404).json({ message: 'Timetable not found' });

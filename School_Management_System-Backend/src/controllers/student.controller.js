@@ -5,6 +5,8 @@
 import Student from "../models/student.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+
 import { ApiError } from "../utils/ApiError.js";
 
 // ✅ Admin registers a student
@@ -189,8 +191,7 @@ export const deleteStudent = async (req, res) => {
     res.status(500).json({ message: "Error deleting student", error: err.message });
   }
 };
-
-// ✅ Get logged-in student
+// controllers/student.controller.js
 export const getLoggedInStudent = async (req, res) => {
   try {
     const student = await Student.findById(req.user._id).select("-password");
@@ -216,20 +217,56 @@ export const getStudentsByClassId = async (req, res) => {
 
 
 
+// export const getStudentsByClass = async (req, res) => {
+//   try {
+//     const { classId } = req.params;
+//     if (!classId) {
+//       throw new ApiError(400, 'Class ID is required');
+//     }
+
+//     const students = await Student.find({ class: classId }).select('name _id'); // Adjust fields as needed
+
+//     res.status(200).json(students);
+//   } catch (error) {
+//     console.error("Error fetching students by class:", error);
+//     res.status(error.statusCode || 500).json({
+//       message: error.message || 'Internal Server Error',
+//     });
+//   }
+// };
+
 export const getStudentsByClass = async (req, res) => {
+  const { classId } = req.params;
+
   try {
-    const { classId } = req.params;
-    if (!classId) {
-      throw new ApiError(400, 'Class ID is required');
+    if (!mongoose.Types.ObjectId.isValid(classId)) {
+      return res.status(400).json({ message: 'Invalid class ID' });
     }
 
-    const students = await Student.find({ class: classId }).select('name _id'); // Adjust fields as needed
+    const classDoc = await Class.findById(classId);
+    if (!classDoc) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    // 🔥 Match students with className (or use classId if you store it that way)
+    const students = await Student.find({ className: classDoc.name }).select("name _id");
 
     res.status(200).json(students);
+  } catch (err) {
+    console.error("Server error while fetching students by class:", err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
+};
+
+
+
+// student.controller.js
+export const getStudentsByClassName = async (req, res) => {
+  try {
+    const { className } = req.params;
+    const students = await Student.find({ className: className });
+    res.status(200).json(students);
   } catch (error) {
-    console.error("Error fetching students by class:", error);
-    res.status(error.statusCode || 500).json({
-      message: error.message || 'Internal Server Error',
-    });
+    res.status(500).json({ message: error.message });
   }
 };

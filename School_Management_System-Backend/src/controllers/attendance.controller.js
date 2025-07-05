@@ -1,75 +1,112 @@
 import Attendance from '../models/attendance.model.js';
 import { ApiError } from '../utils/ApiError.js';
+import mongoose from 'mongoose';
 
-// ✅ GET attendance for logged-in student (Student only)
+
 export const getStudentAttendance = async (req, res) => {
   try {
     const { studentId } = req.params;
-    const { year } = req.query;
+    let { year } = req.query;
 
-    if (req.role !== 'student') {
-      throw new ApiError(403, 'Only students can access their own attendance');
-    }
-
+    // Authorization
     if (req.user._id.toString() !== studentId) {
-      throw new ApiError(403, 'Unauthorized to view this attendance');
+      return res.status(403).json({ message: 'Unauthorized access' });
     }
 
-    const doc = await Attendance.findOne({ studentId, academicYear: year });
-
-    if (!doc) {
-      return res.status(200).json({ records: [] }); // ✅ Return empty array if none
+    // Calculate academic year if not provided
+    if (!year) {
+      const today = new Date();
+      year = today.getMonth() < 3
+        ? `${today.getFullYear() - 1}-${today.getFullYear()}`
+        : `${today.getFullYear()}-${today.getFullYear() + 1}`;
     }
 
-    res.status(200).json({ records: doc.records });
+    // Fetch attendance with proper sorting
+    const doc = await Attendance.findOne({ studentId, academicYear: year })
+      .sort({ 'records.date': -1 });  // Sort by date descending
+
+    res.status(200).json({
+      records: doc?.records || []
+    });
   } catch (err) {
     console.error('Error fetching student attendance:', err);
-    res
-      .status(err.statusCode || 500)
-      .json({ message: err.message || 'Internal server error' });
+    res.status(500).json({
+      message: err.message || 'Internal server error'
+    });
   }
 };
 
-// ✅ MARK attendance — only for Teacher or Admin
 export const markAttendance = async (req, res) => {
   try {
+    // Authorization check
     if (req.role !== 'teacher' && req.role !== 'admin') {
       throw new ApiError(403, 'Only teachers or admins can mark attendance');
     }
 
     const { studentId, classId, subject, date, status, academicYear } = req.body;
 
-    if (!studentId || !classId || !subject || !date || !status || !academicYear) {
-      throw new ApiError(400, 'Missing required fields');
+    // Validate inputs
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      throw new ApiError(400, 'Invalid student ID');
     }
 
+    if (!subject || typeof subject !== 'string') {
+      throw new ApiError(400, 'Valid subject is required');
+    }
+
+    if (!['present', 'absent', 'leave'].includes(status)) {
+      throw new ApiError(400, 'Invalid attendance status');
+    }
+
+    // Find or create attendance document
     let attendanceDoc = await Attendance.findOne({ studentId, academicYear });
 
-    if (!attendanceDoc) {
+    if (attendanceDoc) {
+      // Find existing record
+      const recordIndex = attendanceDoc.records.findIndex(
+        r => r.date === date && r.subject === subject
+      );
+
+      if (recordIndex !== -1) {
+        // Update existing record
+        attendanceDoc.records[recordIndex].status = status;
+      } else {
+        // Add new record
+        attendanceDoc.records.push({ date, status, subject, classId });
+      }
+    } else {
+      // Create new document
       attendanceDoc = new Attendance({
         studentId,
         academicYear,
-        records: [{ date, status, subject, classId }],
+        records: [{ date, status, subject, classId }]
       });
-    } else {
-      const existingIndex = attendanceDoc.records.findIndex(
-        (record) => record.date === date && record.subject === subject
-      );
-
-      if (existingIndex !== -1) {
-        attendanceDoc.records[existingIndex] = { date, status, subject, classId };
-      } else {
-        attendanceDoc.records.push({ date, status, subject, classId });
-      }
     }
 
-    await attendanceDoc.save();
-    res.status(200).json({ message: 'Attendance saved successfully' });
+    // Save with validation
+    const savedDoc = await attendanceDoc.save();
+    res.status(200).json({
+      message: 'Attendance saved successfully',
+      data: savedDoc
+    });
   } catch (err) {
-    console.error('Error marking attendance:', err);
-    res
-      .status(err.statusCode || 500)
-      .json({ message: err.message || 'Internal server error' });
+    // Handle errors
+    if (err.code === 11000) {
+      return res.status(409).json({
+        message: 'Attendance already recorded for this date and subject'
+      });
+    }
+
+    if (err.name === 'ValidationError') {
+      const messages = Object.values(err.errors).map(val => val.message);
+      return res.status(400).json({
+        message: `Validation error: ${messages.join(', ')}`
+      });
+    }
+
+    res.status(err.statusCode || 500).json({
+      message: err.message || 'Internal server error'
+    });
   }
 };
 

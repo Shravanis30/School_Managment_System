@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
@@ -19,9 +18,7 @@ const AllStudentsByClass = () => {
 
   const fetchClassOptions = async () => {
     try {
-      const res = await axios.get('/api/classes', {
-        withCredentials: true,
-      });
+      const res = await axios.get('/api/classes', { withCredentials: true });
       setClassOptions(res.data);
     } catch (err) {
       console.error('Error fetching class options:', err.message);
@@ -40,41 +37,59 @@ const AllStudentsByClass = () => {
   };
 
   return (
-    <div className="flex bg-[#0f1117] min-h-screen text-white">
+    <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
       <Sidebar role="teacher" />
-      <div className="flex flex-col m-5 w-full">
+      <div className="flex-1 p-6 flex flex-col gap-8">
         <Header />
-        <div className="p-6 overflow-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Students by Class</h1>
+
+        <div className="bg-white/5 border border-white/10 p-6 rounded-xl backdrop-blur-md">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <h1 className="text-2xl font-semibold">Students by Class</h1>
             <select
               value={selectedClass}
               onChange={(e) => setSelectedClass(e.target.value)}
-              className="bg-[#1a1d23] text-white border border-gray-600 rounded px-4 py-2"
+              className="bg-gray-800 text-white border border-white/20 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
             >
               <option value="">-- Select Class --</option>
               {classOptions.map((cls) => (
-                <option key={cls._id} value={cls.name}>{cls.name}</option>
+                <option key={cls._id} value={cls.name}>
+                  {cls.name}
+                </option>
               ))}
             </select>
           </div>
 
-          {students.length > 0 ? (
-            <div className="bg-[#1c1f26] rounded-lg shadow p-5">
-              <ul className="divide-y divide-gray-700">
-                {students.map((student) => (
-                  <li key={student._id} className="py-3 flex justify-between items-center">
-                    <div>
-                      <p className="font-semibold text-white">{student.name}</p>
-                      <p className="text-sm text-gray-400">{student.email}</p>
-                    </div>
-                    <span className="text-sm text-gray-300">Roll No: {student.rollNo}</span>
-                  </li>
-                ))}
-              </ul>
+          {selectedClass && students.length === 0 && (
+            <p className="text-white/70">No students found for this class.</p>
+          )}
+
+          {students.length > 0 && (
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-sm border border-white/10 rounded-lg overflow-hidden">
+                <thead>
+                  <tr className="bg-white/10 text-white/80">
+                    <th className="text-left px-4 py-2">Name</th>
+                    <th className="text-left px-4 py-2">Email</th>
+                    <th className="text-left px-4 py-2">Roll No</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map((student) => (
+                    <tr
+                      key={student._id}
+                      className="border-t border-white/10 hover:bg-white/10 transition"
+                    >
+                      <td className="px-4 py-2">{student.name}</td>
+                      <td className="px-4 py-2 text-white/70">{student.email}</td>
+                      <td className="px-4 py-2">{student.rollNo}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="mt-4 text-sm text-white/60">
+                Total Students: <span className="text-white font-medium">{students.length}</span>
+              </p>
             </div>
-          ) : (
-            selectedClass && <p className="text-gray-400">No students found for this class.</p>
           )}
         </div>
       </div>

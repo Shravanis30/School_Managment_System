@@ -735,31 +735,31 @@ const AdminAcademics = () => {
   };
 
 
-const handleSaveResults = async () => {
-  try {
-    for (const [studentId, file] of Object.entries(newResults)) {
-      const formData = new FormData();
-      formData.append("file", file);
+  const handleSaveResults = async () => {
+    try {
+      for (const [studentId, file] of Object.entries(newResults)) {
+        const formData = new FormData();
+        formData.append("file", file);
 
-      const res = await fetch(`/api/results/${encodeURIComponent(selectedClass)}/${studentId}`, {
-        method: "POST",
-        credentials: "include",
-        body: formData
-      });
+        const res = await fetch(`/api/results/${encodeURIComponent(selectedClass)}/${studentId}`, {
+          method: "POST",
+          credentials: "include",
+          body: formData
+        });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Failed for ${studentId}: ${errorText}`);
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Failed for ${studentId}: ${errorText}`);
+        }
       }
-    }
 
-    alert("Results uploaded successfully");
-    setNewResults({});
-  } catch (err) {
-    console.error(err);
-    alert("Failed to upload some results");
-  }
-};
+      alert("Results uploaded successfully");
+      setNewResults({});
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload some results");
+    }
+  };
 
 
 
@@ -853,7 +853,7 @@ const handleSaveResults = async () => {
               <div className="mt-6 text-center">
                 <h4 className="text-lg font-semibold mb-4">Download Syllabus for Class {activeSyllabusClass}</h4>
                 <a
-                  href={`${BACKEND_BASE}${uploadedSyllabus[activeSyllabusClass].url}`}
+                  href={`${uploadedSyllabus[activeSyllabusClass].url}`}
                   download
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-block transition"
                 >

@@ -136,4 +136,5 @@ router.get('/submissions/:className/:subject', async (req, res) => {
 });
 
 
-router.get('/:className', authMiddleware, getAssignmentsByClass);
+router.get('/class/:className', authMiddleware, getAssignmentsByClass);
+  

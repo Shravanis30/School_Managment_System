@@ -1,242 +1,166 @@
-// import React, { useState } from 'react';
-// import Sidebar from '../../components/Sidebar';
-// import { useNavigate } from 'react-router-dom';
-// import FullCalendar from '@fullcalendar/react';
-// import dayGridPlugin from '@fullcalendar/daygrid';
-// import interactionPlugin from '@fullcalendar/interaction';
-//   import { useEffect } from 'react';
-//   import axios from 'axios';
 
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Sidebar from "../../components/Sidebar";
+import Header from "../../components/Header";
 
-// const StudentAttendance = () => {
-//   const navigate = useNavigate();
-//   const [selectedDateEvents, setSelectedDateEvents] = useState([]);
-//   const [showDateEvents, setShowDateEvents] = useState(false);
-
-//   const handleDateClick = (arg) => {
-//     const dateStr = arg.dateStr;
-//     const matchedEvents = attendanceEvents.filter(event => event.date === dateStr);
-//     if (matchedEvents.length > 0) {
-//       setSelectedDateEvents(matchedEvents);
-//       setShowDateEvents(true);
-//     } else {
-//       setSelectedDateEvents([]);
-//       setShowDateEvents(false);
-//     }
-//   };
-
-
-//   const [attendanceEvents, setAttendanceEvents] = useState([]);
-
-//   useEffect(() => {
-//     const fetchAttendance = async () => {
-//       try {
-//         const token = localStorage.getItem('token');
-//         const studentId = localStorage.getItem('studentId'); // Replace with real auth
-
-//         const res = await axios.get(`/api/attendance/student/${studentId}`, {
-//           // headers: { Authorization: `Bearer ${token}` },
-//         });
-
-//         const records = res.data.records || [];
-
-//         const formatted = records.map((rec, index) => ({
-//           id: String(index),
-//           title:
-//             rec.status === 'present'
-//               ? 'Present'
-//               : rec.status === 'absent'
-//                 ? 'Absent'
-//                 : 'Late',
-//           date: rec.date,
-//           description: `You were marked ${rec.status} for ${rec.subject}`,
-//           status: rec.status, // for color mapping
-//         }));
-
-//         setAttendanceEvents(formatted);
-//       } catch (err) {
-//         console.error("Failed to fetch attendance:", err);
-//       }
-//     };
-
-//     fetchAttendance();
-//   }, []);
-
-
-//   return (
-//     <div className="flex min-h-screen bg-black text-white">
-//       <Sidebar role="student" />
-//       <div className="flex-1 p-6">
-//         {/* Header */}
-//         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-//           <h2 className="text-2xl font-bold mb-3 md:mb-0">My Attendance Calendar</h2>
-//           <button
-//             onClick={() => navigate('/dashboard/student/leave')}
-//             className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white transition duration-200"
-//           >
-//             + Request Leave
-//           </button>
-//         </div>
-
-//         {/* Calendar */}
-//         <div className="bg-gray-900 rounded-lg p-4 shadow-md">
-//           <FullCalendar
-//             plugins={[dayGridPlugin, interactionPlugin]}
-//             initialView="dayGridMonth"
-//             dateClick={handleDateClick}
-//             events={attendanceEvents}
-//             height="auto"
-//             eventDisplay="block"
-//             dayHeaderClassNames="!text-white !bg-gray-800"
-//             dayCellClassNames="!border-gray-700 !text-white"
-//             eventClassNames={(arg) => {
-//               const status = arg.event.extendedProps.status;
-//               if (status === 'absent') return '!bg-red-600 !border-0 !text-white';
-//               if (status === 'present') return '!bg-blue-600 !border-0 !text-white';
-//               if (status === 'late') return '!bg-yellow-500 !border-0 !text-black';
-//               return '!bg-gray-500';
-//             }}
-
-//           />
-//         </div>
-
-//         {/* Selected Date Attendance Info */}
-//         {showDateEvents && selectedDateEvents.length > 0 && (
-//           <div className="mt-8 bg-gray-800 p-5 rounded shadow-md">
-//             <h4 className="text-lg font-semibold mb-4">
-//               Attendance on {selectedDateEvents[0].date}
-//             </h4>
-//             {selectedDateEvents.map((event) => (
-//               <div key={event.id} className="bg-gray-700 p-4 mb-3 rounded">
-//                 <p className="text-xl font-semibold">{event.title}</p>
-//                 <p className="text-sm mb-2 text-gray-300">{event.description}</p>
-//               </div>
-//             ))}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default StudentAttendance;
-
-import React, { useState, useEffect } from 'react';
-import Sidebar from '../../components/Sidebar';
-import { useNavigate } from 'react-router-dom';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import axios from 'axios';
+axios.defaults.withCredentials = true;
 
 const StudentAttendance = () => {
-  const navigate = useNavigate();
-  const [attendanceEvents, setAttendanceEvents] = useState([]);
-  const [selectedDateEvents, setSelectedDateEvents] = useState([]);
-  const [showDateEvents, setShowDateEvents] = useState(false);
+  const [student, setStudent] = useState(null);
+  const [selectedClass, setSelectedClass] = useState("");
+  const [subjects, setSubjects] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [attendance, setAttendance] = useState([]);
+  const [academicYear, setAcademicYear] = useState("");
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
-  // ✅ Fetch student profile first (to get _id)
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  // 1. Load student profile (including class) and fetch subjects list
   useEffect(() => {
-    const fetchAttendance = async () => {
+    const init = async () => {
       try {
-        // Step 1: Get the currently logged-in student's profile
-        const profileRes = await axios.get('/api/user/profile', {
-          withCredentials: true, // ✅ Required for cookie auth
-        });
+        const res = await axios.get("/api/user/profile");
+        setStudent(res.data);
+        setSelectedClass(res.data.class);
 
-        const studentId = profileRes.data.id; // ✅ Use .id from profile response
-
-        // Step 2: Fetch attendance using that ID
-        const res = await axios.get(`/api/attendance/student/${studentId}`, {
-          withCredentials: true,
-        });
-
-        const records = res.data.records || [];
-
-        const formatted = records.map((rec, index) => ({
-          id: String(index),
-          title:
-            rec.status === 'present'
-              ? 'Present'
-              : rec.status === 'absent'
-              ? 'Absent'
-              : 'Late',
-          date: rec.date,
-          description: `You were marked ${rec.status} for ${rec.subject}`,
-          status: rec.status, // used for color
-        }));
-
-        setAttendanceEvents(formatted);
+        // fetch subjects via your route
+        const subRes = await axios.get(`/api/classes/subjects/${res.data.class}`);
+        // backend returns array directly, not inside { subjects: [] }
+        setSubjects(subRes.data);
       } catch (err) {
-        console.error('Failed to fetch attendance:', err);
+        console.error("Error loading profile or subjects:", err.message);
       }
     };
 
-    fetchAttendance();
+    // compute academic year like before
+    const today = new Date();
+    const year = today.getMonth() < 3
+      ? `${today.getFullYear() - 1}-${today.getFullYear()}`
+      : `${today.getFullYear()}-${today.getFullYear() + 1}`;
+    setAcademicYear(year);
+
+    init();
   }, []);
 
-  const handleDateClick = (arg) => {
-    const dateStr = arg.dateStr;
-    const matchedEvents = attendanceEvents.filter(event => event.date === dateStr);
-    if (matchedEvents.length > 0) {
-      setSelectedDateEvents(matchedEvents);
-      setShowDateEvents(true);
-    } else {
-      setSelectedDateEvents([]);
-      setShowDateEvents(false);
+  // 2. When a subject is selected, fetch attendance for that student/subject/year
+  useEffect(() => {
+    const loadAttendance = async () => {
+      if (!student || !selectedSubject) return;
+      try {
+        const res = await axios.get(`/api/attendance/student/${student.id}?year=${academicYear}`);
+        const filtered = Array.isArray(res.data.records)
+          ? res.data.records.filter(r => r.subject === selectedSubject)
+          : [];
+        setAttendance(filtered);
+      } catch (err) {
+        console.error("Error fetching attendance data:", err.message);
+      }
+    };
+
+    loadAttendance();
+  }, [student, selectedSubject, academicYear]);
+
+  // Calendar generator
+  const generateCalendar = () => {
+    const start = new Date(currentYear, currentMonth, 1);
+    const firstDay = start.getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    const cells = [];
+    for (let i = 0; i < firstDay; i++) cells.push(null);
+    for (let d = 1; d <= daysInMonth; d++) {
+      const fullDate = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      cells.push({ day: d, fullDate });
     }
+    return cells;
+  };
+
+  const statusColor = (s) => {
+    if (s === "present") return "bg-blue-500";
+    if (s === "absent") return "bg-red-500";
+    if (s === "leave") return "bg-yellow-400";
+    return "";
+  };
+
+  // Calendar cell status
+  const cellStatus = (date) => {
+    const rec = attendance.find(r => r.date === date);
+    return rec?.status;
   };
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
       <Sidebar role="student" />
       <div className="flex-1 p-6">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold mb-3 md:mb-0">My Attendance Calendar</h2>
-          <button
-            onClick={() => navigate('/dashboard/student/leave')}
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white transition duration-200"
-          >
-            + Request Leave
-          </button>
-        </div>
+        <Header />
+        <div className="bg-white/10 p-6 rounded-xl border border-white/10 backdrop-blur">
+          <h2 className="text-xl font-bold text-purple-300 mb-4">📅 Attendance Calendar</h2>
 
-        {/* Calendar */}
-        <div className="bg-gray-900 rounded-lg p-4 shadow-md">
-          <FullCalendar
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            dateClick={handleDateClick}
-            events={attendanceEvents}
-            height="auto"
-            eventDisplay="block"
-            dayHeaderClassNames="!text-white !bg-gray-800"
-            dayCellClassNames="!border-gray-700 !text-white"
-            eventClassNames={(arg) => {
-              const status = arg.event.extendedProps.status;
-              if (status === 'absent') return '!bg-red-600 !border-0 !text-white';
-              if (status === 'present') return '!bg-blue-600 !border-0 !text-white';
-              if (status === 'late') return '!bg-yellow-500 !border-0 !text-black';
-              return '!bg-gray-500';
-            }}
-          />
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="text-sm text-blue-300">Class</label>
+              <p className="p-2 bg-gray-900 rounded border border-white/10">{selectedClass || "Loading..."}</p>
+            </div>
 
-        {/* Selected Date Attendance Info */}
-        {showDateEvents && selectedDateEvents.length > 0 && (
-          <div className="mt-8 bg-gray-800 p-5 rounded shadow-md">
-            <h4 className="text-lg font-semibold mb-4">
-              Attendance on {selectedDateEvents[0].date}
-            </h4>
-            {selectedDateEvents.map((event) => (
-              <div key={event.id} className="bg-gray-700 p-4 mb-3 rounded">
-                <p className="text-xl font-semibold">{event.title}</p>
-                <p className="text-sm mb-2 text-gray-300">{event.description}</p>
+            <div>
+              <label className="text-sm text-blue-300">Subject</label>
+              <select
+                className="w-full p-2 bg-gray-800 rounded border border-white/10"
+                value={selectedSubject}
+                onChange={e => setSelectedSubject(e.target.value)}
+              >
+                <option value="">--Select Subject--</option>
+                {subjects.map(sub => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center mb-4">
+            <button onClick={() => {
+              setCurrentMonth(m => m === 0 ? 11 : m - 1);
+              if (currentMonth === 0) setCurrentYear(y => y - 1);
+            }} className="text-white hover:text-purple-400">⬅️ Prev</button>
+            <h3 className="text-lg text-purple-200">{months[currentMonth]} {currentYear}</h3>
+            <button onClick={() => {
+              setCurrentMonth(m => m === 11 ? 0 : m + 1);
+              if (currentMonth === 11) setCurrentYear(y => y + 1);
+            }} className="text-white hover:text-purple-400">Next ➡️</button>
+          </div>
+
+          <div className="grid grid-cols-7 gap-2 text-sm text-center">
+            {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => (
+              <div key={d} className="text-white/70 font-semibold">{d}</div>
+            ))}
+            {generateCalendar().map((c, i) => (
+              <div key={i} className={`min-h-[70px] p-2 rounded ${c ? "bg-white/5" : ""}`}>
+                {c?.day}
+                {c && (
+                  <div className={`mt-2 w-4 h-4 rounded-full mx-auto ${statusColor(cellStatus(c.fullDate))}`}></div>
+                )}
               </div>
             ))}
           </div>
-        )}
+
+          <div className="mt-6 flex gap-6 text-sm text-white/70">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-blue-500 rounded-full"></div> Present
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-red-500 rounded-full"></div> Absent
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-yellow-400 rounded-full"></div> Leave
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

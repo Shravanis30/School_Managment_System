@@ -8,22 +8,33 @@ import {
   deleteStudent,
   getStudentsByClass,
   getLoggedInStudent,
+  getStudentsByClassName
 } from "../controllers/student.controller.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import { authorizeRole } from "../middlewares/auth.middleware.js";
+import Student from "../models/student.model.js";
 
 const router = express.Router();
+// router.get('/me', authMiddleware, getLoggedInStudent);
+router.get('/me', authMiddleware, (req, res, next) => {
+  console.log('Hitting /me route');
+  next();
+}, getLoggedInStudent);
 
-router.post("/register",authMiddleware, authorizeRole("admin"), createStudent);
+router.get('/:classId', authMiddleware, (req, res, next) => {
+  console.log(`Hitting classId route with: ${req.params.classId}`);
+  next();
+}, getStudentsByClass);
 router.post("/login", loginStudent);
-router.get("/all", authMiddleware, getAllStudentsGroupedByClass);
 
 router.get("/by-class-name/:className", getStudentsByClassByName);
 router.get("/by-class-id/:classId", getStudentsByClassId);
-router.get('/class/:classId', authMiddleware, getStudentsByClass);
+router.post("/register",authMiddleware, authorizeRole("admin"), createStudent);
+router.get("/all", authMiddleware, getAllStudentsGroupedByClass);
+// router.get('/:classId', authMiddleware, getStudentsByClass);
+router.get('/class/:className', getStudentsByClassName);
 
 
-router.get("/me", authMiddleware, getLoggedInStudent); // ✅ This is required
-router.delete("/:id", deleteStudent);
+// routes/student.routes.js
 
 export default router;

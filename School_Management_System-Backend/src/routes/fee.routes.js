@@ -8,17 +8,14 @@ import {
   payFee,
   getStudentFee
 } from "../controllers/fee.controller.js";
-import feestructureModel from "../models/feestructure.model.js";
+import FeeStructure from "../models/feestructure.model.js"; // Import the model
 
 const router = express.Router();
 
-// 📌 Admin-only routes
 router.post("/structure", authMiddleware, authorizeRole("admin"), setFeeStructure);
 router.get("/structure", authMiddleware, authorizeRole("admin"), getFeeStructure);
 router.get("/collection", authMiddleware, authorizeRole("admin"), getCollection);
 router.get("/pending", authMiddleware, authorizeRole("admin"), getPending);
-
-// 📌 Student-only routes
 router.post("/pay", authMiddleware, authorizeRole("student"), payFee);
 router.get("/payments", authMiddleware, authorizeRole("student"), getStudentFee);
 
@@ -26,9 +23,15 @@ router.get("/payments", authMiddleware, authorizeRole("student"), getStudentFee)
 router.get("/my-structure", authMiddleware, authorizeRole("student"), async (req, res) => {
   try {
     const className = req.user.className;
-    const fee = await feestructureModel.findOne({ className });
+    if (!className) {
+      return res.status(400).json({ message: "Student class not found" });
+    }
 
-    if (!fee) return res.status(404).json({ message: "Fee structure not found" });
+    const fee = await FeeStructure.findOne({ className });
+
+    if (!fee) {
+      return res.status(404).json({ message: "Fee structure not found for this class" });
+    }
 
     res.json({
       term1: fee.term1,

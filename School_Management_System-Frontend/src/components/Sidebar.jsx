@@ -198,7 +198,7 @@ const Sidebar = ({ role }) => {
       { icon: <FaBook size={24} />, path: '/dashboard/student/syllabus', label: 'Syllabus' },
       { icon: <FaClipboardCheck size={24} />, path: '/dashboard/student/assignments', label: 'Assignments' },
       { icon: <FaCalendarAlt size={24} />, path: '/dashboard/student/timetable', label: 'TimeTable' },
-      { icon: <FaPoll size={24} />, path: '/dashboard/student/result', label: 'Result' },
+      { icon: <FaPoll size={24} />, path: '/dashboard/student/marks', label: 'Result' },
       { icon: <FaComments size={24} />, path: '/dashboard/student/complaints', label: 'Complaint Box' },
       { icon: <FaComments size={24} />, path: '/dashboard/student/fees', label: 'Fee Structure' },
     ],

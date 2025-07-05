@@ -22,31 +22,25 @@ import cookieParser from 'cookie-parser';
 import feeRoutes from './routes/fee.routes.js';
 import resultRoutes from './routes/result.routes.js';
 import paymentRoutes from './routes/payment.routes.js';
-
+import marksRoutes from './routes/marks.routes.js';
+import PaymentTransaction from './models/paymentTransaction.model.js'; // Import model
 
 
 
 const app = express();
 // app.use(cors());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN,
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5174',
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-
 app.use(express.json());
-
 app.use(cookieParser());
-// app.use('/uploads/results', express.static(path.join(__dirname, 'uploads/results')));
 app.use('/uploads', express.static('uploads'));
 
-// app.use('/uploads', (req, res, next) => {
-//   if (req.path.endsWith('.pdf')) {
-//     res.setHeader('Content-Type', 'application/pdf');
-//     res.setHeader('Content-Disposition', 'inline');
-//   }
-//   next();
-// }, express.static(path.resolve('uploads')));
+
 
 // routes
 app.use('/api/admins', adminRoutes);
@@ -71,6 +65,38 @@ app.get('/', (req, res) => {
 app.use('/api/fees', feeRoutes);
 app.use('/api/results', resultRoutes); // ✅ This mounts /api/results
 app.use('/api/payment', paymentRoutes); // ✅ Mounting route
+app.use('/api/marks', marksRoutes);
+
+
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Endpoint not found"
+  });
+});
+
+// server.js (or app.js)
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  if (Object.keys(req.body).length > 0) {
+    console.log("Request Body:", JSON.stringify(req.body, null, 2));
+  }
+  next();
+});
+
+app.use((err, req, res, next) => {
+  console.error("Global error handler:", err);
+
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+
+  res.status(statusCode).json({
+    success: false,
+    message,
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  });
+});
 
 
 export { app }

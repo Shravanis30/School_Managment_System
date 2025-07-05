@@ -67,7 +67,6 @@ export const submitAssignment = async (req, res) => {
   }
 };
 
-// ✅ GET all assignments by class
 export const getAssignmentsByClass = async (req, res) => {
   const { className } = req.params;
 
@@ -79,6 +78,8 @@ export const getAssignmentsByClass = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch assignments" });
   }
 };
+
+
 
 // ✅ GET all submissions for a class and subject (Admin/Teacher)
 export const getSubmissionsByClassAndSubject = async (req, res) => {

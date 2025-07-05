@@ -44,7 +44,8 @@ export const getSyllabusByClass = async (req, res) => {
     if (!syllabus) {
       console.log("Syllabus not found for:", req.params.classId);
 
-      return res.status(404).json({ error: 'Syllabus not found' });
+      return res.status(200).json({ syllabusURL: syllabus.syllabusURL });
+
     }
 
     res.status(200).json(syllabus);
