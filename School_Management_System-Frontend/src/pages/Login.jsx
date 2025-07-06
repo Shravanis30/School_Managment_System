@@ -47,9 +47,11 @@ const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include', // Essential for cookies
         body: JSON.stringify(form),
+
       });
 
       const data = await response.json();
+      console.log("Login endpoint:", loginRoute);
 
       if (response.ok) {
         alert("Login successful");
@@ -59,6 +61,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
+
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
