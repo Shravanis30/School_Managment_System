@@ -75,7 +75,7 @@ const Sidebar = ({ role }) => {
           {isOpen && (
             <div className="flex items-center gap-2">
               <FaSchool className="text-3xl" />
-              <span className="text-2xl font-bold">ACA</span>
+              <span className="text-2xl font-bold">ERP - School</span>
             </div>
           )}
           <button

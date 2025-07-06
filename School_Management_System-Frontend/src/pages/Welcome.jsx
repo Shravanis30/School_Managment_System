@@ -13,7 +13,7 @@ const WelcomePage = () => {
         {/* Logo */}
         <div className="flex items-center gap-2 sm:gap-3 text-black">
           <FaSchool className="text-2xl sm:text-3xl lg:text-4xl" />
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">SchoolERP</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">ERP-School </h1>
         </div>
 
         {/* Button */}
@@ -57,7 +57,7 @@ const WelcomePage = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between gap-6 text-sm">
             <div>
-              <h3 className="font-semibold mb-2">ACA - School Management</h3>
+              <h3 className="font-semibold mb-2">ERP - School</h3>
               <p>Streamline academic and administrative processes easily.</p>
             </div>
             <div>
