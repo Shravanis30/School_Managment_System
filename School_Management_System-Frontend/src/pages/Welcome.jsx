@@ -13,7 +13,7 @@ const WelcomePage = () => {
         {/* Logo */}
         <div className="flex items-center gap-2 sm:gap-3 text-black">
           <FaSchool className="text-2xl sm:text-3xl lg:text-4xl" />
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">ACA</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">SchoolERP</h1>
         </div>
 
         {/* Button */}
