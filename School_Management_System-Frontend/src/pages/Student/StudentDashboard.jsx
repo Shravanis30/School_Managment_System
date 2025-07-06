@@ -31,7 +31,7 @@ const StudentDashboard = () => {
         </svg>
       ),
       color: "purple",
-      route: "/dashboard/student/result"
+      route: "/dashboard/student/marks"
     },
     {
       title: "Assignment Hub",
