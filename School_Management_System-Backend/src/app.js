@@ -30,7 +30,9 @@ import PaymentTransaction from './models/paymentTransaction.model.js'; // Import
 const app = express();
 // app.use(cors());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5174',
+  // origin: process.env.CORS_ORIGIN || 'http://localhost:5174',
+  origin: 'https://erpiitiancraftcom.vercel.app',
+
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
