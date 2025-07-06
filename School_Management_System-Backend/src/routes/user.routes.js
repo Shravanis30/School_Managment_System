@@ -4,11 +4,13 @@
 import express from 'express';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import { getProfile, logoutUser } from '../controllers/user.controller.js'; // ✅ Import controller
+import upload from '../middlewares/multerConfig.middleware.js';
 
 const router = express.Router();
 
 router.get('/profile', authMiddleware, getProfile); // ✅ Use controller
 router.post('/logout', logoutUser);
+// router.post('/upload-profile-image', authMiddleware, upload.single('image'), uploadProfileImage);
 
 
 export default router;

@@ -66,3 +66,34 @@ export const logoutUser = async (req, res) => {
   }
 };
 
+
+
+export const uploadProfileImage = async (req, res) => {
+  try {
+    const user = req.user;
+    const role = req.role;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const profileImage = `/uploads/${req.file.filename}`;
+
+    let updatedUser;
+
+    if (role === 'admin') {
+      updatedUser = await Admin.findByIdAndUpdate(user._id, { profileImage }, { new: true });
+    } else if (role === 'teacher') {
+      updatedUser = await Teacher.findByIdAndUpdate(user._id, { profileImage }, { new: true });
+    } else if (role === 'student') {
+      updatedUser = await Student.findByIdAndUpdate(user._id, { profileImage }, { new: true });
+    } else {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+    res.status(200).json({ profileImage: updatedUser.profileImage });
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(500).json({ message: "Server error during upload", error: err.message });
+  }
+};

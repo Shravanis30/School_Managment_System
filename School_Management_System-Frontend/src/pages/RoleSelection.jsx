@@ -119,7 +119,7 @@ const RoleSection = () => {
       style={{ backgroundImage: `url(${backgroundImg})` }}
     >
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-blue-900/80 to-black/90"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-blue-400/80 to-black/90"></div>
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">

@@ -1,4 +1,3 @@
-// models/Syllabus.js
 import mongoose from "mongoose";
 
 const syllabusSchema = new mongoose.Schema({

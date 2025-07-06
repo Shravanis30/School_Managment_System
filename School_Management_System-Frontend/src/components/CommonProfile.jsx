@@ -114,6 +114,7 @@ const CommonProfile = () => {
                 <p><span className="font-semibold">Class:</span> {user.className}</p>
               </>
             )}
+
           </div>
         </div>
       </div>

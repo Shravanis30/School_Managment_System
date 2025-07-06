@@ -1,20 +1,3 @@
-// import mongoose from "mongoose";
-
-// const markSchema = new mongoose.Schema({
-//   student: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
-//   className: String,
-//   team: String,
-//   subjects: [String],
-//   marksPerSubject: {
-//     type: Map,
-//     of: Number, // subject: marks
-//   },
-//   totalObtained: Number,
-//   totalMarksPerSubject: Number,
-//   percentage: Number,
-// }, { timestamps: true });
-
-// export default mongoose.model("Mark", markSchema);
 
 
 import mongoose from "mongoose";

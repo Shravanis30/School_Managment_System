@@ -1,4 +1,3 @@
-// models/paymentTransaction.model.js
 import mongoose from "mongoose";
 
 const paymentTransactionSchema = new mongoose.Schema({
