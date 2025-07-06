@@ -10,6 +10,7 @@ const router = express.Router();
 
 router.get('/profile', authMiddleware, getProfile); // ✅ Use controller
 router.post('/logout', logoutUser);
+
 // router.post('/upload-profile-image', authMiddleware, upload.single('image'), uploadProfileImage);
 
 

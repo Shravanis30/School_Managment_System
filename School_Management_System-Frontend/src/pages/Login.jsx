@@ -45,7 +45,7 @@ const Login = () => {
       const response = await fetch(loginRoute, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Essential for cookies
+        // credentials: 'include', // Essential for cookies
         body: JSON.stringify(form),
       });
 
