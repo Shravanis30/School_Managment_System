@@ -27,10 +27,12 @@ const RegisterAdmin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/admins/register', {
+      const registerRoute = `${import.meta.env.VITE_BACKEND_URL}/api/admins/register`;
+
+      const response = await fetch(registerRoute, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
+        credentials: 'include',
         body: JSON.stringify({
           name: form.fullName,
           schoolName: form.schoolName,

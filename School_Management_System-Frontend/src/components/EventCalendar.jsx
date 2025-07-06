@@ -10,9 +10,10 @@ const EventCalendar = ({ role }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get('/api/events', {
-          withCredentials: true, // ✅ Use cookie-based auth
-        });
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/events`,
+          {
+            withCredentials: true, // ✅ Use cookie-based auth
+          });
 
         setEvents(
           res.data.map(event => ({

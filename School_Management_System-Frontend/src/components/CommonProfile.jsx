@@ -12,7 +12,9 @@ const CommonProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("/api/user/profile", { withCredentials: true });
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/profile`, {
+          withCredentials: true,
+        });
         setUser(res.data);
       } catch (err) {
         console.error("Failed to fetch profile:", err);
@@ -37,10 +39,14 @@ const CommonProfile = () => {
     formData.append("image", selectedImage);
 
     try {
-      const res = await axios.post("/api/user/upload-profile-image", formData, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/upload-profile-image`,
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       setUser((prev) => ({ ...prev, profileImage: res.data.profileImage }));
       setSelectedImage(null);
       setPreview(null);
