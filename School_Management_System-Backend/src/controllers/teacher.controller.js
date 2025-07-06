@@ -81,13 +81,14 @@ export const loginTeacher = async (req, res) => {
       .cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: 'Lax',
+        secure: true, // ✅ Required for cross-site cookies
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       })
       .cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: 'Lax',
+        secure: true, // ✅ Required for cross-site cookies
+        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .status(200)

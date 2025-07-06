@@ -46,14 +46,14 @@ export const registerAdmin = async (req, res) => {
     res
       .cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true, // ✅ Required for cross-site cookies
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true, // ✅ Required for cross-site cookies
+        sameSite: "none",
         maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days
       })
       .status(201)
@@ -103,14 +103,14 @@ export const loginAdmin = async (req, res) => {
     res
       .cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true, // ✅ Required for cross-site cookies
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true, // ✅ Required for cross-site cookies
+        sameSite: "none",
         maxAge: 10 * 24 * 60 * 60 * 1000,
       })
       .status(200)
