@@ -197,16 +197,16 @@ const TeacherAddMarks = () => {
   const [existingRecords, setExistingRecords] = useState({});
 
   useEffect(() => {
-    axios.get("/api/classes").then((res) => setClasses(res.data));
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`).then((res) => setClasses(res.data));
   }, []);
 
   useEffect(() => {
     if (selectedClass) {
-      axios.get(`/api/classes/subjects/${selectedClass}`)
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes/subjects/${selectedClass}`)
         .then((res) => setSubjects(res.data))
         .catch(() => setSubjects([]));
 
-      axios.get(`/api/students/by-class-name/${selectedClass}`)
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${selectedClass}`)
         .then((res) => setStudents(res.data))
         .catch(() => setStudents([]));
     }
@@ -216,7 +216,7 @@ const TeacherAddMarks = () => {
     const fetchExistingMarks = async () => {
       if (selectedClass && selectedTeam) {
         try {
-          const res = await axios.get(`/api/marks/by-class-team?className=${selectedClass}&team=${selectedTeam}`);
+          const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/marks/by-class-team?className=${selectedClass}&team=${selectedTeam}`);
           const records = {};
           
           res.data.forEach(record => {
@@ -274,7 +274,7 @@ const TeacherAddMarks = () => {
         studentMarks,
       };
 
-      await axios.post("/api/marks/multiple-subjects", payload, { withCredentials: true });
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/marks/multiple-subjects`, payload, { withCredentials: true });
       toast.success("✅ Marks submitted successfully!");
     } catch (err) {
       toast.error("❌ Error submitting marks. Please try again.");

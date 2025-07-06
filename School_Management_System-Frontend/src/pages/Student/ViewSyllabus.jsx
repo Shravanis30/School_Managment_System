@@ -16,7 +16,7 @@ const ViewSyllabus = ({ className = "10" }) => {
         setLoading(true);
         setError("");
 
-        const res = await fetch(`/api/syllabus/${className}`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${className}`, {
           method: "GET",
           credentials: "include",
         });

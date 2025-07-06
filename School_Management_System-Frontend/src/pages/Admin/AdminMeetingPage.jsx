@@ -21,7 +21,7 @@ const AdminMeetingPage = () => {
 
   const fetchMeetings = async () => {
     try {
-      const res = await axios.get('/api/meetings', {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/meetings`, {
         withCredentials: true,
       });
       setMeetings(res.data);
@@ -33,7 +33,7 @@ const AdminMeetingPage = () => {
   const handleAddMeeting = async () => {
     try {
       const meetingWithStatus = { ...newMeeting, status: 'Scheduled' };
-      await axios.post('/api/meetings/add', meetingWithStatus, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/meetings/add`, meetingWithStatus, {
         withCredentials: true,
       });
       alert('Meeting created and emails sent');

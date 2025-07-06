@@ -29,7 +29,7 @@ const Sidebar = ({ role }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/api/user/logout', {}, { withCredentials: true });
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/logout`, {}, { withCredentials: true });
       navigate('/select-role');
     } catch (err) {
       console.error("Logout failed:", err.response?.data || err.message);

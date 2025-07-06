@@ -264,8 +264,8 @@ export default function StudentFees() {
       setLoading(true);
 
       const [structureRes, paidRes] = await Promise.all([
-        fetch("/api/fees/my-structure", { credentials: "include" }),
-        fetch("/api/fees/payments", { credentials: "include" })
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fees/my-structure`, { credentials: "include" }),
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fees/payments`, { credentials: "include" })
       ]);
 
       if (!structureRes.ok) {
@@ -341,7 +341,7 @@ export default function StudentFees() {
         throw new Error("Failed to load Razorpay SDK");
       }
 
-      const res = await fetch("/api/payment/create-order", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payment/create-order`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -368,7 +368,7 @@ export default function StudentFees() {
         },
         handler: async function (response) {
           try {
-            const verifyRes = await fetch("/api/payment/verify", {
+            const verifyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payment/verify`, {
               method: "POST",
               credentials: "include",
               headers: { "Content-Type": "application/json" },

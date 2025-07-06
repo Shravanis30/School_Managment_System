@@ -9,7 +9,7 @@ const AdminComplaintPage = () => {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        const res = await fetch('/api/complaints', {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/complaints`, {
           credentials: 'include' // Add this
         });
         const data = await res.json();

@@ -160,7 +160,7 @@ const StudentComplaintPage = () => {
         setIsSubmitting(true);
         
         try {
-            const res = await fetch('/api/complaints', {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/complaints`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

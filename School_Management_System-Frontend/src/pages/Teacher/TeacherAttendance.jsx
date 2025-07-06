@@ -311,7 +311,7 @@ const TeacherAttendance = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await axios.get('/api/classes');
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`);
         setClasses(res.data);
       } catch (err) {
         console.error('Error fetching classes:', err.response?.data || err.message);
@@ -357,7 +357,7 @@ const TeacherAttendance = () => {
       setLoadingStudents(true);
 
       // Use class NAME instead of class ID
-      const res = await axios.get(`/api/students/class/${selectedClass.name}`);
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/class/${selectedClass.name}`);
       setStudents(Array.isArray(res.data) ? res.data : []);
       setSelectedAttendance({});
     } catch (err) {
@@ -393,7 +393,7 @@ const TeacherAttendance = () => {
 
       console.log("Sending attendance payload:", payload);
 
-      await axios.post('/api/attendance/mark', payload);
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/attendance/mark`, payload);
     } catch (error) {
       console.error("Failed to mark attendance:", error.response?.data || error.message);
 

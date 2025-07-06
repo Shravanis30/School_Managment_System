@@ -417,7 +417,7 @@ const StudentMarksSection = () => {
     const fetchMarks = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("/api/marks/student", {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/marks/student`, {
           withCredentials: true,
         });
         setMarks(res.data);

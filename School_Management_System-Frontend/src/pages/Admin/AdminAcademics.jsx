@@ -37,7 +37,7 @@ const AdminAcademics = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch('/api/classes', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, {
           credentials: 'include',
         });
         const data = await response.json();
@@ -76,7 +76,7 @@ const AdminAcademics = () => {
 
     const fetchStudents = async () => {
       try {
-        const res = await fetch(`/api/students/by-class-name/${selectedClass}`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${selectedClass}`, {
           credentials: 'include',
         });
 
@@ -99,7 +99,7 @@ const AdminAcademics = () => {
 
     const fetchSyllabus = async () => {
       try {
-        const res = await fetch(`/api/syllabus/${selectedClass.replace('Class ', '')}`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${selectedClass.replace('Class ', '')}`, {
           credentials: 'include',
         });
 
@@ -124,7 +124,7 @@ const AdminAcademics = () => {
 
     const fetchTimetable = async () => {
       try {
-        const res = await fetch(`/api/timetable/${selectedClass}`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/timetable/${selectedClass}`, {
           credentials: 'include',
         });
 
@@ -156,7 +156,7 @@ const AdminAcademics = () => {
     };
 
     try {
-      const res = await fetch("/api/timetable", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/timetable`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include', // ✅ <== important
@@ -188,7 +188,7 @@ const AdminAcademics = () => {
 
   const handleDeleteTimetable = async (cls) => {
     try {
-      const res = await fetch(`/api/timetable/${cls.replace('Class ', '')}`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/timetable/${cls.replace('Class ', '')}`, {
         method: "DELETE",
         credentials: 'include',
       });
@@ -234,7 +234,7 @@ const AdminAcademics = () => {
         const formData = new FormData();
         formData.append("file", file);
 
-        const res = await fetch(`/api/results/${encodeURIComponent(selectedClass)}/${studentId}`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/results/${encodeURIComponent(selectedClass)}/${studentId}`, {
           method: "POST",
           credentials: "include",
           body: formData
@@ -264,7 +264,7 @@ const AdminAcademics = () => {
     formData.append('syllabus', syllabusFile);
 
     try {
-      const res = await fetch(`/api/syllabus/upload`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/syllabus/upload`, {
         method: "POST",
         credentials: 'include', // ✅ <== important
         body: formData

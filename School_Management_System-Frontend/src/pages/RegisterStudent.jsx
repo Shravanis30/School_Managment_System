@@ -18,7 +18,7 @@ const RegisterStudent = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await axios.get('/api/classes', {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, {
           withCredentials: true,
         });
         setClasses(res.data);
@@ -40,7 +40,7 @@ const RegisterStudent = () => {
 
     try {
       const res = await axios.post(
-        "/api/students/register",
+        `${import.meta.env.VITE_BACKEND_URL}/api/students/register`,
         {
           name: form.fullName,
           email: form.email,

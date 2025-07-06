@@ -19,7 +19,7 @@ const TeacherAssignments = () => {
   const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
-    fetch('/api/classes', { credentials: 'include' })
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setClasses(data))
       .catch(err => console.error('Error fetching classes:', err));
@@ -27,7 +27,7 @@ const TeacherAssignments = () => {
 
   useEffect(() => {
     if (form.classId) {
-      fetch(`/api/classes/${form.classId}`, { credentials: 'include' })
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/classes/${form.classId}`, { credentials: 'include' })
         .then(res => res.json())
         .then(data => setSubjects(data.subjects || []));
     } else {
@@ -38,7 +38,7 @@ const TeacherAssignments = () => {
 
   useEffect(() => {
     if (filter.classId) {
-      fetch(`/api/classes/${filter.classId}`, { credentials: 'include' })
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/classes/${filter.classId}`, { credentials: 'include' })
         .then(res => res.json())
         .then(data => setSubjects(data.subjects || []));
     }
@@ -47,7 +47,7 @@ const TeacherAssignments = () => {
   const handleUpload = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/assignments/upload', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/assignments/upload`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

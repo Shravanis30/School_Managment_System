@@ -11,13 +11,13 @@ const AdminFees = () => {
   const [classOptions, setClassOptions] = useState([]);
 
   useEffect(() => {
-    fetch('/api/classes', { credentials: 'include' })
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setClassOptions(data.map(cls => cls.name)));
   }, []);
 
   useEffect(() => {
-    fetch('/api/fee-structure', { credentials: 'include' })
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fee-structure`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         const structure = {};
@@ -28,7 +28,7 @@ const AdminFees = () => {
 
   useEffect(() => {
     if (selectedClass) {
-      fetch(`/api/students/by-class-name/${selectedClass}`, { credentials: 'include' })
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${selectedClass}`, { credentials: 'include' })
         .then(res => res.json())
         .then(data => setStudents(data));
     }
@@ -37,7 +37,7 @@ const AdminFees = () => {
   const handleFeeSubmit = async () => {
     if (!selectedClass || !amount) return;
 
-    await fetch('/api/fee-structure', {
+    await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fee-structure`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

@@ -25,12 +25,12 @@ const StudentAttendance = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const res = await axios.get("/api/user/profile");
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/profile`);
         setStudent(res.data);
         setSelectedClass(res.data.class);
 
         // fetch subjects via your route
-        const subRes = await axios.get(`/api/classes/subjects/${res.data.class}`);
+        const subRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes/subjects/${res.data.class}`);
         // backend returns array directly, not inside { subjects: [] }
         setSubjects(subRes.data);
       } catch (err) {
@@ -53,7 +53,7 @@ const StudentAttendance = () => {
     const loadAttendance = async () => {
       if (!student || !selectedSubject) return;
       try {
-        const res = await axios.get(`/api/attendance/student/${student.id}?year=${academicYear}`);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/attendance/student/${student.id}?year=${academicYear}`);
         const filtered = Array.isArray(res.data.records)
           ? res.data.records.filter(r => r.subject === selectedSubject)
           : [];

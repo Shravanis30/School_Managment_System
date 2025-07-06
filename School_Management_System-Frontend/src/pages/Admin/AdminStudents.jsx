@@ -21,7 +21,7 @@ const AdminStudents = () => {
 
   const fetchClassOptions = async () => {
     try {
-      const res = await axios.get('/api/classes', {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, {
         withCredentials: true,
       });
       setClassOptions(res.data);
@@ -32,7 +32,7 @@ const AdminStudents = () => {
 
   const fetchStudentsByClass = async (className) => {
     try {
-      const res = await axios.get(`/api/students/by-class-name/${className}`, {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${className}`, {
         withCredentials: true,
       });
       setStudents(res.data);
@@ -44,7 +44,7 @@ const AdminStudents = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this student?')) return;
     try {
-      await axios.delete(`/api/students/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/students/${id}`, {
         withCredentials: true,
       });
       alert('Student deleted successfully');

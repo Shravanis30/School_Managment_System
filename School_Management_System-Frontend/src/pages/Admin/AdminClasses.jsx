@@ -18,7 +18,7 @@ const AdminClasses = () => {
 
   const fetchAllClasses = async () => {
     try {
-      const res = await axios.get('/api/classes', { withCredentials: true });
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, { withCredentials: true });
       setClasses(res.data);
     } catch (err) {
       console.error('Error fetching classes:', err.response?.data || err.message);
@@ -27,7 +27,7 @@ const AdminClasses = () => {
 
   const fetchSubjects = async (id) => {
     try {
-      const res = await axios.get(`/api/classes/${id}`, { withCredentials: true });
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes/${id}`, { withCredentials: true });
       setSubjects(res.data.subjects || []);
       setSelectedClass(res.data);
       setShowModal(true);
@@ -40,7 +40,7 @@ const AdminClasses = () => {
     if (!newSubject || !selectedClass?._id) return;
     try {
       await axios.post(
-        `/api/classes/${selectedClass._id}/subjects`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/classes/${selectedClass._id}/subjects`,
         { subject: newSubject },
         { withCredentials: true }
       );
@@ -55,7 +55,7 @@ const AdminClasses = () => {
     if (!newClassName.trim()) return;
     try {
       await axios.post(
-        '/api/classes',
+        `${import.meta.env.VITE_BACKEND_URL}/api/classes`,
         { name: newClassName },
         { withCredentials: true }
       );

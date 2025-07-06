@@ -8,7 +8,7 @@ const NoticeBoard = () => {
   useEffect(() => {
     const fetchNotices = async () => {
       try {
-        const res = await axios.get('/api/notices', {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/notices`, {
           withCredentials: true, // ✅ Ensures cookies (like accessToken) are sent
         });
         setNotices(res.data);

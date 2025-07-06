@@ -21,7 +21,7 @@ const AdminDashboard = () => {
 
   const fetchNotices = async () => {
     try {
-      const res = await axios.get('/api/notices', { withCredentials: true });
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/notices`, { withCredentials: true });
       setNotices(res.data || []);
     } catch (err) {
       console.error('Error fetching notices:', err.response?.data || err.message);
@@ -30,7 +30,7 @@ const AdminDashboard = () => {
 
   const handleAddNotice = async () => {
     try {
-      const res = await axios.post('/api/notices', newNotice, {
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notices`, newNotice, {
         withCredentials: true,
       });
       setNotices((prev) => [res.data, ...prev]);
@@ -45,7 +45,7 @@ const AdminDashboard = () => {
   const handleDeleteNotice = async (id) => {
     if (window.confirm('Are you sure you want to delete this notice?')) {
       try {
-        await axios.delete(`/api/notices/${id}`, {
+        await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/notices/${id}`, {
           withCredentials: true,
         });
         setNotices((prev) => prev.filter((notice) => notice._id !== id));

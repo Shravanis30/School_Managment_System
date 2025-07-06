@@ -124,11 +124,11 @@ const StudentLeaveForm = () => {
         setError('');
 
         // Fetch available classes
-        const classesRes = await axios.get('/api/classes', { withCredentials: true });
+        const classesRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, { withCredentials: true });
         setClasses(classesRes.data);
 
         // Auto-fill student details
-        const profileRes = await axios.get('/api/user/profile', { withCredentials: true });
+        const profileRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/profile`, { withCredentials: true });
         const student = profileRes.data;
 
         setFormData(prev => ({
@@ -166,7 +166,7 @@ const StudentLeaveForm = () => {
         reason: formData.reason
       };
 
-      await axios.post('/api/leaves/submit', payload, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/leaves/submit`, payload, {
         withCredentials: true,
       });
 

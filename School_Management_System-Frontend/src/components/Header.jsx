@@ -10,7 +10,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get('/api/user/profile', {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/profile`, {
           withCredentials: true,
         });
         setUser(res.data);

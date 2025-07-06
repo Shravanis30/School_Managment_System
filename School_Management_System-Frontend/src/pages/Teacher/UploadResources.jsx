@@ -16,7 +16,7 @@ const UploadResources = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await axios.get('/api/classes', {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, {
           withCredentials: true,
         });
         setClasses(res.data);
@@ -30,7 +30,7 @@ const UploadResources = () => {
   useEffect(() => {
     const fetchSubjects = async (id) => {
       try {
-        const res = await axios.get(`/api/classes/${id}`, { withCredentials: true });
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes/${id}`, { withCredentials: true });
         setSubjects(res.data.subjects || []);
       } catch (err) {
         console.error('Error fetching subjects:', err.response?.data || err.message);
@@ -70,7 +70,7 @@ const UploadResources = () => {
     data.append("file", file);
 
     try {
-      await axios.post('/api/resources/upload', data, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/resources/upload`, data, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data',

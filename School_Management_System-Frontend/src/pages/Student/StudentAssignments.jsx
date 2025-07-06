@@ -21,7 +21,7 @@ const StudentAssignments = () => {
         setError('');
         
         // Fetch student info
-        const studentRes = await fetch('/api/students/me', {
+        const studentRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/students/me`, {
           credentials: 'include',
         });
 
@@ -40,7 +40,7 @@ const StudentAssignments = () => {
         setStudentClass(className);
 
         // Fetch assignments
-        const assignmentsRes = await fetch(`/api/assignments/class/${className}`, {
+        const assignmentsRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/assignments/class/${className}`, {
           credentials: 'include',
         });
 
@@ -82,7 +82,7 @@ const StudentAssignments = () => {
     formData.append('file', file);
 
     try {
-      const res = await fetch('/api/assignments/submit', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/assignments/submit`, {
         method: 'POST',
         credentials: 'include',
         body: formData,

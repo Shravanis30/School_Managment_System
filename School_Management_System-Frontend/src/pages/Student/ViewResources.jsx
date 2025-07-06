@@ -13,7 +13,7 @@ const ViewResources = () => {
     const fetchStudentAndResources = async () => {
       try {
         // ✅ Get student data from protected route
-        const studentRes = await axios.get('/api/students/me', {
+        const studentRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/me`, {
           withCredentials: true,
         });
 
@@ -21,8 +21,8 @@ const ViewResources = () => {
         setClassName(studentClass);
 
         const [resourcesRes, subjectsRes] = await Promise.all([
-          axios.get(`/api/resources/class/${studentClass}`),
-          axios.get(`/api/resources/subjects/${studentClass}`),
+          axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/resources/class/${studentClass}`),
+          axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/resources/subjects/${studentClass}`),
         ]);
 
         setResources(resourcesRes.data);

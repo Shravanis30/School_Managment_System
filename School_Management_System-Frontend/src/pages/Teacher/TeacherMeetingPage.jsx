@@ -9,7 +9,7 @@ const TeacherMeetingPage = () => {
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
-        const res = await axios.get('/api/meetings', {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/meetings`, {
           withCredentials: true,
         });
         setMeetings(res.data || []);

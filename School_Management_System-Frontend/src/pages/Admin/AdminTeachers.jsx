@@ -15,7 +15,7 @@ const AdminTeachers = () => {
 
   const fetchTeachers = async () => {
     try {
-      const res = await axios.get('/api/teachers/list', {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/teachers/list`, {
         withCredentials: true, // ✅ Send cookies (accessToken)
       });
       setTeachers(res.data);
@@ -35,7 +35,7 @@ const AdminTeachers = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`/api/teachers/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/teachers/${id}`, {
         withCredentials: true, // ✅ Protected route, send cookie
       });
       alert('Teacher deleted successfully');

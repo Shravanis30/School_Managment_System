@@ -24,7 +24,7 @@ const RegisterTeacher = () => {
 
   const fetchClasses = async () => {
     try {
-      const res = await fetch('/api/classes', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, {
         credentials: 'include', // 👈 Send cookies
       });
       const data = await res.json();
@@ -57,7 +57,7 @@ const RegisterTeacher = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch('/api/teachers/create', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/teachers/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

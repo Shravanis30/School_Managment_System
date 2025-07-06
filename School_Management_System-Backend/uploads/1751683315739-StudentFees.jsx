@@ -9,8 +9,8 @@ export default function StudentFees() {
 
   const fetchFeeData = async () => {
     try {
-      const structureRes = await fetch("/api/fees/my-structure", { credentials: "include" });
-      const paidRes = await fetch("/api/fees/payments", { credentials: "include" });
+      const structureRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fees/my-structure`, { credentials: "include" });
+      const paidRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fees/payments`, { credentials: "include" });
 
       if (structureRes.ok) {
         const structureData = await structureRes.json();
@@ -52,7 +52,7 @@ export default function StudentFees() {
       return;
     }
 
-    const res = await fetch("/api/payment/create-order", {
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payment/create-order`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -80,7 +80,7 @@ export default function StudentFees() {
         email: data.student?.email || "student@example.com",
       },
       handler: async function (response) {
-        const verifyRes = await fetch("/api/payment/verify", {
+        const verifyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payment/verify`, {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },

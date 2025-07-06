@@ -29,7 +29,7 @@ const AdminEvents = () => {
     if (newEvent.title && newEvent.date) {
       try {
         const res = await axios.post(
-          '/api/events',
+          `${import.meta.env.VITE_BACKEND_URL}/api/events`,
           newEvent,
           { withCredentials: true }
         );
@@ -47,7 +47,7 @@ const AdminEvents = () => {
 
   const handleDeleteEvent = async (id) => {
     try {
-      await axios.delete(`/api/events/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/events/${id}`, {
         withCredentials: true,
       });
       setEvents(events.filter(event => event._id !== id));
@@ -61,7 +61,7 @@ const AdminEvents = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get('/api/events', {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/events`, {
           withCredentials: true,
         });
         setEvents(res.data);

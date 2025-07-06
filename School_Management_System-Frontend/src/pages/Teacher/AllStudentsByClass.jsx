@@ -18,7 +18,7 @@ const AllStudentsByClass = () => {
 
   const fetchClassOptions = async () => {
     try {
-      const res = await axios.get('/api/classes', { withCredentials: true });
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, { withCredentials: true });
       setClassOptions(res.data);
     } catch (err) {
       console.error('Error fetching class options:', err.message);
@@ -27,7 +27,7 @@ const AllStudentsByClass = () => {
 
   const fetchStudentsByClass = async (className) => {
     try {
-      const res = await axios.get(`/api/students/by-class-name/${className}`, {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${className}`, {
         withCredentials: true,
       });
       setStudents(res.data);

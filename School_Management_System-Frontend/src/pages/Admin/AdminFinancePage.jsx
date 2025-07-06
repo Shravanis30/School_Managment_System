@@ -218,7 +218,7 @@ export default function AdminFinancePage() {
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchClasses = async () => {
-    const res = await fetch("/api/classes", { credentials: "include" });
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, { credentials: "include" });
     const data = await res.json();
     setClasses(data);
     if (data.length > 0) setSelectedClass(data[0].name);
@@ -226,12 +226,12 @@ export default function AdminFinancePage() {
 
   const fetchStruct = () => {
     if (!selectedClass) return;
-    fetch(`/api/fees/structure?className=${selectedClass}`, { credentials: "include" })
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fees/structure?className=${selectedClass}`, { credentials: "include" })
       .then(r => r.json()).then(setFeeStruct);
   };
 
   const saveStruct = () => {
-    fetch("/api/fees/structure", {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fees/structure`, {
       method: "POST", credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ className: selectedClass, term1: +feeStruct.term1, term2: +feeStruct.term2 })
@@ -254,14 +254,14 @@ export default function AdminFinancePage() {
     const fetchData = async () => {
       try {
         if (activeTab === "Collection") {
-          const response = await fetch("/api/fees/collection", { credentials: "include" });
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fees/collection`, { credentials: "include" });
           if (!response.ok) throw new Error("Failed to fetch collection");
           const data = await response.json();
           setCollection(Array.isArray(data) ? data : []);
         }
 
         if (activeTab === "Pending Payments") {
-          const response = await fetch("/api/fees/pending", { credentials: "include" });
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/fees/pending`, { credentials: "include" });
           if (!response.ok) throw new Error("Failed to fetch pending payments");
           const data = await response.json();
           setPending(Array.isArray(data) ? data : []);

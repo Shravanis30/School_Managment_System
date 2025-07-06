@@ -277,7 +277,7 @@ const ViewTimetable = () => {
       try {
         setLoading(true);
         setError('');
-        const studentRes = await fetch('/api/students/me', {
+        const studentRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/students/me`, {
           credentials: 'include',
         });
 
@@ -307,7 +307,7 @@ const ViewTimetable = () => {
         
         setLoading(true);
         setError('');
-        const response = await fetch(`/api/timetable/${studentClass}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/timetable/${studentClass}`, {
           credentials: 'include',
         });
 
