@@ -59,7 +59,7 @@ const Sidebar = ({ role }) => {
       { icon: <FaBook size={24} />, path: '/dashboard/student/syllabus', label: 'Syllabus' },
       { icon: <FaClipboardCheck size={24} />, path: '/dashboard/student/assignments', label: 'Assignments' },
       { icon: <FaCalendarAlt size={24} />, path: '/dashboard/student/timetable', label: 'TimeTable' },
-      { icon: <FaPoll size={24} />, path: '/dashboard/student/marks', label: 'Result' },
+      { icon: <FaPoll size={24} />, path: '/dashboard/student/result', label: 'Result' },
       { icon: <FaComments size={24} />, path: '/dashboard/student/complaints', label: 'Complaint Box' },
       { icon: <FaComments size={24} />, path: '/dashboard/student/fees', label: 'Fee Structure' },
     ],
@@ -108,13 +108,13 @@ const Sidebar = ({ role }) => {
 
       {/* Settings + Logout */}
       <div className="p-4 flex flex-col gap-3">
-        <Link
+        {/* <Link
           to={`/${role}/settings`}
           className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-blue-700/40 hover:text-white transition-all text-lg"
         >
           <FaCog size={24} />
           {isOpen && <span className="text-lg font-semibold">Settings</span>}
-        </Link>
+        </Link> */}
 
         <button
           onClick={handleLogout}

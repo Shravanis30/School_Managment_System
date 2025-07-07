@@ -82,7 +82,7 @@ const AdminDashboard = () => {
       count: '₹2,50,00,000',
       icon: <FaMoneyBillWave className="text-4xl text-white drop-shadow-lg" />,
       note: '+10% revenue',
-      link: '/dashboard/admin/fees',
+      link: '/dashboard/admin/finance',
     },
   ];
 
