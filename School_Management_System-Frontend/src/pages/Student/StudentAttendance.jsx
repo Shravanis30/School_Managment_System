@@ -169,7 +169,6 @@
 // export default StudentAttendance;
 
 
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar";
@@ -190,6 +189,7 @@ const StudentAttendance = () => {
     toDate: '',
     reason: ''
   });
+  const [error, setError] = useState(null);
 
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -197,36 +197,53 @@ const StudentAttendance = () => {
   ];
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/profile`);
-        setStudent(res.data);
-        setSelectedClass(res.data.class);
-      } catch (err) {
-        console.error("Error loading profile:", err.message);
-      }
-    };
-
     const today = new Date();
     const year = today.getMonth() < 3
       ? `${today.getFullYear() - 1}-${today.getFullYear()}`
       : `${today.getFullYear()}-${today.getFullYear() + 1}`;
     setAcademicYear(year);
 
+    const init = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/user/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+
+            }
+          }
+        );
+        setStudent(res.data);
+        setSelectedClass(res.data.class);
+      } catch (err) {
+        console.error("Error loading profile:", err);
+        setError("Failed to load profile data");
+      }
+    };
     init();
   }, []);
 
-  useEffect(() => {
-    const loadAttendance = async () => {
-      if (!student) return;
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/attendance/student/${student.id}?year=${academicYear}`);
-        setAttendance(Array.isArray(res.data?.records) ? res.data.records : []);
-      } catch (err) {
-        console.error("Error fetching attendance data:", err.message);
-      }
-    };
+  const loadAttendance = async () => {
+    if (!student) return;
+    setError(null);
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/attendance/student/${student._id}?year=${academicYear}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        }
+      );
+      setAttendance(Array.isArray(res.data?.records) ? res.data.records : []);
+    } catch (err) {
+      console.error("Error fetching attendance data:", err);
+      setError("Failed to load attendance data. Please try again.");
+    }
+  };
 
+  useEffect(() => {
     loadAttendance();
   }, [student, academicYear]);
 
@@ -259,23 +276,28 @@ const StudentAttendance = () => {
   const handleSubmitLeave = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/leaves`, {
-        studentId: student.id,
-        studentName: student.name,
-        class: student.class,
-        rollNo: student.rollNo,
-        fromDate: leaveData.fromDate,
-        toDate: leaveData.toDate,
-        reason: leaveData.reason
-      });
-      
-      if (response.status === 201) {
-        alert("Leave application submitted successfully!");
-        setShowLeaveForm(false);
-        setLeaveData({ fromDate: '', toDate: '', reason: '' });
-      }
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/leaves`,
+        {
+          studentId: student._id,
+          studentName: student.name,
+          class: student.class,
+          rollNo: student.rollNo,
+          fromDate: leaveData.fromDate,
+          toDate: leaveData.toDate,
+          reason: leaveData.reason
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        }
+      );
+      alert("Leave application submitted successfully!");
+      setShowLeaveForm(false);
+      setLeaveData({ fromDate: '', toDate: '', reason: '' });
     } catch (error) {
-      console.error("Error submitting leave:", error.response?.data || error.message);
+      console.error("Error submitting leave:", error);
       alert("Failed to submit leave application. Please try again.");
     }
   };
@@ -306,7 +328,7 @@ const StudentAttendance = () => {
           </div>
 
           <div className="grid grid-cols-7 gap-2 text-sm text-center">
-            {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => (
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
               <div key={d} className="text-white/70 font-semibold">{d}</div>
             ))}
             {generateCalendar().map((c, i) => (
@@ -332,13 +354,25 @@ const StudentAttendance = () => {
           </div>
 
           <div className="mt-8">
-            <button 
+            <button
               onClick={() => setShowLeaveForm(true)}
               className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
             >
               Apply for Leave
             </button>
           </div>
+
+          {error && (
+            <div className="mt-4 p-4 bg-red-900/30 rounded-lg">
+              <p className="text-red-300">{error}</p>
+              <button
+                onClick={loadAttendance}
+                className="mt-2 px-4 py-2 bg-red-600 rounded hover:bg-red-700"
+              >
+                Retry
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -352,7 +386,7 @@ const StudentAttendance = () => {
                 <input
                   type="date"
                   value={leaveData.fromDate}
-                  onChange={e => setLeaveData({...leaveData, fromDate: e.target.value})}
+                  onChange={e => setLeaveData({ ...leaveData, fromDate: e.target.value })}
                   className="w-full p-2 bg-gray-700 rounded"
                   required
                 />
@@ -362,7 +396,7 @@ const StudentAttendance = () => {
                 <input
                   type="date"
                   value={leaveData.toDate}
-                  onChange={e => setLeaveData({...leaveData, toDate: e.target.value})}
+                  onChange={e => setLeaveData({ ...leaveData, toDate: e.target.value })}
                   className="w-full p-2 bg-gray-700 rounded"
                   required
                 />
@@ -371,21 +405,21 @@ const StudentAttendance = () => {
                 <label className="block text-sm mb-1">Reason</label>
                 <textarea
                   value={leaveData.reason}
-                  onChange={e => setLeaveData({...leaveData, reason: e.target.value})}
+                  onChange={e => setLeaveData({ ...leaveData, reason: e.target.value })}
                   className="w-full p-2 bg-gray-700 rounded"
                   required
                   rows={3}
                 />
               </div>
               <div className="flex justify-end gap-2">
-                <button 
+                <button
                   type="button"
                   onClick={() => setShowLeaveForm(false)}
                   className="px-4 py-2 bg-gray-600 rounded"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="px-4 py-2 bg-yellow-500 text-black rounded"
                 >

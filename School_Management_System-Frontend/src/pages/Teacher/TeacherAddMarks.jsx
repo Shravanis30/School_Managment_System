@@ -177,6 +177,8 @@
 
 
 
+
+
 import React, { useState, useEffect } from "react";
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
@@ -197,16 +199,24 @@ const TeacherAddMarks = () => {
   const [existingRecords, setExistingRecords] = useState({});
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`).then((res) => setClasses(res.data));
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, { 
+      withCredentials: true 
+    }).then((res) => setClasses(res.data));
   }, []);
 
   useEffect(() => {
     if (selectedClass) {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes/subjects/${selectedClass}`)
+      // Corrected subjects endpoint
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes/subjects/${selectedClass}`, { 
+        withCredentials: true 
+      })
         .then((res) => setSubjects(res.data))
         .catch(() => setSubjects([]));
 
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${selectedClass}`)
+      // Corrected students endpoint
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/class/${selectedClass}`, { 
+        withCredentials: true 
+      })
         .then((res) => setStudents(res.data))
         .catch(() => setStudents([]));
     }
@@ -216,9 +226,13 @@ const TeacherAddMarks = () => {
     const fetchExistingMarks = async () => {
       if (selectedClass && selectedTeam) {
         try {
-          const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/marks/by-class-team?className=${selectedClass}&team=${selectedTeam}`);
-          const records = {};
+          // Corrected marks endpoint with proper parameters
+          const res = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/api/marks/${selectedClass}/${selectedTeam}`, 
+            { withCredentials: true }
+          );
           
+          const records = {};
           res.data.forEach(record => {
             records[record.student] = record;
           });
@@ -226,6 +240,7 @@ const TeacherAddMarks = () => {
           setExistingRecords(records);
         } catch (err) {
           console.error("Error fetching existing marks", err);
+          setExistingRecords({});
         }
       }
     };
@@ -274,7 +289,12 @@ const TeacherAddMarks = () => {
         studentMarks,
       };
 
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/marks/multiple-subjects`, payload, { withCredentials: true });
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/marks/multiple-subjects`, 
+        payload, 
+        { withCredentials: true }
+      );
+      
       toast.success("✅ Marks submitted successfully!");
     } catch (err) {
       toast.error("❌ Error submitting marks. Please try again.");

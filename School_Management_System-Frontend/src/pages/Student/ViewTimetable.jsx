@@ -307,15 +307,16 @@ const ViewTimetable = () => {
         
         setLoading(true);
         setError('');
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/timetable/${studentClass}`, {
+        
+        // Normalize class name by removing "Class " prefix
+        const normalizedClass = studentClass.replace(/^Class\s*/i, '');
+        
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/timetable/${normalizedClass}`, {
           credentials: 'include',
         });
 
-        // Handle non-JSON responses
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          const text = await response.text();
-          throw new Error(`Unexpected response: ${text.slice(0, 100)}`);
+        if (response.status === 404) {
+          throw new Error('Timetable not found for this class');
         }
 
         if (!response.ok) {

@@ -118,6 +118,9 @@
 // };
 
 
+
+
+
 // controllers/fee.controller.js
 import FeeStructure from "../models/feestructure.model.js";
 import StudentFee from "../models/studentfee.model.js";
@@ -228,5 +231,17 @@ export const getPending = async (req, res) => {
   } catch (error) {
     console.error("Error in getPending:", error);
     res.status(500).json([]);
+  }
+};
+
+// controllers/fee.controller.js
+export const getAllFeeStructures = async (req, res) => {
+  try {
+    const adminId = req.user._id;
+    const structures = await FeeStructure.find({ adminId });
+    res.json(structures);
+  } catch (error) {
+    console.error("Error fetching all fee structures:", error);
+    res.status(500).json({ message: "Error fetching fee structures" });
   }
 };

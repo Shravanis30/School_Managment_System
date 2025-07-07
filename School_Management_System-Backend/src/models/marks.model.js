@@ -20,6 +20,8 @@
 // // Export as "Marks" to match controller
 // export default mongoose.model("Marks", markSchema);
 
+
+
 // models/marks.model.js
 import mongoose from "mongoose";
 

@@ -392,6 +392,7 @@
 // };
 
 
+
 import React, { useEffect, useState } from "react";
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
@@ -410,6 +411,7 @@ const TeacherAttendance = () => {
   const [currentYear, setCurrentYear] = useState(2025);
   const [saving, setSaving] = useState(false);
   const [loadingStudents, setLoadingStudents] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -439,7 +441,7 @@ const TeacherAttendance = () => {
   }, [selectedDate]);
 
   useEffect(() => {
-    if (selectedClass?._id && selectedDate && academicYear) {
+    if (selectedClass?.name && selectedDate && academicYear) {
       fetchStudentsByClass();
     }
   }, [selectedClass, selectedDate, academicYear]);
@@ -447,11 +449,16 @@ const TeacherAttendance = () => {
   const fetchStudentsByClass = async (dateToUse = selectedDate) => {
     try {
       setLoadingStudents(true);
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/class/${selectedClass._id}`);
+      setError(null);
+      // CORRECTED ENDPOINT: Using class name instead of ID
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${encodeURIComponent(selectedClass.name)}`
+      );
       setStudents(Array.isArray(res.data) ? res.data : []);
       setSelectedAttendance({});
     } catch (err) {
       console.error('Error fetching students:', err.message);
+      setError('Error fetching students. Please try again.');
     } finally {
       setLoadingStudents(false);
     }
@@ -467,6 +474,7 @@ const TeacherAttendance = () => {
     setSelectedAttendance(updated);
 
     try {
+      setSaving(true);
       const payload = {
         studentId,
         classId: selectedClass._id,
@@ -479,10 +487,12 @@ const TeacherAttendance = () => {
     } catch (error) {
       console.error("Failed to mark attendance:", error.response?.data || error.message);
       if (error.response?.data?.message.includes('validation')) {
-        alert('Invalid attendance data. Please check your inputs.');
+        setError('Invalid attendance data. Please check your inputs.');
       } else {
-        alert('Failed to save attendance. Please try again.');
+        setError('Failed to save attendance. Please try again.');
       }
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -516,6 +526,26 @@ const TeacherAttendance = () => {
     const today = getTodayDate();
     setSelectedDate(today);
   }, []);
+
+  // Custom tick icons
+  const TickIcon = ({ status }) => {
+    let iconColor = "text-white";
+    
+    if (status === 'present') iconColor = "text-blue-500";
+    else if (status === 'absent') iconColor = "text-red-500";
+    else if (status === 'leave') iconColor = "text-yellow-500";
+
+    return (
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        className={`h-5 w-5 ${iconColor}`} 
+        viewBox="0 0 20 20" 
+        fill="currentColor"
+      >
+        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+      </svg>
+    );
+  };
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
@@ -552,6 +582,15 @@ const TeacherAttendance = () => {
             />
           </div>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-900/30 text-red-300 rounded-lg flex items-center border border-red-500/30">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {error}
+          </div>
+        )}
 
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-md w-full lg:w-1/2 mb-6">
@@ -626,12 +665,18 @@ const TeacherAttendance = () => {
                   onClick={() => {
                     if (!date.disabled) {
                       setSelectedDate(date.fullDate);
-                      if (selectedClass?._id && academicYear) {
+                      if (selectedClass?.name && academicYear) {
                         fetchStudentsByClass(date.fullDate);
                       }
                     }
                   }}
-                  className={`py-2 rounded-lg cursor-pointer transition-all ${date.disabled ? "text-gray-600" : selectedDate === date.fullDate ? "bg-purple-600 text-white" : "hover:bg-purple-700"}`}
+                  className={`py-2 rounded-lg cursor-pointer transition-all flex items-center justify-center ${
+                    date.disabled 
+                      ? "text-gray-600" 
+                      : selectedDate === date.fullDate 
+                        ? "bg-purple-600 text-white" 
+                        : "hover:bg-purple-700"
+                  }`}
                 >
                   {date.day}
                 </div>
@@ -640,7 +685,7 @@ const TeacherAttendance = () => {
 
             <div className="mt-4 flex justify-between items-center">
               <div className="text-sm text-gray-400">
-                Selected: {selectedDate || "No date selected"}
+                Selected: {selectedDate ? new Date(selectedDate).toLocaleDateString() : "No date selected"}
               </div>
             </div>
           </div>
@@ -652,13 +697,13 @@ const TeacherAttendance = () => {
             </div>
           )}
           
-          {students.length > 0 && (
+          {!loadingStudents && students.length > 0 && (
             <div className="bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-md w-full lg:w-1/2">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-white">
-                  👥 Attendance for {selectedDate}
+                  👥 Attendance for {selectedDate && new Date(selectedDate).toLocaleDateString()}
                 </h3>
-                <span className="text-sm text-blue-300">
+                <span className="text-sm text-blue-300 bg-blue-900/30 px-2 py-1 rounded">
                   {selectedClass?.name}
                 </span>
               </div>
@@ -667,30 +712,38 @@ const TeacherAttendance = () => {
                 <table className="w-full text-sm">
                   <thead className="bg-purple-700 text-white">
                     <tr>
-                      <th className="p-2 text-left">Student</th>
-                      <th className="p-2 text-center">Present</th>
-                      <th className="p-2 text-center">Absent</th>
-                      <th className="p-2 text-center">Leave</th>
+                      <th className="p-3 text-left">Student</th>
+                      <th className="p-3 text-center">Present</th>
+                      <th className="p-3 text-center">Absent</th>
+                      <th className="p-3 text-center">Leave</th>
                     </tr>
                   </thead>
                   <tbody>
                     {students.map(student => (
                       <tr key={student._id} className="border-t border-white/10 hover:bg-white/10">
-                        <td className="p-2">{student.name}</td>
+                        <td className="p-3">{student.name}</td>
                         {["present", "absent", "leave"].map(status => (
-                          <td key={status} className="p-2 text-center">
+                          <td key={status} className="p-3 text-center">
                             <button
                               onClick={() => handleAttendanceChange(student._id, status)}
                               disabled={saving}
-                              className={`w-8 h-8 rounded-full transition flex items-center justify-center ${
-                                selectedAttendance[student._id] === status
-                                  ? status === 'leave' 
-                                    ? 'bg-yellow-500' 
-                                    : 'bg-purple-600'
-                                  : 'bg-gray-700 hover:bg-gray-600'
-                              } ${saving ? "opacity-50 cursor-not-allowed" : ""}`}
+                              className={`
+                                w-8 h-8 rounded-full transition flex items-center justify-center 
+                                ${saving ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                                ${
+                                  selectedAttendance[student._id] === status
+                                    ? status === 'present' 
+                                      ? 'bg-blue-500/20 hover:bg-blue-500/30' 
+                                      : status === 'absent'
+                                        ? 'bg-red-500/20 hover:bg-red-500/30'
+                                        : 'bg-yellow-500/20 hover:bg-yellow-500/30'
+                                    : 'bg-gray-700 hover:bg-gray-600'
+                                }`
+                              }
                             >
-                              {saving ? "..." : selectedAttendance[student._id] === status ? "✓" : ""}
+                              {selectedAttendance[student._id] === status && (
+                                <TickIcon status={status} />
+                              )}
                             </button>
                           </td>
                         ))}
@@ -701,20 +754,19 @@ const TeacherAttendance = () => {
               </div>
             </div>
           )}
-        </div>
 
-        {students.length > 0 && (
-          <div className="mb-4">
-            {Object.values(selectedAttendance).includes('duplicate') && (
-              <div className="bg-red-900/30 text-red-300 p-3 rounded-lg flex items-center border border-red-500/30">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Attendance already recorded for this date
-              </div>
-            )}
-          </div>
-        )}
+          {!loadingStudents && selectedClass && students.length === 0 && (
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-md w-full lg:w-1/2 flex flex-col items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <h3 className="text-lg font-semibold mb-2">No Students Found</h3>
+              <p className="text-gray-400 text-center">
+                No students registered in {selectedClass?.name} class.
+              </p>
+            </div>
+          )}
+        </div>
 
         {!selectedClass && (
           <div className="bg-blue-900/30 p-6 rounded-xl text-center border border-blue-500/30">

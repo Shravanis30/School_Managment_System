@@ -57,7 +57,8 @@ import {
   getCollection,
   getPending,
   payFee,
-  getStudentFee
+  getStudentFee,
+  getAllFeeStructures
 } from "../controllers/fee.controller.js";
 import FeeStructure from "../models/feestructure.model.js";
 
@@ -69,7 +70,7 @@ router.get("/collection", authMiddleware, authorizeRole("admin"), getCollection)
 router.get("/pending", authMiddleware, authorizeRole("admin"), getPending);
 router.post("/pay", authMiddleware, authorizeRole("student"), payFee);
 router.get("/payments", authMiddleware, authorizeRole("student"), getStudentFee);
-
+router.get("/all-structures", authMiddleware, authorizeRole("admin"), getAllFeeStructures);
 router.get("/my-structure", authMiddleware, authorizeRole("student"), async (req, res) => {
   try {
     const className = req.user.className;

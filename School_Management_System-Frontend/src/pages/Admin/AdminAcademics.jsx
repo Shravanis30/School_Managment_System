@@ -561,10 +561,18 @@
 // export default AdminAcademics;
 
 
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
-import { FaDownload, FaTrash, FaTimes } from 'react-icons/fa';
+import { FaDownload, FaTrash, FaTimes, FaEdit } from 'react-icons/fa';
 
 const AdminAcademics = () => {
   // Syllabus state
@@ -593,7 +601,8 @@ const AdminAcademics = () => {
   const [isSyllabusModalOpen, setIsSyllabusModalOpen] = useState(false);
   const [isTimetableModalOpen, setIsTimetableModalOpen] = useState(false);
 
-  const normalizeClassName = (className) => className.replace(/^Class\s*/, '');
+  // Fixed normalization function
+  const normalizeClassName = (className) => className.replace(/^Class\s*/i, '');
 
   // Fetch classes on component mount
   useEffect(() => {
@@ -623,17 +632,18 @@ const AdminAcademics = () => {
       try {
         // Fetch students
         const studentsRes = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${selectedClass}`, 
+          `${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${normalizeClassName(selectedClass)}`, 
           { credentials: 'include' }
         );
         const studentsData = await studentsRes.json();
         setStudents(studentsData);
 
-        // Fetch syllabus
+        // Fetch syllabus - fixed endpoint
         const syllabusRes = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${normalizeClassName(selectedClass)}`,
           { credentials: 'include' }
         );
+        
         if (syllabusRes.ok) {
           const syllabusData = await syllabusRes.json();
           setUploadedSyllabus(prev => ({
@@ -647,11 +657,12 @@ const AdminAcademics = () => {
           }));
         }
 
-        // Fetch timetable
+        // Fetch timetable - fixed endpoint
         const timetableRes = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/api/timetable/${normalizeClassName(selectedClass)}`,
           { credentials: 'include' }
         );
+        
         if (timetableRes.ok) {
           const timetableData = await timetableRes.json();
           setUploadedTimetables(prev => ({
@@ -1000,6 +1011,16 @@ const AdminAcademics = () => {
                     className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm"
                   >
                     View
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Set this class as active for editing
+                      setSelectedClass(cls);
+                      setActiveTab('Time-Table');
+                    }}
+                    className="py-2 px-3 bg-yellow-600 hover:bg-yellow-700 rounded"
+                  >
+                    <FaEdit />
                   </button>
                   <button
                     onClick={() => {

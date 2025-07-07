@@ -102,3 +102,16 @@ export const deleteTeacherController = async (req, res) => {
     res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
+
+// teacher.controller.js
+export const getStudentsByClassForTeacher = async (req, res) => {
+  try {
+    const students = await Student.find({
+      className: req.params.className,
+      adminId: req.user.adminId // Using teacher's adminId
+    });
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching students' });
+  }
+};
