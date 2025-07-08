@@ -5,6 +5,7 @@ import {
   uploadTimetable,
   getTimetableByClassName,
   deleteTimetableByClass,
+  getAllTimetablesForAdmin
 } from '../controllers/timetable.controller.js';
 import authMiddleware, { authorizeRole } from '../middlewares/auth.middleware.js';
 
