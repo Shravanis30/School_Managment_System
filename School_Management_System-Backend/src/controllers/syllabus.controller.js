@@ -128,3 +128,13 @@ export const deleteSyllabus = async (req, res) => {
     res.status(err.statusCode || 500).json({ error: err.message || "Delete failed" });
   }
 };
+
+// Add this new function
+export const getAllSyllabusForAdmin = async (req, res) => {
+  try {
+    const syllabi = await Syllabus.find({ adminId: req.user._id });
+    res.status(200).json(syllabi);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};

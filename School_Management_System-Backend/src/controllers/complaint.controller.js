@@ -91,3 +91,25 @@ export const getAllComplaints = async (req, res) => {
     res.status(err.statusCode || 500).json({ error: err.message || 'Failed to fetch complaints' });
   }
 };
+
+// ✅ Delete complaint (Admin only)
+export const deleteComplaint = async (req, res) => {
+  try {
+    if (req.role !== 'admin') {
+      throw new ApiError(403, 'Only admins can delete complaints');
+    }
+
+    const { id } = req.params;
+    const complaint = await Complaint.findByIdAndDelete(id);
+
+    if (!complaint) {
+      throw new ApiError(404, 'Complaint not found');
+    }
+
+    res.status(200).json({ message: 'Complaint resolved successfully' });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ 
+      error: err.message || 'Failed to resolve complaint' 
+    });
+  }
+};

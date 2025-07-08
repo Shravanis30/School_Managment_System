@@ -173,7 +173,7 @@ const UploadResources = () => {
   const [resources, setResources] = useState([]);
   const [refreshResources, setRefreshResources] = useState(0);
   const [loading, setLoading] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     className: '',
     subject: '',
@@ -200,7 +200,7 @@ const UploadResources = () => {
   useEffect(() => {
     const selectedClass = classes.find(cls => cls.name === formData.className);
     setSubjects(selectedClass?.subjects || []);
-    
+
     // Reset subject when class changes
     if (selectedClass) {
       setFormData(prev => ({ ...prev, subject: '' }));
@@ -217,12 +217,12 @@ const UploadResources = () => {
             `${import.meta.env.VITE_BACKEND_URL}/api/resources/class/${encodeURIComponent(formData.className)}`,
             { withCredentials: true }
           );
-          
+
           // Filter resources by selected subject
           const filtered = res.data.filter(
             resource => resource.subject === formData.subject
           );
-          
+
           setResources(filtered);
         } catch (err) {
           console.error('Error fetching resources:', err);
@@ -268,7 +268,7 @@ const UploadResources = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       alert("Resource uploaded successfully!");
       setFormData(prev => ({ ...prev, title: '', file: null }));
       setRefreshResources(prev => prev + 1); // Refresh resource list
@@ -358,7 +358,7 @@ const UploadResources = () => {
             </form>
           </div>
 
-          {/* Syllabus Viewing Section */}
+          {/* Syllabus Viewing Section
           {formData.className && formData.subject && (
             <div className="bg-white/10 p-6 rounded-lg shadow-md border border-white/20 backdrop-blur">
               <h2 className="text-2xl font-bold mb-4 text-center">
@@ -384,6 +384,48 @@ const UploadResources = () => {
                       </div>
                       <a
                         href={`${import.meta.env.VITE_BACKEND_URL}${resource.fileUrl}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-green-500 hover:bg-green-600 text-black px-3 py-1 rounded font-medium"
+                      >
+                        View PDF
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  ); */}
+          {/* Syllabus Viewing Section */}
+          {formData.className && formData.subject && (
+            <div className="bg-white/10 p-6 rounded-lg shadow-md border border-white/20 backdrop-blur">
+              <h2 className="text-2xl font-bold mb-4 text-center">
+                Syllabus for {formData.className} - {formData.subject}
+              </h2>
+
+              {loading ? (
+                <p className="text-center">Loading resources...</p>
+              ) : resources.length === 0 ? (
+                <p className="text-center">No syllabus uploaded yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {resources.map((resource) => (
+                    <div
+                      key={resource._id}
+                      className="flex justify-between items-center p-3 bg-gray-800/50 rounded"
+                    >
+                      <div>
+                        <h3 className="font-medium">{resource.title}</h3>
+                        <p className="text-sm text-gray-400">
+                          Uploaded: {new Date(resource.uploadedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <a
+                        href={`${import.meta.env.VITE_BACKEND_URL}${resource.fileUrl}`} // Fixed URL
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-green-500 hover:bg-green-600 text-black px-3 py-1 rounded font-medium"

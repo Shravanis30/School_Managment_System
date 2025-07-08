@@ -176,9 +176,6 @@
 // export default TeacherAddMarks;
 
 
-
-
-
 import React, { useState, useEffect } from "react";
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
@@ -191,6 +188,7 @@ const TeacherAddMarks = () => {
   const [selectedTeam, setSelectedTeam] = useState("");
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
+  const [selectedClassId, setSelectedClassId] = useState("");
   const [subjects, setSubjects] = useState([]);
   const [students, setStudents] = useState([]);
   const [marks, setMarks] = useState({});
@@ -205,28 +203,27 @@ const TeacherAddMarks = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedClass) {
-      // Corrected subjects endpoint
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes/subjects/${selectedClass}`, { 
+    if (selectedClassId) {
+      // Fetch subjects by class ID
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes/${selectedClassId}/subjects`, { 
         withCredentials: true 
       })
         .then((res) => setSubjects(res.data))
         .catch(() => setSubjects([]));
 
-      // Corrected students endpoint
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/class/${selectedClass}`, { 
+      // Fetch students by class ID
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/students/class/${selectedClassId}`, { 
         withCredentials: true 
       })
         .then((res) => setStudents(res.data))
         .catch(() => setStudents([]));
     }
-  }, [selectedClass]);
+  }, [selectedClassId]);
 
   useEffect(() => {
     const fetchExistingMarks = async () => {
       if (selectedClass && selectedTeam) {
         try {
-          // Corrected marks endpoint with proper parameters
           const res = await axios.get(
             `${import.meta.env.VITE_BACKEND_URL}/api/marks/${selectedClass}/${selectedTeam}`, 
             { withCredentials: true }
@@ -283,6 +280,7 @@ const TeacherAddMarks = () => {
 
       const payload = {
         className: selectedClass,
+        classId: selectedClassId,
         team: selectedTeam,
         totalMarksPerSubject: totalMarks,
         subjects,
@@ -298,6 +296,7 @@ const TeacherAddMarks = () => {
       toast.success("✅ Marks submitted successfully!");
     } catch (err) {
       toast.error("❌ Error submitting marks. Please try again.");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -354,7 +353,12 @@ const TeacherAddMarks = () => {
               <label className="block text-sm mb-1 text-gray-300">Class</label>
               <select 
                 value={selectedClass} 
-                onChange={(e) => setSelectedClass(e.target.value)}
+                onChange={(e) => {
+                  const selected = e.target.value;
+                  const cls = classes.find(c => c.name === selected);
+                  setSelectedClass(selected);
+                  setSelectedClassId(cls?._id || "");
+                }}
                 className="w-full p-2 rounded bg-gray-800 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Select Class</option>

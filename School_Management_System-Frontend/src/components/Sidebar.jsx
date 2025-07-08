@@ -30,11 +30,24 @@ const Sidebar = ({ role }) => {
   const handleLogout = async () => {
     try {
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/logout`, {}, { withCredentials: true });
-      navigate('/select-role');
+
+      alert("Logout successful!");
+
+      if (role === 'admin') {
+        navigate('/login/admin');
+      } else if (role === 'teacher') {
+        navigate('/login/teacher');
+      } else if (role === 'student') {
+        navigate('/login/student');
+      } else {
+        navigate('/select-role');
+      }
     } catch (err) {
       console.error("Logout failed:", err.response?.data || err.message);
+      alert("Logout failed. Please try again.");
     }
   };
+
 
   const navItems = {
     admin: [
@@ -93,11 +106,10 @@ const Sidebar = ({ role }) => {
               to={item.path}
               key={item.path}
               title={item.label}
-              className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 text-lg ${
-                location.pathname === item.path
+              className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 text-lg ${location.pathname === item.path
                   ? 'bg-blue-600 text-white'
                   : 'text-gray-300 hover:bg-blue-700/40 hover:text-white'
-              }`}
+                }`}
             >
               {item.icon}
               {isOpen && <span className="text-lg font-semibold">{item.label}</span>}

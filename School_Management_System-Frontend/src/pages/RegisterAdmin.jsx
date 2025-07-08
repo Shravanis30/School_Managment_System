@@ -1,8 +1,9 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react'; // ✅ include useEffect
 import { Link, useNavigate } from 'react-router-dom'; // ✅ added useNavigate
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import backgroundImg from "../assets/img.jpg";
+import axios from 'axios'
 
 const RegisterAdmin = () => {
   const [form, setForm] = useState({
@@ -11,10 +12,31 @@ const RegisterAdmin = () => {
     email: '',
     password: '',
     remember: false,
+    profileImage: '',
+
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate(); // ✅ initialize navigate
+
+
+  // ✅ Check if admin already exists
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admins/check`, {
+          withCredentials: true,
+        });
+        if (res.data.exists) {
+          navigate('/login/admin'); // redirect to login if already exists
+        }
+      } catch (err) {
+        console.error("Error checking admin existence:", err);
+      }
+    };
+
+    checkAdmin();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

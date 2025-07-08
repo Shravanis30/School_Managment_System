@@ -200,3 +200,27 @@ export const deleteSubjectFromClass = async (req, res) => {
     res.status(err.statusCode || 500).json({ message: err.message || 'Error deleting subject' });
   }
 };
+
+// Add this function to your class controller
+export const deleteClass = async (req, res) => {
+  try {
+    if (req.role !== 'admin') {
+      throw new ApiError(403, 'Only admins can delete classes');
+    }
+
+    const { id } = req.params;
+    const adminId = req.user._id;
+
+    const cls = await Class.findOneAndDelete({ _id: id, adminId });
+
+    if (!cls) {
+      throw new ApiError(404, 'Class not found');
+    }
+
+    res.status(200).json({ message: 'Class deleted successfully' });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ 
+      message: err.message || 'Error deleting class' 
+    });
+  }
+};

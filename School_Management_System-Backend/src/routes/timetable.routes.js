@@ -14,4 +14,7 @@ router.post('/', authMiddleware, uploadTimetable);
 router.get('/:className', authMiddleware, getTimetableByClassName);
 router.delete('/:className', authMiddleware, deleteTimetableByClass);
 
+router.get('/admin/all', authMiddleware, authorizeRole('admin'), getAllTimetablesForAdmin);
+
+
 export default router;

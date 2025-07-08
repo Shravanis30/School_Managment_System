@@ -1,5 +1,3 @@
-
-
 // import React, { useEffect, useState } from 'react';
 // import Sidebar from '../../components/Sidebar';
 // import Header from '../../components/Header';
@@ -15,15 +13,25 @@
 //       try {
 //         setLoading(true);
 //         setError("");
-
-//         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${className}`, {
+        
+//         // Clean class name to match backend format
+//         const cleanClassName = className.replace(/^Class\s*/i, '');
+        
+//         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${cleanClassName}`, {
 //           method: "GET",
 //           credentials: "include",
 //         });
 
 //         if (!res.ok) {
-//           const errorText = await res.text();
-//           throw new Error(`Failed to fetch syllabus: ${res.status} - ${errorText}`);
+//           // Improved error handling
+//           let errorMsg;
+//           try {
+//             const errorResponse = await res.json();
+//             errorMsg = errorResponse.message || errorResponse.error || res.statusText;
+//           } catch (e) {
+//             errorMsg = await res.text();
+//           }
+//           throw new Error(errorMsg);
 //         }
 
 //         const data = await res.json();
@@ -37,12 +45,16 @@
 //           setFileInfo({
 //             name: fileName,
 //             type: fileExt,
-//             size: "1.5 MB"
+//             size: "1.5 MB" // Static size since backend doesn't provide it
 //           });
 //         }
 //       } catch (err) {
-//         console.error("Error fetching syllabus:", err);
-//         setError(err.message || "Syllabus not found for this class.");
+//         const errorMessage = err.message;
+//         setError(errorMessage);
+//         // Only log unexpected errors
+//         if (!errorMessage.toLowerCase().includes('not found')) {
+//           console.error("Error fetching syllabus:", err);
+//         }
 //       } finally {
 //         setLoading(false);
 //       }
@@ -91,7 +103,7 @@
 //                 </svg>
 //                 <h2 className="text-xl font-bold mb-2">Syllabus Not Available</h2>
 //                 <p className="text-red-300 mb-4 text-center max-w-md">
-//                   {error.includes("not found")
+//                   {error.toLowerCase().includes("not found")
 //                     ? `The syllabus for Class ${className} hasn't been uploaded yet.`
 //                     : error}
 //                 </p>
@@ -250,15 +262,20 @@
 // export default ViewSyllabus;
 
 
+
+
+
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
+import { FaDownload } from 'react-icons/fa';
 
-const ViewSyllabus = ({ className = "10" }) => {
+const ViewSyllabus = () => {
   const [syllabusURL, setSyllabusURL] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [fileInfo, setFileInfo] = useState({ name: "", size: "", type: "" });
+  const [className, setClassName] = useState("");
 
   useEffect(() => {
     const fetchSyllabus = async () => {
@@ -266,8 +283,22 @@ const ViewSyllabus = ({ className = "10" }) => {
         setLoading(true);
         setError("");
         
+        // First fetch student data to get class
+        const studentRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/students/me`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!studentRes.ok) {
+          throw new Error('Failed to fetch student data');
+        }
+
+        const student = await studentRes.json();
+        const studentClass = student.className;
+        setClassName(studentClass);
+
         // Clean class name to match backend format
-        const cleanClassName = className.replace(/^Class\s*/i, '');
+        const cleanClassName = studentClass.replace(/^Class\s*/i, '');
         
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${cleanClassName}`, {
           method: "GET",
@@ -275,15 +306,19 @@ const ViewSyllabus = ({ className = "10" }) => {
         });
 
         if (!res.ok) {
-          // Improved error handling
-          let errorMsg;
-          try {
-            const errorResponse = await res.json();
-            errorMsg = errorResponse.message || errorResponse.error || res.statusText;
-          } catch (e) {
-            errorMsg = await res.text();
+          if (res.status === 404) {
+            throw new Error(`The syllabus for ${studentClass} hasn't been uploaded yet.`);
+          } else {
+            // Improved error handling
+            let errorMsg;
+            try {
+              const errorResponse = await res.json();
+              errorMsg = errorResponse.message || errorResponse.error || res.statusText;
+            } catch (e) {
+              errorMsg = await res.text();
+            }
+            throw new Error(errorMsg);
           }
-          throw new Error(errorMsg);
         }
 
         const data = await res.json();
@@ -313,7 +348,7 @@ const ViewSyllabus = ({ className = "10" }) => {
     };
 
     fetchSyllabus();
-  }, [className]);
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
@@ -328,13 +363,15 @@ const ViewSyllabus = ({ className = "10" }) => {
                 <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
                   Class Syllabus
                 </h1>
-                <p className="text-blue-300 mt-1 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
-                  </svg>
-                  Syllabus for Class {className}
-                </p>
+                {className && (
+                  <p className="text-blue-300 mt-1 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
+                    </svg>
+                    Syllabus for {className}
+                  </p>
+                )}
               </div>
               <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
             </div>
@@ -355,9 +392,7 @@ const ViewSyllabus = ({ className = "10" }) => {
                 </svg>
                 <h2 className="text-xl font-bold mb-2">Syllabus Not Available</h2>
                 <p className="text-red-300 mb-4 text-center max-w-md">
-                  {error.toLowerCase().includes("not found")
-                    ? `The syllabus for Class ${className} hasn't been uploaded yet.`
-                    : error}
+                  {error}
                 </p>
                 <button
                   onClick={() => window.location.reload()}
@@ -387,7 +422,7 @@ const ViewSyllabus = ({ className = "10" }) => {
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <div className="text-sm text-gray-400">Class</div>
-                            <div className="font-medium">Class {className}</div>
+                            <div className="font-medium">{className}</div>
                           </div>
                           <div>
                             <div className="text-sm text-gray-400">File Type</div>
@@ -406,16 +441,32 @@ const ViewSyllabus = ({ className = "10" }) => {
 
                       <div className="mb-6">
                         <h3 className="font-semibold mb-2 text-green-300 flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 5a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                           </svg>
                           Key Information
                         </h3>
                         <ul className="list-disc pl-5 space-y-1 text-gray-300">
-                          <li>Complete list of topics covered each term</li>
-                          <li>Important dates and assessment schedules</li>
-                          <li>Recommended textbooks and resources</li>
-                          <li>Grading criteria and evaluation methods</li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">•</span>
+                            The syllabus is your academic roadmap for the entire year
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">•</span>
+                            It outlines all topics, assignments, and exams you'll encounter
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">•</span>
+                            Refer to it regularly to stay on track with your studies
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">•</span>
+                            Pay special attention to assessment dates and grading criteria
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">•</span>
+                            Contact your teacher if you have any questions about the content
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -467,7 +518,7 @@ const ViewSyllabus = ({ className = "10" }) => {
                 </svg>
                 <h2 className="text-xl font-bold mb-2">Syllabus Not Available</h2>
                 <p className="text-gray-400 max-w-md">
-                  The syllabus for Class {className} hasn't been published yet.
+                  The syllabus for {className} hasn't been published yet.
                   Please check back later or contact your class coordinator.
                 </p>
               </div>
@@ -477,7 +528,7 @@ const ViewSyllabus = ({ className = "10" }) => {
             <div className="mt-8 bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6">
               <h2 className="font-bold text-lg mb-4 text-blue-300 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 5a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
                 Understanding Your Syllabus
               </h2>

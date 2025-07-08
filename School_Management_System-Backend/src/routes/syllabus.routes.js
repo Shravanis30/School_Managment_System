@@ -107,4 +107,6 @@ router.get('/:classId', authMiddleware, getSyllabusByClass);
 // ✅ Delete syllabus
 router.delete('/:classId', authMiddleware, deleteSyllabus);
 
+router.get('/admin/all', authMiddleware, authorizeRole('admin'), getAllSyllabusForAdmin);
+
 export default router;

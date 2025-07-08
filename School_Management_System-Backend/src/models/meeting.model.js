@@ -1,7 +1,11 @@
-// // models/meeting.model.js
 // import mongoose from "mongoose";
 
 // const meetingSchema = new mongoose.Schema({
+//   adminId: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "Admin",
+//     required: true
+//   },
 //   title: String,
 //   date: String,
 //   time: String,
@@ -16,7 +20,7 @@
 
 import mongoose from "mongoose";
 
-const meetingSchema = new mongoose.Schema({
+const meetingHistorySchema = new mongoose.Schema({
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Admin",
@@ -24,11 +28,8 @@ const meetingSchema = new mongoose.Schema({
   },
   title: String,
   date: String,
-  time: String,
-  participants: [String],
-  mode: String,
-  link: String,
-  status: { type: String, default: "Scheduled" },
+  by: String,
+  summary: String,
 }, { timestamps: true });
 
-export default mongoose.model("Meeting", meetingSchema);
+export default mongoose.model("MeetingHistory", meetingHistorySchema);

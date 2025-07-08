@@ -72,6 +72,7 @@ import {
   getAllClasses,
   getClassById,
   deleteSubjectFromClass,
+  deleteClass
 } from '../controllers/class.controller.js';
 import Class from '../models/class.model.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
@@ -80,6 +81,8 @@ const router = express.Router();
 
 router.get('/', authMiddleware, getAllClasses);
 router.get('/:id', authMiddleware, getClassById);
+router.delete('/:id', authMiddleware, deleteClass);
+
 router.post('/', authMiddleware, createClass);
 router.post('/:id/subjects', authMiddleware, addSubjectToClass);
 router.delete('/:id/subjects/:subject', authMiddleware, deleteSubjectFromClass);

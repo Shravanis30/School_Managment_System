@@ -68,7 +68,6 @@
 // export default AdminComplaintPage;
 
 
-
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
@@ -77,6 +76,7 @@ const AdminComplaintPage = () => {
   const [complaints, setComplaints] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [resolvingId, setResolvingId] = useState(null);
 
   useEffect(() => {
     const fetchComplaints = async () => {
@@ -101,6 +101,30 @@ const AdminComplaintPage = () => {
     };
     fetchComplaints();
   }, []);
+
+  // Handle resolving complaints
+  const handleResolveComplaint = async (complaintId) => {
+    try {
+      setResolvingId(complaintId);
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/complaints/${complaintId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      if (!res.ok) {
+        throw new Error('Failed to resolve complaint');
+      }
+      
+      // Remove the resolved complaint from the UI
+      setComplaints(complaints.filter(complaint => complaint._id !== complaintId));
+      
+    } catch (err) {
+      console.error('Failed to resolve complaint', err);
+      setError('Failed to resolve complaint. Please try again.');
+    } finally {
+      setResolvingId(null);
+    }
+  };
 
   // Priority badge styling
   const getPriorityClass = (priority) => {
@@ -153,12 +177,13 @@ const AdminComplaintPage = () => {
                     <th className="p-4 text-left text-sm font-medium text-blue-300">Roll No</th>
                     <th className="p-4 text-left text-sm font-medium text-blue-300">Complaint</th>
                     <th className="p-4 text-left text-sm font-medium text-blue-300">Priority</th>
+                    <th className="p-4 text-left text-sm font-medium text-blue-300">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/10">
-                  {complaints.map((item, i) => (
+                  {complaints.map((item) => (
                     <tr
-                      key={i}
+                      key={item._id}
                       className="hover:bg-white/5 transition duration-150"
                     >
                       <td className="p-4">
@@ -184,6 +209,29 @@ const AdminComplaintPage = () => {
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${getPriorityClass(item.priority)}`}>
                           {item.priority}
                         </span>
+                      </td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => handleResolveComplaint(item._id)}
+                          disabled={resolvingId === item._id}
+                          className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                            resolvingId === item._id
+                              ? 'bg-gray-700 cursor-not-allowed'
+                              : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 hover:shadow-lg'
+                          }`}
+                        >
+                          {resolvingId === item._id ? (
+                            <div className="flex items-center">
+                              <svg className="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Resolving...
+                            </div>
+                          ) : (
+                            'Mark as Resolved'
+                          )}
+                        </button>
                       </td>
                     </tr>
                   ))}

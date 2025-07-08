@@ -260,3 +260,12 @@ export const loginAdmin = async (req, res) => {
     });
   }
 };
+
+export const checkAdminExists = async (req, res) => {
+  try {
+    const count = await Admin.countDocuments();
+    res.status(200).json({ exists: count > 0 });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};

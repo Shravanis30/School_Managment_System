@@ -164,3 +164,13 @@ export const deleteTimetableByClass = async (req, res) => {
     res.status(500).json({ message: 'Error deleting timetable', error: err.message });
   }
 };
+
+// Add this new function
+export const getAllTimetablesForAdmin = async (req, res) => {
+  try {
+    const timetables = await Timetable.find({ adminId: req.user._id });
+    res.status(200).json(timetables);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
