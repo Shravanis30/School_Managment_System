@@ -75,7 +75,7 @@ import {
   deleteSyllabus
 } from '../controllers/syllabus.controller.js';
 // Correct import based on actual folder name
-import { authMiddleware, authorizeRole } from '../middlewares/auth.middleware.js'; 
+import authMiddleware, { authorizeRole } from '../middlewares/auth.middleware.js';
 
 
 
