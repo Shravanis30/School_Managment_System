@@ -860,7 +860,7 @@ const TeacherAttendance = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, { withCredentials: true });
         setClasses(res.data);
       } catch (err) {
         console.error('Error fetching classes:', err.response?.data || err.message);
@@ -889,7 +889,9 @@ const TeacherAttendance = () => {
       const fetchSubjects = async () => {
         try {
           const res = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/api/classes/${selectedClass._id}`
+            `${import.meta.env.VITE_BACKEND_URL}/api/classes/${selectedClass._id}`,
+            { withCredentials: true }
+
           );
           setSubjects(res.data.subjects || []);
           if (res.data.subjects.length > 0) {
@@ -916,7 +918,8 @@ const TeacherAttendance = () => {
       setLoadingStudents(true);
       setError(null);
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/students?classId=${selectedClass._id}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/students?classId=${selectedClass._id}`,
+        { withCredentials: true }
       );
       setStudents(Array.isArray(res.data) ? res.data : []);
       setSelectedAttendance({});
@@ -953,7 +956,7 @@ const TeacherAttendance = () => {
         academicYear,
       };
 
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/attendance/mark`, payload);
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/attendance/mark`, { withCredentials: true }, payload);
     } catch (error) {
       console.error("Failed to mark attendance:", error.response?.data || error.message);
       if (error.response?.data?.message.includes('validation')) {
@@ -999,16 +1002,16 @@ const TeacherAttendance = () => {
 
   const TickIcon = ({ status }) => {
     let iconColor = "text-white";
-    
+
     if (status === 'present') iconColor = "text-blue-500";
     else if (status === 'absent') iconColor = "text-red-500";
     else if (status === 'leave') iconColor = "text-yellow-500";
 
     return (
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        className={`h-5 w-5 ${iconColor}`} 
-        viewBox="0 0 20 20" 
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={`h-5 w-5 ${iconColor}`}
+        viewBox="0 0 20 20"
         fill="currentColor"
       >
         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -1152,13 +1155,12 @@ const TeacherAttendance = () => {
                       }
                     }
                   }}
-                  className={`py-2 rounded-lg cursor-pointer transition-all flex items-center justify-center ${
-                    date.disabled 
-                      ? "text-gray-600" 
-                      : selectedDate === date.fullDate 
-                        ? "bg-purple-600 text-white" 
-                        : "hover:bg-purple-700"
-                  }`}
+                  className={`py-2 rounded-lg cursor-pointer transition-all flex items-center justify-center ${date.disabled
+                    ? "text-gray-600"
+                    : selectedDate === date.fullDate
+                      ? "bg-purple-600 text-white"
+                      : "hover:bg-purple-700"
+                    }`}
                 >
                   {date.day}
                 </div>
@@ -1171,14 +1173,14 @@ const TeacherAttendance = () => {
               </div>
             </div>
           </div>
-          
+
           {loadingStudents && (
             <div className="bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-md w-full lg:w-1/2 flex flex-col items-center justify-center">
               <span className="animate-spin text-2xl mb-2">🌀</span>
               <p>Loading students...</p>
             </div>
           )}
-          
+
           {!loadingStudents && students.length > 0 && (
             <div className="bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-md w-full lg:w-1/2">
               <div className="flex justify-between items-center mb-4">
@@ -1212,14 +1214,13 @@ const TeacherAttendance = () => {
                               className={`
                                 w-8 h-8 rounded-full transition flex items-center justify-center 
                                 ${saving ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-                                ${
-                                  selectedAttendance[student._id] === status
-                                    ? status === 'present' 
-                                      ? 'bg-blue-500/20 hover:bg-blue-500/30' 
-                                      : status === 'absent'
-                                        ? 'bg-red-500/20 hover:bg-red-500/30'
-                                        : 'bg-yellow-500/20 hover:bg-yellow-500/30'
-                                    : 'bg-gray-700 hover:bg-gray-600'
+                                ${selectedAttendance[student._id] === status
+                                  ? status === 'present'
+                                    ? 'bg-blue-500/20 hover:bg-blue-500/30'
+                                    : status === 'absent'
+                                      ? 'bg-red-500/20 hover:bg-red-500/30'
+                                      : 'bg-yellow-500/20 hover:bg-yellow-500/30'
+                                  : 'bg-gray-700 hover:bg-gray-600'
                                 }`
                               }
                             >

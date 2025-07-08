@@ -130,7 +130,7 @@ const TeacherLeaveList = () => {
   useEffect(() => {
     const fetchLeaves = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/leaves`);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/leaves`, { withCredentials: true });
         setLeaves(res.data);
       } catch (error) {
         console.error('Error fetching leaves:', error.response?.data || error.message);
@@ -141,7 +141,7 @@ const TeacherLeaveList = () => {
 
   const handleApprove = async (id) => {
     try {
-      await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/leaves/${id}`, { status: 'Approved' });
+      await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/leaves/${id}`, { withCredentials: true },{ status: 'Approved' });
       setLeaves(leaves.map(l => l._id === id ? { ...l, status: 'Approved' } : l));
     } catch (error) {
       console.error('Approval failed:', error);
@@ -150,7 +150,7 @@ const TeacherLeaveList = () => {
 
   const handleReject = async (id) => {
     try {
-      await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/leaves/${id}`, { status: 'Rejected' });
+      await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/leaves/${id}`, { withCredentials: true }, { withCredentials: true }, { status: 'Rejected' });
       setLeaves(leaves.map(l => l._id === id ? { ...l, status: 'Rejected' } : l));
     } catch (error) {
       console.error('Rejection failed:', error);

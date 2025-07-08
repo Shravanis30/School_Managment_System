@@ -488,7 +488,9 @@ const StudentAttendance = () => {
     const init = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/user/profile`
+          `${import.meta.env.VITE_BACKEND_URL}/api/user/profile`,
+          { withCredentials: true }
+
         );
         setStudent(res.data);
         setSelectedClass(res.data.class);
@@ -505,7 +507,9 @@ const StudentAttendance = () => {
     setError(null);
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/attendance/student/${student._id}?year=${academicYear}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/attendance/student/${student._id}?year=${academicYear}`,
+        { withCredentials: true }
+
       );
       setAttendance(Array.isArray(res.data?.records) ? res.data.records : []);
     } catch (err) {
@@ -559,7 +563,9 @@ const StudentAttendance = () => {
           fromDate: leaveData.fromDate,
           toDate: leaveData.toDate,
           reason: leaveData.reason
-        }
+        },
+        { withCredentials: true }
+
       );
       alert("Leave application submitted successfully!");
       setShowLeaveForm(false);
