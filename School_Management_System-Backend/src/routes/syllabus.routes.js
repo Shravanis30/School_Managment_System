@@ -74,8 +74,9 @@ import {
   getSyllabusByClass,
   deleteSyllabus
 } from '../controllers/syllabus.controller.js';
-import authMiddleware from "../middlewares/auth.middleware.js";
-import { authorizeRole } from '../middleware/auth.middleware.js';
+// Correct import based on actual folder name
+import { authMiddleware, authorizeRole } from '../middlewares/auth.middleware.js'; 
+
 
 
 const router = express.Router();
