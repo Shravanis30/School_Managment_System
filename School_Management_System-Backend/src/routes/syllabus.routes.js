@@ -72,7 +72,8 @@ import multer from 'multer';
 import {
   uploadSyllabus,
   getSyllabusByClass,
-  deleteSyllabus
+  deleteSyllabus,
+  getAllSyllabusForAdmin
 } from '../controllers/syllabus.controller.js';
 // Correct import based on actual folder name
 import authMiddleware, { authorizeRole } from '../middlewares/auth.middleware.js';
