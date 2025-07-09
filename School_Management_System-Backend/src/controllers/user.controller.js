@@ -175,12 +175,46 @@ export const logoutUser = async (req, res) => {
 // ✅ Upload Profile Image (Based on Role)
 export const uploadProfileImage = async (req, res) => {
   try {
-    const user = req.user;
-    const role = req.role;
+    // console.log("File:", req.file);
+    // console.log("User:", req.user);
+    // console.log("Role:", req.role);
+    // const user = req.user;
+    // const role = req.role;
 
+    // if (!req.file) {
+    //   return res.status(400).json({ message: "No file uploaded" });
+    // }
+
+    // const profileImage = `/uploads/${req.file.filename}`;
+    // let updatedUser;
+
+    // if (role === 'admin') {
+    //   updatedUser = await Admin.findByIdAndUpdate(user._id, { profileImage }, { new: true });
+    // } else if (role === 'teacher') {
+    //   updatedUser = await Teacher.findOneAndUpdate(
+    //     { _id: user._id, adminId: user.adminId },
+    //     { profileImage },
+    //     { new: true }
+    //   );
+    // } else if (role === 'student') {
+    //   updatedUser = await Student.findOneAndUpdate(
+    //     { _id: user._id, adminId: user.adminId },
+    //     { profileImage },
+    //     { new: true }
+    //   );
+    // } else {
+    //   return res.status(400).json({ message: "Invalid role" });
+    // }
+
+    // res.status(200).json({ profileImage: updatedUser.profileImage });
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
+
+    console.log("Role:", role);
+    console.log("User ID:", user._id);
+    console.log("adminId:", user.adminId);
+    console.log("File:", req.file);
 
     const profileImage = `/uploads/${req.file.filename}`;
     let updatedUser;
@@ -203,7 +237,12 @@ export const uploadProfileImage = async (req, res) => {
       return res.status(400).json({ message: "Invalid role" });
     }
 
+    if (!updatedUser) {
+      return res.status(500).json({ message: "User not found or update failed" });
+    }
+
     res.status(200).json({ profileImage: updatedUser.profileImage });
+
   } catch (err) {
     console.error("Upload error:", err);
     res.status(500).json({ message: "Server error during upload", error: err.message });
