@@ -1,9 +1,10 @@
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
+// middlewares/multerConfig.middleware.js
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
-// Ensure the uploads folder exists
-const uploadDir = 'uploads';
+// Create uploads folder if not exists
+const uploadDir = "uploads";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
@@ -14,7 +15,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
-    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9) + ext;
+    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     cb(null, uniqueName);
   },
 });

@@ -29,6 +29,9 @@ import PaymentTransaction from './models/paymentTransaction.model.js'; // Import
 
 const app = express();
 // app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // <--- ADD THIS
+app.use(cookieParser());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5000',
 
@@ -36,10 +39,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // <--- ADD THIS
-app.use(cookieParser());
 app.use('/uploads', express.static('uploads'));
 
 

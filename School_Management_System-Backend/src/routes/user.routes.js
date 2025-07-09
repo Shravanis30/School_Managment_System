@@ -27,7 +27,7 @@ import {
   logoutUser,
   uploadProfileImage
 } from '../controllers/user.controller.js';
-import upload from '../middlewares/multerConfig.middleware.js';
+import upload from '../middlewares/upload.middleware.js';
 
 const router = express.Router();
 
@@ -38,6 +38,11 @@ router.get('/profile', authMiddleware, getProfile);
 router.post('/logout', logoutUser);
 
 // ✅ Upload profile image (requires auth)
-router.post('/upload-profile-image', authMiddleware, upload.single('image'), uploadProfileImage);
+router.post(
+  "/upload-profile-image",
+  authMiddleware,
+  upload.single("image"),
+  uploadProfileImage
+);
 
 export default router;
