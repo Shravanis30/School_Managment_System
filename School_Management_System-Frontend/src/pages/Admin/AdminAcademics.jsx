@@ -676,6 +676,26 @@
 // export default AdminAcademics;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from '../../components/Sidebar';
@@ -824,8 +844,9 @@ const AdminAcademics = () => {
     if (!syllabusFile || !selectedClass) return;
 
     const formData = new FormData();
-    formData.append("file", syllabusFile); // Actual PDF file
-    formData.append("className", normalizeClassName(selectedClass)); // Match backend field
+    formData.append("syllabus", syllabusFile); // <-- must match backend
+    formData.append("class", normalizeClassName(selectedClass)); // <-- must match backend
+
 
     try {
       const res = await axios.post(
@@ -839,21 +860,21 @@ const AdminAcademics = () => {
         }
       );
 
-      if (res.data) {
+      if (res.data?.data) {
         // Update syllabus list
         setAllSyllabus(prev => {
           const existingIndex = prev.findIndex(s => s.class === selectedClass);
           if (existingIndex >= 0) {
             const updated = [...prev];
-            updated[existingIndex] = res.data;
+            updated[existingIndex] = res.data.data;
             return updated;
           }
-          return [...prev, res.data];
+          return [...prev, res.data.data];
         });
-
         setSyllabusFile(null);
         alert('Syllabus uploaded successfully!');
       }
+
     } catch (err) {
       console.error("Syllabus upload error", err);
       alert(err.response?.data?.error || "Failed to upload syllabus");

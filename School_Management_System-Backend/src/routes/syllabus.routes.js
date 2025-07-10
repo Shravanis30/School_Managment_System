@@ -83,6 +83,7 @@ import authMiddleware, { authorizeRole } from '../middlewares/auth.middleware.js
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
+
 router.post('/upload', authMiddleware, upload.single('syllabus'), async (req, res) => {
   try {
     if (req.role !== 'admin') return res.status(403).json({ message: 'Only admins allowed' });

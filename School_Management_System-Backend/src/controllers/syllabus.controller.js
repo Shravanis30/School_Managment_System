@@ -66,7 +66,7 @@ import { ApiError } from '../utils/ApiError.js';
 
 export const uploadSyllabus = async (req, res) => {
   try {
-    const { className, subject } = req.body;
+    const className = req.body.class;
     const adminId = req.user._id;
 
     if (!req.file) {
@@ -151,13 +151,13 @@ export const deleteSyllabus = async (req, res) => {
 export const getAllSyllabusForAdmin = async (req, res) => {
   try {
     const syllabi = await Syllabus.find({ adminId: req.user._id });
-    
+
     // Add "Class " prefix to class names
     const formattedSyllabi = syllabi.map(s => ({
       ...s._doc,
       class: `Class ${s.class}`
     }));
-    
+
     res.status(200).json(formattedSyllabi);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -169,7 +169,7 @@ export const getSyllabusByClass = async (req, res) => {
   try {
     const classId = req.params.classId.replace(/^Class\s*/i, '');
     const syllabus = await Syllabus.findOne({ class: classId });
-    
+
     if (!syllabus) {
       return res.status(404).json({ message: "Syllabus not found" });
     }
