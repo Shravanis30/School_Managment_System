@@ -75,6 +75,8 @@ import {
   deleteSyllabus,
   getAllSyllabusForAdmin
 } from '../controllers/syllabus.controller.js';
+import { uploadResourcePDF } from "../middlewares/multerConfig.middleware.js";
+
 // Correct import based on actual folder name
 import authMiddleware, { authorizeRole } from '../middlewares/auth.middleware.js';
 
@@ -83,27 +85,34 @@ import authMiddleware, { authorizeRole } from '../middlewares/auth.middleware.js
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
+
+router.post(
+  "/upload",
+  authMiddleware,
+  uploadResourcePDF.single("file"),
+  uploadSyllabus
+);
 // ✅ Upload Syllabus PDF
-router.post('/upload', authMiddleware, upload.single('syllabus'), async (req, res, next) => {
-  try {
-    if (req.role !== 'admin') return res.status(403).json({ message: 'Only admins allowed' });
+// router.post('/upload', authMiddleware, upload.single('syllabus'), async (req, res, next) => {
+//   try {
+//     if (req.role !== 'admin') return res.status(403).json({ message: 'Only admins allowed' });
 
-    const className = req.body.class.replace(/^Class\s*/, '');
-    const fileUrl = `/uploads/${req.file.filename}`;
+//     const className = req.body.class.replace(/^Class\s*/, '');
+//     const fileUrl = `/uploads/${req.file.filename}`;
 
-    let syllabus = await Syllabus.findOne({ class: className, adminId: req.user._id });
-    if (syllabus) {
-      syllabus.syllabusURL = fileUrl;
-      await syllabus.save();
-    } else {
-      syllabus = await Syllabus.create({ class: className, syllabusURL: fileUrl, adminId: req.user._id });
-    }
+//     let syllabus = await Syllabus.findOne({ class: className, adminId: req.user._id });
+//     if (syllabus) {
+//       syllabus.syllabusURL = fileUrl;
+//       await syllabus.save();
+//     } else {
+//       syllabus = await Syllabus.create({ class: className, syllabusURL: fileUrl, adminId: req.user._id });
+//     }
 
-    res.status(200).json({ message: 'Syllabus uploaded successfully', url: fileUrl });
-  } catch (err) {
-    res.status(500).json({ message: 'Upload failed', error: err.message });
-  }
-});
+//     res.status(200).json({ message: 'Syllabus uploaded successfully', url: fileUrl });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Upload failed', error: err.message });
+//   }
+// });
 
 // ✅ Get Syllabus by class
 router.get('/:classId', authMiddleware, getSyllabusByClass);

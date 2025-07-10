@@ -8,7 +8,7 @@
 //   const [uploadedSyllabus, setUploadedSyllabus] = useState({});
 //   const [syllabusFile, setSyllabusFile] = useState(null);
 //   const [activeSyllabusClass, setActiveSyllabusClass] = useState('');
-  
+
 //   // Timetable state
 //   const [uploadedTimetables, setUploadedTimetables] = useState({});
 //   const [newTimetableEntries, setNewTimetableEntries] = useState(
@@ -18,14 +18,14 @@
 //     }))
 //   );
 //   const [activeTimetableClass, setActiveTimetableClass] = useState('');
-  
+
 //   // Results state
 //   const [classOptions, setClassOptions] = useState([]);
 //   const [selectedClass, setSelectedClass] = useState('');
 //   const [activeTab, setActiveTab] = useState('Syllabus');
 //   const [students, setStudents] = useState([]);
 //   const [newResults, setNewResults] = useState({});
-  
+
 //   // Modal states
 //   const [isSyllabusModalOpen, setIsSyllabusModalOpen] = useState(false);
 //   const [isTimetableModalOpen, setIsTimetableModalOpen] = useState(false);
@@ -72,7 +72,7 @@
 //           `${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${normalizeClassName(selectedClass)}`,
 //           { credentials: 'include' }
 //         );
-        
+
 //         if (syllabusRes.ok) {
 //           const syllabusData = await syllabusRes.json();
 //           setUploadedSyllabus(prev => ({
@@ -91,14 +91,14 @@
 //           `${import.meta.env.VITE_BACKEND_URL}/api/timetable/${normalizeClassName(selectedClass)}`,
 //           { credentials: 'include' }
 //         );
-        
+
 //         if (timetableRes.ok) {
 //           const timetableData = await timetableRes.json();
 //           setUploadedTimetables(prev => ({
 //             ...prev,
 //             [selectedClass]: timetableData.entries
 //           }));
-          
+
 //           // Pre-fill form with existing timetable
 //           if (timetableData.entries && timetableData.entries.length > 0) {
 //             setNewTimetableEntries(timetableData.entries);
@@ -199,7 +199,7 @@
 //         credentials: 'include',
 //         body: JSON.stringify(payload)
 //       });
-      
+
 //       if (res.ok) {
 //         const data = await res.json();
 //         setUploadedTimetables(prev => ({
@@ -365,7 +365,7 @@
 //     <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
 //       <div className="mb-8">
 //         <h3 className="text-xl font-bold mb-4">Edit Timetable for {selectedClass}</h3>
-        
+
 //         <div className="overflow-x-auto">
 //           <table className="w-full border-collapse">
 //             <thead>
@@ -396,7 +396,7 @@
 //             </tbody>
 //           </table>
 //         </div>
-        
+
 //         <div className="mt-4 flex justify-end">
 //           <button
 //             onClick={handleTimetableSubmit}
@@ -429,7 +429,7 @@
 //                   {uploadedTimetables[cls]?.length > 0 ? "Uploaded" : "Not Uploaded"}
 //                 </span>
 //               </div>
-              
+
 //               {uploadedTimetables[cls]?.length > 0 ? (
 //                 <div className="flex gap-2">
 //                   <button
@@ -475,7 +475,7 @@
 //     <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
 //       <div className="mb-6">
 //         <h3 className="text-xl font-bold mb-4">Upload Results for {selectedClass}</h3>
-        
+
 //         <div className="bg-gray-900 rounded-lg p-4 mb-6">
 //           <p className="text-gray-400 mb-3">Instructions:</p>
 //           <ul className="list-disc pl-5 text-gray-300 space-y-1 text-sm">
@@ -485,7 +485,7 @@
 //             <li>Click "Save Results" when finished</li>
 //           </ul>
 //         </div>
-        
+
 //         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //           {students.map((student) => (
 //             <div key={student._id} className="bg-gray-900 p-4 rounded-lg">
@@ -518,7 +518,7 @@
 //           ))}
 //         </div>
 //       </div>
-      
+
 //       <div className="flex justify-between items-center">
 //         <p className="text-gray-400 text-sm">
 //           {Object.keys(newResults).length} file(s) ready for upload
@@ -538,14 +538,14 @@
 //   return (
 //     <div className="flex min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
 //       <Sidebar role="admin" />
-      
+
 //       <div className="flex-1 p-4 md:p-8">
 //         <Header />
-        
+
 //         <div className="max-w-7xl mx-auto mt-8">
 //           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
 //             <h2 className="text-3xl font-bold text-white mb-4 lg:mb-0">Academic Management</h2>
-            
+
 //             <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
 //               <select
 //                 value={selectedClass}
@@ -557,7 +557,7 @@
 //                   <option key={cls} value={cls}>{cls}</option>
 //                 ))}
 //               </select>
-              
+
 //               <div className="flex bg-gray-800 rounded-lg p-1">
 //                 {['Syllabus', 'Time-Table', 'Result'].map((tab) => (
 //                   <button
@@ -575,7 +575,7 @@
 //               </div>
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gray-800/50 backdrop-blur-lg rounded-xl p-4 md:p-6 border border-gray-700 shadow-2xl">
 //             {activeTab === 'Syllabus' && renderSyllabusTab()}
 //             {activeTab === 'Time-Table' && renderTimetableTab()}
@@ -583,7 +583,7 @@
 //           </div>
 //         </div>
 //       </div>
-      
+
 //       {/* Syllabus Modal */}
 //       {isSyllabusModalOpen && uploadedSyllabus[activeSyllabusClass] && (
 //         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -599,14 +599,14 @@
 //                 <FaTimes size={20} />
 //               </button>
 //             </div>
-            
+
 //             <div className="p-6">
 //               <div className="flex justify-center mb-6">
 //                 <div className="bg-gray-900 border-2 border-dashed border-gray-700 rounded-xl w-64 h-64 flex items-center justify-center">
 //                   <span className="text-gray-500">PDF Preview</span>
 //                 </div>
 //               </div>
-              
+
 //               <div className="flex justify-center gap-4">
 //                 <a
 //                   href={uploadedSyllabus[activeSyllabusClass].syllabusURL}
@@ -615,7 +615,7 @@
 //                 >
 //                   <FaDownload className="mr-2" /> Download Syllabus
 //                 </a>
-                
+
 //                 <button
 //                   onClick={handleDeleteSyllabus}
 //                   className="px-6 py-3 bg-red-600 rounded-lg text-white font-semibold flex items-center hover:bg-red-700"
@@ -627,7 +627,7 @@
 //           </div>
 //         </div>
 //       )}
-      
+
 //       {/* Timetable Modal */}
 //       {isTimetableModalOpen && uploadedTimetables[activeTimetableClass] && (
 //         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -643,7 +643,7 @@
 //                 <FaTimes size={20} />
 //               </button>
 //             </div>
-            
+
 //             <div className="p-4 overflow-auto max-h-[70vh]">
 //               <table className="w-full border-collapse">
 //                 <thead>
@@ -686,7 +686,7 @@ const AdminAcademics = () => {
   // Syllabus state
   const [syllabusFile, setSyllabusFile] = useState(null);
   const [activeSyllabusClass, setActiveSyllabusClass] = useState('');
-  
+
   // Timetable state
   const [newTimetableEntries, setNewTimetableEntries] = useState(
     ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day => ({
@@ -695,14 +695,14 @@ const AdminAcademics = () => {
     }))
   );
   const [activeTimetableClass, setActiveTimetableClass] = useState('');
-  
+
   // Results state
   const [classOptions, setClassOptions] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [activeTab, setActiveTab] = useState('Syllabus');
   const [students, setStudents] = useState([]);
   const [newResults, setNewResults] = useState({});
-  
+
   // Modal states
   const [isSyllabusModalOpen, setIsSyllabusModalOpen] = useState(false);
   const [isTimetableModalOpen, setIsTimetableModalOpen] = useState(false);
@@ -730,7 +730,7 @@ const AdminAcademics = () => {
         console.error("Failed to fetch class list", error);
       }
     };
-    
+
     const fetchAllSyllabus = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/syllabus/admin/all`, {
@@ -741,7 +741,7 @@ const AdminAcademics = () => {
         console.error("Failed to fetch syllabus", error);
       }
     };
-    
+
     const fetchAllTimetables = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/timetable/admin/all`, {
@@ -752,7 +752,7 @@ const AdminAcademics = () => {
         console.error("Failed to fetch timetables", error);
       }
     };
-    
+
     fetchClasses();
     fetchAllSyllabus();
     fetchAllTimetables();
@@ -766,7 +766,7 @@ const AdminAcademics = () => {
       try {
         // Fetch students
         const studentsRes = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${normalizeClassName(selectedClass)}`, 
+          `${import.meta.env.VITE_BACKEND_URL}/api/students/by-class-name/${normalizeClassName(selectedClass)}`,
           { withCredentials: true }
         );
         setStudents(studentsRes.data);
@@ -778,18 +778,59 @@ const AdminAcademics = () => {
     fetchData();
   }, [selectedClass]);
 
-  // Syllabus handlers
+  // // Syllabus handlers
+  // const handleSyllabusUpload = async () => {
+  //   if (!syllabusFile || !selectedClass) return;
+
+  //   const formData = new FormData();
+  //   formData.append("file", file); // selected .pdf
+  //   formData.append('class', normalizeClassName(selectedClass));
+  //   formData.append('syllabus', syllabusFile);
+
+  //   try {
+  //     const res = await axios.post(
+  //       `${import.meta.env.VITE_BACKEND_URL}/api/syllabus/upload`,
+  //       formData,
+  //       {
+  //         withCredentials: true,
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data'
+  //         }
+  //       }
+  //     );
+
+  //     if (res.data) {
+  //       // Update all syllabus list
+  //       setAllSyllabus(prev => {
+  //         const existingIndex = prev.findIndex(s => s.class === selectedClass);
+  //         if (existingIndex >= 0) {
+  //           const updated = [...prev];
+  //           updated[existingIndex] = res.data;
+  //           return updated;
+  //         }
+  //         return [...prev, res.data];
+  //       });
+  //       setSyllabusFile(null);
+  //       alert('Syllabus uploaded successfully!');
+  //     }
+  //   } catch (err) {
+  //     console.error("Syllabus upload error", err);
+  //     alert(err.response?.data?.error || "Failed to upload syllabus");
+  //   }
+  // };
+
+  // Corrected Syllabus Upload Handler
   const handleSyllabusUpload = async () => {
     if (!syllabusFile || !selectedClass) return;
 
     const formData = new FormData();
-    formData.append('class', normalizeClassName(selectedClass));
-    formData.append('syllabus', syllabusFile);
+    formData.append("file", syllabusFile); // Correct file reference
+    formData.append("className", normalizeClassName(selectedClass)); // Match backend field
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/syllabus/upload`, 
-        formData, 
+        `${import.meta.env.VITE_BACKEND_URL}/api/syllabus/upload`,
+        formData,
         {
           withCredentials: true,
           headers: {
@@ -799,7 +840,7 @@ const AdminAcademics = () => {
       );
 
       if (res.data) {
-        // Update all syllabus list
+        // Update syllabus list
         setAllSyllabus(prev => {
           const existingIndex = prev.findIndex(s => s.class === selectedClass);
           if (existingIndex >= 0) {
@@ -809,6 +850,7 @@ const AdminAcademics = () => {
           }
           return [...prev, res.data];
         });
+
         setSyllabusFile(null);
         alert('Syllabus uploaded successfully!');
       }
@@ -818,12 +860,13 @@ const AdminAcademics = () => {
     }
   };
 
+
   const handleDeleteSyllabus = async (className) => {
     if (!className) return;
 
     try {
       await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${normalizeClassName(className)}`, 
+        `${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${normalizeClassName(className)}`,
         { withCredentials: true }
       );
 
@@ -850,11 +893,11 @@ const AdminAcademics = () => {
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/timetable`, 
+        `${import.meta.env.VITE_BACKEND_URL}/api/timetable`,
         payload,
         { withCredentials: true }
       );
-      
+
       // Update all timetables list
       setAllTimetables(prev => {
         const existingIndex = prev.findIndex(t => t.class === selectedClass);
@@ -865,7 +908,7 @@ const AdminAcademics = () => {
         }
         return [...prev, res.data];
       });
-      
+
       alert('Timetable saved successfully!');
     } catch (err) {
       console.error("Timetable upload error", err);
@@ -878,7 +921,7 @@ const AdminAcademics = () => {
 
     try {
       await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URL}/api/timetable/${normalizeClassName(className)}`, 
+        `${import.meta.env.VITE_BACKEND_URL}/api/timetable/${normalizeClassName(className)}`,
         { withCredentials: true }
       );
 
@@ -907,7 +950,7 @@ const AdminAcademics = () => {
         formData.append("file", file);
 
         await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/api/results/${normalizeClassName(selectedClass)}/${studentId}`, 
+          `${import.meta.env.VITE_BACKEND_URL}/api/results/${normalizeClassName(selectedClass)}/${studentId}`,
           formData,
           {
             withCredentials: true,
@@ -967,11 +1010,10 @@ const AdminAcademics = () => {
             return (
               <div
                 key={cls}
-                className={`p-4 rounded-lg border ${
-                  syllabus 
-                    ? "border-green-500 bg-green-900/20" 
-                    : "border-gray-700 bg-gray-900/50"
-                } transition hover:scale-[1.02] cursor-pointer`}
+                className={`p-4 rounded-lg border ${syllabus
+                  ? "border-green-500 bg-green-900/20"
+                  : "border-gray-700 bg-gray-900/50"
+                  } transition hover:scale-[1.02] cursor-pointer`}
                 onClick={() => {
                   if (syllabus) {
                     setActiveSyllabusClass(cls);
@@ -981,11 +1023,10 @@ const AdminAcademics = () => {
               >
                 <div className="flex justify-between items-center">
                   <h5 className="font-bold text-lg">{cls}</h5>
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    syllabus 
-                      ? "bg-green-800 text-green-200" 
-                      : "bg-gray-700 text-gray-400"
-                  }`}>
+                  <span className={`px-2 py-1 rounded text-xs ${syllabus
+                    ? "bg-green-800 text-green-200"
+                    : "bg-gray-700 text-gray-400"
+                    }`}>
                     {syllabus ? "Uploaded" : "Not Uploaded"}
                   </span>
                 </div>
@@ -998,7 +1039,7 @@ const AdminAcademics = () => {
                     <span className="text-gray-500">No syllabus available</span>
                   )}
                   {syllabus && (
-                    <button 
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteSyllabus(cls);
@@ -1021,7 +1062,7 @@ const AdminAcademics = () => {
     <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
       <div className="mb-8">
         <h3 className="text-xl font-bold mb-4">Edit Timetable for {selectedClass}</h3>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
@@ -1052,7 +1093,7 @@ const AdminAcademics = () => {
             </tbody>
           </table>
         </div>
-        
+
         <div className="mt-4 flex justify-end">
           <button
             onClick={handleTimetableSubmit}
@@ -1071,23 +1112,21 @@ const AdminAcademics = () => {
             return (
               <div
                 key={cls}
-                className={`p-4 rounded-lg border ${
-                  timetable?.entries?.length > 0
-                    ? "border-blue-500 bg-blue-900/20" 
-                    : "border-gray-700 bg-gray-900/50"
-                } transition hover:scale-[1.02]`}
+                className={`p-4 rounded-lg border ${timetable?.entries?.length > 0
+                  ? "border-blue-500 bg-blue-900/20"
+                  : "border-gray-700 bg-gray-900/50"
+                  } transition hover:scale-[1.02]`}
               >
                 <div className="flex justify-between items-center mb-3">
                   <h5 className="font-bold text-lg">{cls}</h5>
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    timetable?.entries?.length > 0
-                      ? "bg-blue-800 text-blue-200" 
-                      : "bg-gray-700 text-gray-400"
-                  }`}>
+                  <span className={`px-2 py-1 rounded text-xs ${timetable?.entries?.length > 0
+                    ? "bg-blue-800 text-blue-200"
+                    : "bg-gray-700 text-gray-400"
+                    }`}>
                     {timetable?.entries?.length > 0 ? "Uploaded" : "Not Uploaded"}
                   </span>
                 </div>
-                
+
                 {timetable?.entries?.length > 0 ? (
                   <div className="flex gap-2">
                     <button
@@ -1133,7 +1172,7 @@ const AdminAcademics = () => {
     <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
       <div className="mb-6">
         <h3 className="text-xl font-bold mb-4">Upload Results for {selectedClass}</h3>
-        
+
         <div className="bg-gray-900 rounded-lg p-4 mb-6">
           <p className="text-gray-400 mb-3">Instructions:</p>
           <ul className="list-disc pl-5 text-gray-300 space-y-1 text-sm">
@@ -1143,7 +1182,7 @@ const AdminAcademics = () => {
             <li>Click "Save Results" when finished</li>
           </ul>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {students.map((student) => (
             <div key={student._id} className="bg-gray-900 p-4 rounded-lg">
@@ -1176,7 +1215,7 @@ const AdminAcademics = () => {
           ))}
         </div>
       </div>
-      
+
       <div className="flex justify-between items-center">
         <p className="text-gray-400 text-sm">
           {Object.keys(newResults).length} file(s) ready for upload
@@ -1196,14 +1235,14 @@ const AdminAcademics = () => {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
       <Sidebar role="admin" />
-      
+
       <div className="flex-1 p-4 md:p-8">
         <Header />
-        
+
         <div className="max-w-7xl mx-auto mt-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-4 lg:mb-0">Academic Management</h2>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
               <select
                 value={selectedClass}
@@ -1215,17 +1254,16 @@ const AdminAcademics = () => {
                   <option key={cls} value={cls}>{cls}</option>
                 ))}
               </select>
-              
+
               <div className="flex bg-gray-800 rounded-lg p-1">
                 {['Syllabus', 'Time-Table', 'Result'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                      activeTab === tab
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-300 hover:text-white'
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === tab
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-300 hover:text-white'
+                      }`}
                   >
                     {tab}
                   </button>
@@ -1233,7 +1271,7 @@ const AdminAcademics = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-gray-800/50 backdrop-blur-lg rounded-xl p-4 md:p-6 border border-gray-700 shadow-2xl">
             {activeTab === 'Syllabus' && renderSyllabusTab()}
             {activeTab === 'Time-Table' && renderTimetableTab()}
@@ -1241,7 +1279,7 @@ const AdminAcademics = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Syllabus Modal */}
       {isSyllabusModalOpen && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -1250,21 +1288,21 @@ const AdminAcademics = () => {
               <h3 className="text-xl font-bold">
                 Syllabus for {activeSyllabusClass}
               </h3>
-              <button 
+              <button
                 onClick={() => setIsSyllabusModalOpen(false)}
                 className="text-gray-400 hover:text-white"
               >
                 <FaTimes size={20} />
               </button>
             </div>
-            
+
             <div className="p-6">
               <div className="flex justify-center mb-6">
                 <div className="bg-gray-900 border-2 border-dashed border-gray-700 rounded-xl w-64 h-64 flex items-center justify-center">
                   <span className="text-gray-500">PDF Preview</span>
                 </div>
               </div>
-              
+
               <div className="flex justify-center gap-4">
                 <a
                   href={allSyllabus.find(s => s.class === activeSyllabusClass)?.syllabusURL}
@@ -1273,7 +1311,7 @@ const AdminAcademics = () => {
                 >
                   <FaDownload className="mr-2" /> Download Syllabus
                 </a>
-                
+
                 <button
                   onClick={() => {
                     handleDeleteSyllabus(activeSyllabusClass);
@@ -1288,7 +1326,7 @@ const AdminAcademics = () => {
           </div>
         </div>
       )}
-      
+
       {/* Timetable Modal */}
       {isTimetableModalOpen && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -1297,14 +1335,14 @@ const AdminAcademics = () => {
               <h3 className="text-xl font-bold">
                 Timetable for {activeTimetableClass}
               </h3>
-              <button 
+              <button
                 onClick={() => setIsTimetableModalOpen(false)}
                 className="text-gray-400 hover:text-white"
               >
                 <FaTimes size={20} />
               </button>
             </div>
-            
+
             <div className="p-4 overflow-auto max-h-[70vh]">
               <table className="w-full border-collapse">
                 <thead>
