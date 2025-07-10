@@ -3,7 +3,7 @@
 
 // import express from "express";
 // import multer from 'multer';
-// import Syllabus from "../models/syllabus.model.js";
+// import syllabus from "../models/syllabus.model.js";
 // import authMiddleware from "../middlewares/auth.middleware.js";
 
 // const router = express.Router();
@@ -17,15 +17,15 @@
 //     const className = req.body.class.replace(/^Class\s*/, '');
 //     const fileUrl = `/uploads/${req.file.filename}`;
 
-//     let syllabus = await Syllabus.findOne({ class: className });
+//     let syllabus = await syllabus.findOne({ class: className });
 //     if (syllabus) {
 //       syllabus.syllabusURL = fileUrl;
 //       await syllabus.save();
 //     } else {
-//       syllabus = await Syllabus.create({ class: className, syllabusURL: fileUrl });
+//       syllabus = await syllabus.create({ class: className, syllabusURL: fileUrl });
 //     }
 
-//     res.status(200).json({ message: 'Syllabus uploaded successfully', url: fileUrl });
+//     res.status(200).json({ message: 'syllabus uploaded successfully', url: fileUrl });
 //   } catch (err) {
 //     res.status(500).json({ message: 'Upload failed', error: err.message });
 //   }
@@ -38,10 +38,10 @@
 //   try {
 //     console.log("Fetching syllabus for:", req.params.classId);
 //     const classId = req.params.classId.replace(/^Class\s*/, '');
-//     const syllabus = await Syllabus.findOne({ class: classId });
+//     const syllabus = await syllabus.findOne({ class: classId });
 //     if (!syllabus) {
 //       console.log("Not found");
-//       return res.status(404).json({ message: "Syllabus not found" });
+//       return res.status(404).json({ message: "syllabus not found" });
 //     }
 //     console.log("Found syllabus:", syllabus.syllabusURL);
 //     res.status(200).json(syllabus);
@@ -56,8 +56,8 @@
 //   try {
 //     const classId = req.params.classId.replace(/^Class\s*/, ''); // remove "Class " if present
 
-//     await Syllabus.findOneAndDelete({ class: classId });
-//     res.json({ message: "Syllabus deleted" });
+//     await syllabus.findOneAndDelete({ class: classId });
+//     res.json({ message: "syllabus deleted" });
 //   } catch (err) {
 //     res.status(500).json({ error: "Delete failed" });
 //   }
@@ -101,7 +101,7 @@ router.post('/upload', authMiddleware, upload.single('syllabus'), async (req, re
       syllabus.syllabusURL = fileUrl;
       await syllabus.save();
     } else {
-      syllabus = await Syllabus.create({
+      syllabus = await syllabus.create({
         class: cleanClassName,
         syllabusURL: fileUrl,
         adminId: req.user._id
@@ -109,7 +109,7 @@ router.post('/upload', authMiddleware, upload.single('syllabus'), async (req, re
     }
 
     res.status(200).json({
-      message: 'Syllabus uploaded successfully',
+      message: 'syllabus uploaded successfully',
       data: syllabus
     });
   } catch (err) {
@@ -117,7 +117,7 @@ router.post('/upload', authMiddleware, upload.single('syllabus'), async (req, re
     res.status(500).json({ message: 'Upload failed', error: err.message });
   }
 });
-// ✅ Get Syllabus by class
+// ✅ Get syllabus by class
 router.get('/:classId', authMiddleware, getSyllabusByClass);
 
 // ✅ Delete syllabus

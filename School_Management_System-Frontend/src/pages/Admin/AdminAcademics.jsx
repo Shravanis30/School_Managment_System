@@ -719,7 +719,7 @@ const AdminAcademics = () => {
   // Results state
   const [classOptions, setClassOptions] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
-  const [activeTab, setActiveTab] = useState('Syllabus');
+  const [activeTab, setActiveTab] = useState('syllabus');
   const [students, setStudents] = useState([]);
   const [newResults, setNewResults] = useState({});
 
