@@ -818,13 +818,13 @@ const AdminAcademics = () => {
   //     alert(err.response?.data?.error || "Failed to upload syllabus");
   //   }
   // };
-
+  // Syllabus Upload Function (React)
   // Corrected Syllabus Upload Handler
   const handleSyllabusUpload = async () => {
     if (!syllabusFile || !selectedClass) return;
 
     const formData = new FormData();
-    formData.append("file", syllabusFile); // Correct file reference
+    formData.append("file", syllabusFile); // Actual PDF file
     formData.append("className", normalizeClassName(selectedClass)); // Match backend field
 
     try {

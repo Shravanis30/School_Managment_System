@@ -85,13 +85,27 @@ import authMiddleware, { authorizeRole } from '../middlewares/auth.middleware.js
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
+router.post('/upload', uploadResourcePDF.single('file'), async (req, res) => {
+  try {
+    const { className } = req.body;
+    if (!req.file || !className) {
+      return res.status(400).json({ error: 'Missing file or class name' });
+    }
 
-router.post(
-  "/upload",
-  authMiddleware,
-  uploadResourcePDF.single("file"),
-  uploadSyllabus
-);
+    const syllabusURL = `${process.env.BASE_URL}/uploads/resources/${req.file.filename}`; // or use req.protocol + req.get('host')
+
+    const syllabus = await Syllabus.create({
+      class: className,
+      syllabusURL,
+    });
+
+    res.status(201).json(syllabus);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to upload syllabus' });
+  }
+});
+
 // ✅ Upload Syllabus PDF
 // router.post('/upload', authMiddleware, upload.single('syllabus'), async (req, res, next) => {
 //   try {
