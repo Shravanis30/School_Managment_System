@@ -18,7 +18,7 @@ const syllabusSchema = new mongoose.Schema({
     ref: "Admin",
     required: true
   },
-  class: { type: String, required: true },
+  class: { type: String, required: true, trim: true },
   syllabusURL: { type: String, required: true }
 }, {
   timestamps: true

@@ -99,27 +99,27 @@ export const uploadSyllabus = async (req, res) => {
 
 
 // ✅ Get Syllabus by Class (Student, Teacher, Admin)
-export const getSyllabusByClass = async (req, res) => {
-  try {
-    const classId = req.params.classId.replace(/^Class\s*/, '');
+// export const getSyllabusByClass = async (req, res) => {
+//   try {
+//     const classId = req.params.classId.replace(/^Class\s*/, '');
 
-    // Admin can only access their syllabus
-    let query = { class: classId };
-    if (req.role === 'admin') {
-      query.adminId = req.user._id;
-    }
+//     // Admin can only access their syllabus
+//     let query = { class: classId };
+//     if (req.role === 'admin') {
+//       query.adminId = req.user._id;
+//     }
 
-    const syllabus = await Syllabus.findOne(query);
-    if (!syllabus) {
-      return res.status(404).json({ message: "Syllabus not found" });
-    }
+//     const syllabus = await Syllabus.findOne(query);
+//     if (!syllabus) {
+//       return res.status(404).json({ message: "Syllabus not found" });
+//     }
 
-    res.status(200).json(syllabus);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
+//     res.status(200).json(syllabus);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Server error' });
+//   }
+// };
 
 // ✅ Delete syllabus by classId (Admin only)
 export const deleteSyllabus = async (req, res) => {
@@ -137,12 +137,49 @@ export const deleteSyllabus = async (req, res) => {
   }
 };
 
-// Add this new function
+// // Add this new function
+// export const getAllSyllabusForAdmin = async (req, res) => {
+//   try {
+//     const syllabi = await Syllabus.find({ adminId: req.user._id });
+//     res.status(200).json(syllabi);
+//   } catch (err) {
+//     res.status(500).json({ error: 'Server error' });
+//   }
+// };
+
+// Get all syllabus for admin
 export const getAllSyllabusForAdmin = async (req, res) => {
   try {
     const syllabi = await Syllabus.find({ adminId: req.user._id });
-    res.status(200).json(syllabi);
+    
+    // Add "Class " prefix to class names
+    const formattedSyllabi = syllabi.map(s => ({
+      ...s._doc,
+      class: `Class ${s.class}`
+    }));
+    
+    res.status(200).json(formattedSyllabi);
   } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Get syllabus by class
+export const getSyllabusByClass = async (req, res) => {
+  try {
+    const classId = req.params.classId.replace(/^Class\s*/i, '');
+    const syllabus = await Syllabus.findOne({ class: classId });
+    
+    if (!syllabus) {
+      return res.status(404).json({ message: "Syllabus not found" });
+    }
+
+    res.status(200).json({
+      ...syllabus._doc,
+      class: `Class ${syllabus.class}` // Add prefix for frontend
+    });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
 };

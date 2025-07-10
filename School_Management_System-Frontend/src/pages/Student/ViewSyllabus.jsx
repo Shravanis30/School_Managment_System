@@ -13,10 +13,10 @@
 //       try {
 //         setLoading(true);
 //         setError("");
-        
+
 //         // Clean class name to match backend format
 //         const cleanClassName = className.replace(/^Class\s*/i, '');
-        
+
 //         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${cleanClassName}`, {
 //           method: "GET",
 //           credentials: "include",
@@ -278,32 +278,36 @@ const ViewSyllabus = () => {
   const [className, setClassName] = useState("");
 
   useEffect(() => {
+    // Replace the fetchSyllabus function with:
     const fetchSyllabus = async () => {
       try {
         setLoading(true);
         setError("");
-        
-        // First fetch student data to get class
+
         const studentRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/students/me`, {
-          method: "GET",
           credentials: "include",
         });
 
-        if (!studentRes.ok) {
-          throw new Error('Failed to fetch student data');
-        }
-
+        if (!studentRes.ok) throw new Error('Failed to fetch student data');
         const student = await studentRes.json();
+
         const studentClass = student.className;
         setClassName(studentClass);
 
-        // Clean class name to match backend format
-        const cleanClassName = studentClass.replace(/^Class\s*/i, '');
-        
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${cleanClassName}`, {
-          method: "GET",
-          credentials: "include",
-        });
+        // Fetch syllabus using the original class name
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/syllabus/${encodeURIComponent(studentClass)}`,
+          { credentials: "include" }
+        );
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            throw new Error(`The syllabus for ${studentClass} hasn't been uploaded yet.`);
+          }
+          throw new Error('Failed to fetch syllabus');
+        }
+        const data = await res.json();
+        setSyllabusURL(data.syllabusURL || "");
 
         if (!res.ok) {
           if (res.status === 404) {
@@ -320,9 +324,7 @@ const ViewSyllabus = () => {
             throw new Error(errorMsg);
           }
         }
-
-        const data = await res.json();
-        setSyllabusURL(data.syllabusURL || "");
+        ;
 
         // Extract file info from URL
         if (data.syllabusURL) {

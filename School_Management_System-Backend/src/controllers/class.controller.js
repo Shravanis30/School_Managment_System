@@ -224,3 +224,20 @@ export const deleteClass = async (req, res) => {
     });
   }
 };
+// Add this to your class controller exports
+export const getNormalizedClasses = async (req, res) => {
+  try {
+    const adminId = req.user?.adminId || req.user?._id;
+    const classes = await Class.find({ adminId });
+    
+    // Format class names with "Class " prefix
+    const formattedClasses = classes.map(cls => ({
+      ...cls._doc,
+      name: `Class ${cls.name}`
+    }));
+    
+    res.status(200).json(formattedClasses);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};

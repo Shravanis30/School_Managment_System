@@ -72,7 +72,9 @@ import {
   getAllClasses,
   getClassById,
   deleteSubjectFromClass,
-  deleteClass
+  deleteClass,
+  getNormalizedClasses // Add this import
+
 } from '../controllers/class.controller.js';
 import Class from '../models/class.model.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
@@ -118,5 +120,8 @@ router.get("/subjects/:className", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+
+router.get('/normalized', authMiddleware, getNormalizedClasses);
+
 
 export default router;
