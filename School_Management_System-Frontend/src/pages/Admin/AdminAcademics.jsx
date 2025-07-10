@@ -716,31 +716,13 @@ const AdminAcademics = () => {
 
   // Fetch classes on component mount
   useEffect(() => {
-    // const fetchClasses = async () => {
-    //   try {
-    //     const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, {
-    //       withCredentials: true,
-    //     });
-    //     const classNames = response.data.map(cls => cls.name);
-    //     setClassOptions(classNames);
-    //     if (classNames.length > 0) {
-    //       setSelectedClass(classNames[0]);
-    //     }
-    //   } catch (error) {
-    //     console.error("Failed to fetch class list", error);
-    //   }
-    // };
-
     const fetchClasses = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/classes/normalized`,
-          { withCredentials: true }
-        );
-
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/classes`, {
+          withCredentials: true,
+        });
         const classNames = response.data.map(cls => cls.name);
         setClassOptions(classNames);
-
         if (classNames.length > 0) {
           setSelectedClass(classNames[0]);
         }
